@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "450572815031",
+    "firebase_url": "https://fifa-wager-a5cde.firebaseio.com",
+    "project_id": "fifa-wager-a5cde",
+    "storage_bucket": "fifa-wager-a5cde.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:450572815031:android:d559df6bccc32048",
+        "android_client_info": {
+          "package_name": "antrix.chopbet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "450572815031-la1808eq0ji751mnat46deld8r2a87cl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfrINrkg8nTOM9wukH12CROuJOhudErtY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+
+        
+        <RelativeLayout
+            android:id="@+id/currentMatchLayout"
+            android:layout_width="match_parent"
+            android:layout_height="100dp">
+
+                <android.support.v7.widget.CardView
+                    android:layout_margin="10dp"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                                <RelativeLayout
+                                    android:id="@+id/winChanceLayout"
+                                    android:layout_weight="1"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent">
+
+                                        <TextView
+                                            android:textColor="@color/black"
+                                            android:layout_marginTop="15dp"
+                                            android:layout_centerHorizontal="true"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="@string/win_chance"/>
+
+                                        <TextView
+                                            android:textColor="@color/black"
+                                            android:layout_marginTop="15dp"
+                                            android:layout_alignParentBottom="true"
+                                            android:layout_marginBottom="20dp"
+                                            android:layout_centerHorizontal="true"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="20%"/>
+
+                                </RelativeLayout>
+
+
+
+                        </LinearLayout>
+
+
+
+
+
+                </android.support.v7.widget.CardView>
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_above="@+id/lastMatchLayout"
+            android:layout_below="@+id/currentMatchLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+                <android.support.v7.widget.CardView
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                        <RelativeLayout
+                            android:id="@+id/acceptLayout"
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                                <TextView
+                                    android:textColor="@color/black"
+                                    android:layout_marginTop="20dp"
+                                    android:id="@+id/playerTwo"
+                                    android:padding="10dp"
+                                    android:textAlignment="center"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="OPPONENT"/>
+
+                                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                                    android:id="@+id/acceptButton"
+                                    android:layout_width="70dp"
+                                    android:layout_height="70dp"
+                                    android:src="@drawable/ic_done_check"
+                                    app:civ_fill_color="@color/green"
+                                    app:elevation="5dp"
+                                    android:layout_centerInParent="true"
+                                    android:layout_centerHorizontal="true"
+                                    app:civ_border_color="#EEE"
+                                    app:civ_border_width="2dp" />
+
+                                <TextView
+                                    android:layout_below="@id/acceptButton"
+                                    android:padding="10dp"
+                                    android:textSize="11sp"
+                                    android:textAlignment="center"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Click to accept"/>
+
+                                <LinearLayout
+                                    android:layout_centerInParent="true"
+                                    android:orientation="horizontal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+                                        <RelativeLayout
+                                            android:layout_weight="1"
+                                            android:layout_width="0dp"
+                                            android:layout_height="match_parent">
+
+                                            <RadioButton
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_centerHorizontal="true"
+                                                android:checked="false"
+                                                android:duplicateParentState="false"
+                                                android:enabled="true" />
+                                        </RelativeLayout>
+                                        <RelativeLayout
+                                            android:layout_weight="1"
+                                            android:layout_width="0dp"
+                                            android:layout_height="match_parent">
+
+                                                <RadioButton
+                                                    style="@style/radioButtonStyle"
+                                                    android:enabled="false"
+                                                    android:layout_centerHorizontal="true"
+                                                    android:layout_width="wrap_content"
+                                                    android:layout_height="wrap_content" />
+                                        </RelativeLayout>
+
+
+
+                                </LinearLayout>
+                                
+
+
+
+
+                        </RelativeLayout>
+
+
+                </android.support.v7.widget.CardView>
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_alignParentBottom="true"
+            android:id="@+id/lastMatchLayout"
+            android:layout_width="match_parent"
+            android:layout_height="100dp">
+
+                <android.support.v7.widget.CardView
+                    android:layout_margin="10dp"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                        <RelativeLayout
+                            android:id="@+id/opponentLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                                <TextView
+                                    android:id="@+id/winsHeader"
+                                    android:layout_marginTop="20dp"
+                                    android:layout_toStartOf="@+id/playerTwoImageView"
+                                    android:layout_centerHorizontal="true"
+                                    android:textColor="@color/black"
+                                    android:layout_marginEnd="10dp"
+                                    android:text="@string/wins"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+                                <TextView
+                                    android:id="@+id/winsTextView"
+                                    android:layout_marginTop="10dp"
+                                    android:layout_toStartOf="@+id/playerTwoImageView"
+                                    android:layout_marginEnd="10dp"
+                                    android:layout_below="@+id/winsHeader"
+                                    android:layout_centerHorizontal="true"
+                                    android:textColor="@color/green"
+                                    android:text="1000"
+                                    android:shadowColor="@color/green"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+
+                                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                                    android:id="@+id/playerTwoImageView"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:src="@drawable/ic_profile"
+                                    app:civ_fill_color="@color/colorAccent"
+                                    app:elevation="5dp"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_margin="10dp"
+                                    app:civ_border_color="#EEE"
+                                    app:civ_border_width="2dp" />
+
+
+
+                                <TextView
+                                    android:id="@+id/lossesHeader"
+                                    android:layout_marginTop="20dp"
+                                    android:textColor="@color/black"
+                                    android:layout_toEndOf="@+id/playerTwoImageView"
+                                    android:text="@string/losses"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+                                <TextView
+                                    android:id="@+id/lossesTextView"
+                                    android:layout_marginTop="10dp"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_below="@+id/lossesHeader"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_toEndOf="@+id/playerTwoImageView"
+                                    android:textColor="@color/colorPrimary"
+                                    android:text="500"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+
+                        </RelativeLayout>
+
+                </android.support.v7.widget.CardView>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:visibility="gone"
+            android:id="@+id/coverLayout"
+            android:background="@drawable/background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </RelativeLayout>
+
+        <io.rmiri.buttonloading.ButtonLoading
+            android:visibility="visible"
+            android:id="@+id/findBetButton"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            app:elevation="5dp"
+            android:layout_centerInParent="true"
+            app:BL_backgroundColor="@color/selector"
+            app:BL_circleColor="@color/green"
+            app:BL_circleColorSecond="@color/white"
+            app:BL_enable="true"
+            app:BL_font="fonts/IRANSans_Light.ttf"
+            app:BL_stateShow="normal"
+            app:BL_text="FIND BET"
+            app:BL_textColor="@color/white"
+            app:BL_textSize="16sp" />
+
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/findingMatchTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Finding match..."
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"
+            android:foregroundGravity="top"
+            android:textColor="@color/black"/>
+
+
+        <Button
+            android:id="@+id/stopSearchButton"
+            android:background="@mipmap/ic_cancel"
+            android:visibility="gone"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:textSize="14sp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="20dp"
+            android:layout_centerHorizontal="true"
+            style="@style/redButton"
+            />
+
+
+
+
+
+</RelativeLayout>

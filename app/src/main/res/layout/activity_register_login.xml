@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+
+
+
+
+
+        <RelativeLayout
+            android:id="@+id/linearLayout"
+            android:layout_above="@+id/btnSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                >
+
+                <TextView
+                    android:background="@color/colorPrimary"
+                    android:padding="10dp"
+                    android:id="@+id/loginHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="LOGIN"
+                    android:textSize="16sp"
+                    android:textColor="@color/white"
+                    android:textAlignment="center"/>
+
+
+                <com.hbb20.CountryCodePicker
+                    android:layout_below="@+id/loginHeader"
+                    android:id="@+id/ccp"
+                    android:layout_marginStart="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_height="wrap_content"
+                    app:ccp_contentColor="@color/black"
+                    app:ccp_defaultNameCode="GH"
+                    app:ccp_showNameCode="false"
+                    android:layout_marginTop="50dp"/>
+
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_below="@+id/ccp"
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/textInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="PHONE NUMBER">
+
+                    <EditText
+                        android:hint="PHONE NUMBER"
+                        android:id="@+id/phoneNumber"
+                        android:layout_below="@+id/ccp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="7"
+                        android:drawableEnd="@drawable/ic_phone"
+                        android:inputType="phone"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:maxLength="12"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        />
+
+
+
+
+                </android.support.design.widget.TextInputLayout>
+
+                <TextView
+                    android:layout_below="@+id/textInput"
+                    android:textSize="12sp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginTop="5dp"
+                    android:textAlignment="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sms_warning"/>
+
+
+
+
+
+            </RelativeLayout>
+
+
+
+
+        </RelativeLayout>
+
+
+
+
+
+    <com.dx.dxloadingbutton.lib.LoadingButton
+        android:id="@+id/btnSignIn"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:lb_resetAfterFailed="true"
+        app:lb_btnRippleColor="#000000"
+        app:lb_btnText="LOG IN"
+        app:lb_btnColor="@color/colorPrimary"
+        />
+
+
+</RelativeLayout>

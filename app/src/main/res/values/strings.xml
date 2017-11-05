@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">Chop Bet</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_wallet">Wallet</string>
+    <string name="title_history">History</string>
+    <string name="title_friends">Friends</string>
+    <string name="name">Name</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
+    <string name="stop_search">stop search</string>
+    <string name="wins">WINS</string>
+    <string name="losses">LOSSES</string>
+    <string name="accept">ACCEPT</string>
+    <string name="win_chance">WIN CHANCE</string>
+    <string name="psn">PSN:</string>
+    <string name="xbox_live">Xbox Live</string>
+    <string name="xbox_live_1">Xbox Live:</string>
+    <string name="origin">Origin:</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="psn1">PSN</string>
+    <string name="change_picture">Change Picture</string>
+    <string name="sms_warning">You will get an SMS with a confirmation code to this number. Carrier charges may apply</string>
+    <string name="phone_number">PHONE NUMBER</string>
+    <string name="dateformat">dd MMM yyyy</string>
+    <string name="pending">pending</string>
+    <string name="friends">FRIENDS</string>
+    <string name="favourites">FAVOURITES</string>
+</resources>
