@@ -177,6 +177,7 @@ public class fragmentChopBet extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, activityUserProfile.class);
+                intent.putExtra("phoneNumber", myPhoneNumber);
                 context.startActivity(intent);
             }
         });

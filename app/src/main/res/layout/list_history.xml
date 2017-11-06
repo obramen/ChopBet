@@ -25,6 +25,7 @@
 
 
         <RelativeLayout
+            android:id="@+id/gameLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white">
@@ -88,7 +89,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:textColor="@color/green"
-                android:text="WIN"
+                android:text="@string/win"
                 android:textStyle="italic"
                 android:layout_marginEnd="10dp"
                 android:layout_alignParentEnd="true"

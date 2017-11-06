@@ -17,8 +17,11 @@ import android.view.MenuItem;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Date;
 
@@ -94,9 +97,10 @@ public class activityChopBet extends BaseActivity {
         getSupportActionBar().setTitle("Chop Bet");
 
 
-        //declarations();
-        //loadDefaults();
-        //clickers();
+        declarations();
+        loadDefaults();
+        initialSetup();
+        clickers();
 
 
 
@@ -117,9 +121,13 @@ public class activityChopBet extends BaseActivity {
         loginTime = new Date().getTime();
 
         // get bundled country code from registerLogin activity
+
         bundle = getIntent().getExtras();
-        countryCode = bundle.getString("countryCode");
-        countryCodeStatus = bundle.getString("countryCodeStatus");
+        if (bundle != null){
+            countryCode = bundle.getString("countryCode");
+            countryCodeStatus = bundle.getString("countryCodeStatus");
+        }
+
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         editor = sharedPreferences.edit();
@@ -161,6 +169,35 @@ public class activityChopBet extends BaseActivity {
 
 
     }
+
+
+    public void initialSetup(){
+
+        dbRef.child("usernamesByPhone").child(myPhoneNumber).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.hasChildren()){
+
+                }else{
+                    Intent intent = new Intent (context, activityEditUsername.class);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+    }
+
+
+
 
     //minimize leap when back is pressed
     @Override

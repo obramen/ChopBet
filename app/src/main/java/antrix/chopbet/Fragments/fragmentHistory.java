@@ -2,6 +2,7 @@ package antrix.chopbet.Fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -21,6 +22,7 @@ import com.google.firebase.database.Query;
 
 import java.util.Objects;
 
+import antrix.chopbet.Activities.activityBetDetails;
 import antrix.chopbet.Models.NewMatch;
 import antrix.chopbet.R;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -60,7 +62,7 @@ public class fragmentHistory extends Fragment {
 
         adapter = new FirebaseListAdapter<NewMatch>(activity, NewMatch.class, R.layout.list_history, query) {
             @Override
-            protected void populateView(View v, NewMatch model, int position) {
+            protected void populateView(View v, final NewMatch model, int position) {
 
                 TextView date = (TextView)v.findViewById(R.id.date);
                 TextView name = (TextView)v.findViewById(R.id.name);
@@ -70,6 +72,7 @@ public class fragmentHistory extends Fragment {
                 RelativeLayout topDividor = (RelativeLayout)v.findViewById(R.id.topDividor);
                 RelativeLayout bottomDividor = (RelativeLayout)v.findViewById(R.id.bottomDividor);
                 CircleImageView profileImage = (CircleImageView)v.findViewById(R.id.profileImage);
+                RelativeLayout gameLayout = (RelativeLayout)v.findViewById(R.id.gameLayout);
 
 
 
@@ -128,12 +131,22 @@ public class fragmentHistory extends Fragment {
 
 
 
+                gameLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(context, activityBetDetails.class);
+                        intent.putExtra("matchID", model.getMatchID());
+                        startActivity(intent);
+                    }
+                });
+
 
 
 
 
 
             }
+
 
         };
 

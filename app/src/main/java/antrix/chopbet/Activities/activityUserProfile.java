@@ -8,6 +8,10 @@ import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.Objects;
+
 import antrix.chopbet.BetClasses.BaseActivity;
 import antrix.chopbet.R;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -21,6 +25,13 @@ public class activityUserProfile extends BaseActivity{
     View view;
     Context context;
 
+    String myPhoneNumber, myUID;
+    String phoneNumber, sourceActivity;
+    FirebaseAuth mAuth;
+
+    Bundle bundle;
+
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -30,6 +41,12 @@ public class activityUserProfile extends BaseActivity{
 
         declarations();
         clickers();
+
+
+        if (Objects.equals(phoneNumber, myPhoneNumber)){
+            editProfileTextView.setVisibility(View.VISIBLE);
+        }
+
 
 
 
@@ -43,12 +60,23 @@ public class activityUserProfile extends BaseActivity{
 
         context = this;
 
+
+        //dbRef = FirebaseDatabase.getInstance().getReference();
+        //mAuth = FirebaseAuth.getInstance();
+        //myPhoneNumber = mAuth.getCurrentUser().getPhoneNumber();
+        //myUID = mAuth.getCurrentUser().getUid();
+
+
+
         name = (TextView)findViewById(R.id.name);
         psnTextView = (TextView)findViewById(R.id.psnTextView);
         originTextView = (TextView)findViewById(R.id.originTextView);
         xboxLiveTextView = (TextView)findViewById(R.id.xboxLiveTextView);
         profileImage = (CircleImageView)findViewById(R.id.profileImage);
         editProfileTextView = (TextView) findViewById(R.id.editProfileTextView);
+
+        bundle = getIntent().getExtras();
+        phoneNumber = bundle.getString("phoneNumber");
 
 
     }
@@ -58,7 +86,10 @@ public class activityUserProfile extends BaseActivity{
         editProfileTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /// 2 - for normal profile edit
                 Intent intent = new Intent(context, activityEditUserProfile.class);
+                intent.putExtra("phoneNumber", myPhoneNumber);
+                intent.putExtra("sourceActivity", 2);
                 startActivity(intent);
             }
         });
