@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "450572815031-07e4ter5lg0674pev7ianfs3la0vepaj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "antrix.chopbet",
+            "certificate_hash": "a2685cce5ecd27f84535bac140447f54448d4c56"
+          }
+        },
+        {
           "client_id": "450572815031-la1808eq0ji751mnat46deld8r2a87cl.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "450572815031-la1808eq0ji751mnat46deld8r2a87cl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

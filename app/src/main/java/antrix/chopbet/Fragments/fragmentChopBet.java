@@ -69,10 +69,10 @@ public class fragmentChopBet extends Fragment {
         mHandler = new Handler();
 
 
-        //dbRef = FirebaseDatabase.getInstance().getReference();
-        //mAuth = FirebaseAuth.getInstance();
-        //myPhoneNumber = mAuth.getCurrentUser().getPhoneNumber();
-        //myUID = mAuth.getCurrentUser().getUid();
+        dbRef = FirebaseDatabase.getInstance().getReference();
+        mAuth = FirebaseAuth.getInstance();
+        myPhoneNumber = mAuth.getCurrentUser().getPhoneNumber();
+        myUID = mAuth.getCurrentUser().getUid();
 
 
         findBetButton = (ButtonLoading)myView.findViewById(R.id.findBetButton);

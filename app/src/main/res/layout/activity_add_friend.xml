@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp">
+
+           <android.support.design.widget.TextInputLayout
+               android:paddingTop="10dp"
+               android:hint="Search username"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
+
+               <EditText
+                   android:id="@+id/searchEditText"
+                   android:textSize="15sp"
+                   android:maxLines="1"
+                   android:maxLength="25"
+                   android:layout_width="match_parent"
+                   android:layout_height="50dp"
+                   android:drawableStart="@android:drawable/ic_menu_search"/>
+
+           </android.support.design.widget.TextInputLayout>
+
+
+
+
+
+
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/list_Friends"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"
+        android:scrollbarSize="0dp" />
+
+</LinearLayout>

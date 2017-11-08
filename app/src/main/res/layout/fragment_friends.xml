@@ -8,6 +8,7 @@
 
 
     <RelativeLayout
+        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -35,26 +36,55 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/list_FavouriteFriends"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
         android:choiceMode="multipleChoice"
         android:divider="@android:color/transparent"
         android:dividerHeight="5dp"
         android:scrollbarSize="0dp" />
 
 
-
-    <TextView
+    <RelativeLayout
         android:layout_marginTop="20dp"
-        android:textColor="@color/black"
-        android:layout_marginStart="10dp"
-        android:text="@string/friends"
-        android:textSize="13sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:textColor="@color/black"
+            android:layout_marginStart="10dp"
+            android:text="@string/friends"
+            android:textSize="13sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/addFriend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Friend"
+            android:layout_toStartOf="@+id/friendRequest"
+            android:layout_marginEnd="10dp"
+            android:textColor="@color/colorPrimary"
+            android:textSize="13sp"
+            />
+
+        <TextView
+            android:id="@+id/friendRequest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="Requests"
+            android:layout_marginEnd="10dp"
+            android:textColor="@color/black"
+            android:textSize="13sp"
+            />
+
+    </RelativeLayout>
+
+
 
 
     <ListView
-        android:id="@+id/list_History"
+        android:id="@+id/list_Friends"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:divider="@android:color/transparent"

@@ -13,14 +13,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import antrix.chopbet.BetClasses.BaseActivity;
+import antrix.chopbet.Models.BetBuddy;
 import antrix.chopbet.R;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -36,6 +44,7 @@ public class activityEditUsername extends BaseActivity {
     String myPhoneNumber, myUID;
     FirebaseAuth mAuth;
     DatabaseReference dbRef;
+    FirebaseFirestore fireDbRef;
 
     public String username;
 
@@ -59,9 +68,11 @@ public class activityEditUsername extends BaseActivity {
         context = this;
 
         dbRef = FirebaseDatabase.getInstance().getReference();
+        fireDbRef = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         myPhoneNumber = mAuth.getCurrentUser().getPhoneNumber();
         myUID = mAuth.getCurrentUser().getUid();
+
 
         userNameTextView = (EditText)findViewById(R.id.userNameTextView);
         profileImage = (CircleImageView)findViewById(R.id.profileImage);
@@ -92,42 +103,76 @@ public class activityEditUsername extends BaseActivity {
                     return;
                 }
 
+                userNameTextView.setEnabled(false);
+                acceptButton.setEnabled(false);
+
                 progressDialog.setMessage("Verifying username...");
+                progressDialog.show();
 
                 username = userNameTextView.getText().toString();
 
 
-                dbRef.child("usernames").addListenerForSingleValueEvent(new ValueEventListener() {
+                fireDbRef.document("Users/UserNames").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
 
-                        if (dataSnapshot.child(username).exists()){
+                        if (documentSnapshot.exists()){
+                            if (documentSnapshot.contains(username)){
+                                hintTextView.setText(username + " is not available");
+                                progressDialog.dismiss();
 
-                            hintTextView.setText(username + " is not available");
-                            progressDialog.dismiss();
+                                userNameTextView.setEnabled(true);
+                                acceptButton.setEnabled(true);
+                            } else {
+                                saveUserName();
+                                progressDialog.dismiss();
 
-                        } else {
-                            dbRef.child("usernames").child(username).setValue(username);
-                            dbRef.child("usernamesByPhone").child(myPhoneNumber).setValue(username);
-                            progressDialog.dismiss();
+                            }
 
-                            Intent intent = new Intent(context, activityChopBet.class);
-                            startActivity(intent);
-                            finish();
-                            Toast.makeText(context, "Username created successfully", Toast.LENGTH_LONG).show();
                         }
 
-                    }
+                        else{
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                            saveUserName();
+                            progressDialog.dismiss();
+
+
+                        }
+
+
 
                     }
                 });
+
+
+
             }
         });
 
 
+    }
+
+    public void saveUserName(){
+        Map<String, Object> mUserName = new HashMap<>();
+        Map<String, Object> xUserName = new HashMap<>();
+        mUserName.put(username, myPhoneNumber);
+        xUserName.put("userName", username);
+
+        BetBuddy betBuddy = new BetBuddy(username, "Add Friend");
+
+        fireDbRef.document("Users/UserNames").set(mUserName, SetOptions.merge());
+        fireDbRef.collection("UserNames").add(betBuddy);
+        fireDbRef.document("Users/UserInfo/PhoneNumber/"+myPhoneNumber).set(xUserName, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Intent intent = new Intent(context, activityChopBet.class);
+                intent.putExtra("countryCodeStatus", "0");
+                intent.putExtra("countryCode", "0");
+                startActivity(intent);
+                finish();
+                Toast.makeText(context, "Username created successfully", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 }

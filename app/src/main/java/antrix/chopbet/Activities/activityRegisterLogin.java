@@ -353,54 +353,6 @@ public class activityRegisterLogin extends AppCompatActivity {
     }
 
 
-    public void onTokenRefresh() {
-
-        //Check user's credentials
-        mAuth = FirebaseAuth.getInstance();
-        mAuth.getCurrentUser().getToken(true)
-                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-                    public void onComplete(@NonNull Task<GetTokenResult> task) {
-                        if (task.isSuccessful()) {
-                            //String idToken = task.getResult().getToken();
-                            // Send token to your backend via HTTPS
-                            // ...
-
-
-                            CountryCodePicker ccp = (CountryCodePicker) findViewById(R.id.ccp);
-
-                            //Open main interface for Leap while passing usr value
-                            //code status is used to tell the Leap activity where the extras is coming from.
-                            // the number "0" is used to signal that the intent is coming from splash screen activity.
-                            // Hence it comes with country code attached to it
-                            Intent openLeapIntent = new Intent(context, activityChopBet.class);
-                            openLeapIntent.putExtra("countryCode", ccp.getSelectedCountryCode());
-                            openLeapIntent.putExtra("countryCodeStatus", "1");
-                            startActivity(openLeapIntent);
-                            finish();
-
-                        } else {
-                            // Handle error -> task.getException();
-
-                            FirebaseAuth.getInstance().signOut();
-                            //Toast.makeText(registerLogin.this, "This doesn't work, re-login", Toast.LENGTH_LONG).show();
-
-
-
-                        }
-                    }
-
-                });
-
-
-    }
-
-
-
-
-
-
-
-
 
 
 

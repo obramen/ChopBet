@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Objects;
 
@@ -28,6 +30,8 @@ public class activityUserProfile extends BaseActivity{
     String myPhoneNumber, myUID;
     String phoneNumber, sourceActivity;
     FirebaseAuth mAuth;
+
+    DatabaseReference dbRef;
 
     Bundle bundle;
 
@@ -61,11 +65,10 @@ public class activityUserProfile extends BaseActivity{
         context = this;
 
 
-        //dbRef = FirebaseDatabase.getInstance().getReference();
-        //mAuth = FirebaseAuth.getInstance();
-        //myPhoneNumber = mAuth.getCurrentUser().getPhoneNumber();
-        //myUID = mAuth.getCurrentUser().getUid();
-
+        dbRef = FirebaseDatabase.getInstance().getReference();
+        mAuth = FirebaseAuth.getInstance();
+        myPhoneNumber = mAuth.getCurrentUser().getPhoneNumber();
+        myUID = mAuth.getCurrentUser().getUid();
 
 
         name = (TextView)findViewById(R.id.name);
@@ -87,6 +90,7 @@ public class activityUserProfile extends BaseActivity{
             @Override
             public void onClick(View v) {
                 /// 2 - for normal profile edit
+
                 Intent intent = new Intent(context, activityEditUserProfile.class);
                 intent.putExtra("phoneNumber", myPhoneNumber);
                 intent.putExtra("sourceActivity", 2);

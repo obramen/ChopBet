@@ -92,6 +92,7 @@
                 android:text="Other people will use this to find you"/>
 
             <android.support.design.widget.TextInputLayout
+                android:layout_marginTop="10dp"
                 android:id="@+id/textInputLayout"
                 android:layout_toEndOf="@+id/profileImage"
                 android:layout_marginEnd="20dp"
@@ -107,7 +108,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text=""
-                    android:inputType=""
+                    android:inputType="text"
                     android:textSize="14sp"
                     android:maxLines="1"
                     android:maxLength="17"

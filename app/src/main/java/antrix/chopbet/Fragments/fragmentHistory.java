@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 import java.util.Objects;
@@ -166,14 +167,14 @@ public class fragmentHistory extends Fragment {
         context = getActivity();
         myView = view;
 
-        //dbRef = FirebaseDatabase.getInstance().getReference();
-        //mAuth = FirebaseAuth.getInstance();
-        //myPhoneNumber = mAuth.getCurrentUser().getPhoneNumber();
-        //myUID = mAuth.getCurrentUser().getUid();
+        dbRef = FirebaseDatabase.getInstance().getReference();
+        mAuth = FirebaseAuth.getInstance();
+        myPhoneNumber = mAuth.getCurrentUser().getPhoneNumber();
+        myUID = mAuth.getCurrentUser().getUid();
 
         listView = (ListView)myView.findViewById(R.id.list_History);
 
-        query = dbRef.child("").limitToLast(10);
+        query = dbRef.child("matches").child(myPhoneNumber).limitToLast(10);
 
 
 

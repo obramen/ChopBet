@@ -28,4 +28,5 @@
     <string name="friends">FRIENDS</string>
     <string name="favourites">FAVOURITES</string>
     <string name="win">WIN</string>
+    <string name="transactions">Transactions</string>
 </resources>

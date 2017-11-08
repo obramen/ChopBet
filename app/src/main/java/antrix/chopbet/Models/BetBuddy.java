@@ -4,6 +4,7 @@ public class BetBuddy {
 
     private String userName;
     private String favourite;
+    private String phoneNumber;
 
     public BetBuddy(){
 
@@ -13,10 +14,15 @@ public class BetBuddy {
         this.userName = userName;
     }
 
+    public BetBuddy(String userName,String phoneNumber){
+        this.userName = userName;
+        this.phoneNumber = phoneNumber;
+    }
 
-    public BetBuddy(String userName, String favourite){
+    public BetBuddy(String userName, String phoneNumber, String favourite){
         this.userName = userName;
         this.favourite = favourite;
+        this.phoneNumber = phoneNumber;
     }
 
 
@@ -35,5 +41,13 @@ public class BetBuddy {
 
     public void setFavourite(String favourite) {
         this.favourite = favourite;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }

@@ -8,6 +8,7 @@
     android:orientation="vertical"
     tools:context="antrix.chopbet.Activities.activityChopBet">
 
+
     <FrameLayout
         android:id="@+id/content"
         android:layout_width="match_parent"
@@ -21,8 +22,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:itemTextColor="@color/white"
+        app:itemIconTint="@drawable/bottom_nav_icon_selector"
+        app:itemTextColor="@drawable/bottom_nav_icon_selector"
         android:background="@color/colorPrimaryDarker"
+        app:itemBackground="@color/colorPrimaryDarker"
         app:menu="@menu/navigation" />
 
 </LinearLayout>
