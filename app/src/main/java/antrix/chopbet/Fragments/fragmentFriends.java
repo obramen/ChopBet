@@ -3,6 +3,7 @@ package antrix.chopbet.Fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -19,14 +21,19 @@ import android.widget.TextView;
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import antrix.chopbet.Activities.activityAddFriend;
+import antrix.chopbet.Activities.activityFriendRequests;
+import antrix.chopbet.BetClasses.BetUtilities;
 import antrix.chopbet.Models.BetBuddy;
 import antrix.chopbet.Models.NewMatch;
 import antrix.chopbet.R;
@@ -54,7 +61,14 @@ public class fragmentFriends extends Fragment {
     Query queryFavourites;
     Activity activity;
 
+    LinearLayout favouritesLayout;
+
     TextView viewAll, addFriend, friendReqeust;
+
+    ValueEventListener listener;
+    DatabaseReference friendsDbRef;
+    BetUtilities betUtilities;
+
 
     @Nullable
     @Override
@@ -69,19 +83,7 @@ public class fragmentFriends extends Fragment {
         listFriends();
         listFavouriteFirends();
         clickers();
-
-
-
-
-
-
-
-
-
-
-
-
-
+        notificationIcon();
 
 
 
@@ -91,12 +93,58 @@ public class fragmentFriends extends Fragment {
         return view;
     }
 
+
+
+    private void notificationIcon(){
+
+
+
+
+        Query userDBRef = dbRef.child("Friends").child(myPhoneNumber).orderByChild("status").equalTo("Pending");
+
+
+        listener = userDBRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                long count = dataSnapshot.getChildrenCount();
+                if (count >= 1){
+                    friendReqeust.setText("[" + count + "]" + " Requests");
+                    friendReqeust.setTextColor(getResources().getColor(R.color.colorPrimary));
+                } else {
+                    friendReqeust.setText("Requests");
+                    friendReqeust.setTextColor(getResources().getColor(R.color.black));
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+
+
+
+
     private void clickers() {
 
         addFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, activityAddFriend.class);
+                startActivity(intent);
+            }
+        });
+
+        friendReqeust.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, activityFriendRequests.class);
                 startActivity(intent);
             }
         });
@@ -199,11 +247,17 @@ public class fragmentFriends extends Fragment {
         listView = (ListView)myView.findViewById(R.id.list_Friends);
         recyclerView = (RecyclerView) myView.findViewById(R.id.list_FavouriteFriends);
 
+        favouritesLayout = (LinearLayout)myView.findViewById(R.id.favouritesLayout);
+        betUtilities = new BetUtilities();
+
 
 
         if (dbRef.child("friends").child(myPhoneNumber) != null){
-            queryFriends = dbRef.child("friends").child(myPhoneNumber).limitToLast(10);
-            queryFavourites = dbRef.child("friends").child(myPhoneNumber).orderByChild("favourite").equalTo("true").limitToFirst(5);
+            queryFriends = dbRef.child("Friends").child(myPhoneNumber).orderByChild("status").equalTo("Friend");
+            queryFavourites = dbRef.child("Friends").child(myPhoneNumber).orderByChild("favourite").equalTo("true").limitToFirst(5);
+            if (queryFavourites == null){
+                favouritesLayout.setVisibility(View.VISIBLE);
+            }
 
         }
 
@@ -213,9 +267,20 @@ public class fragmentFriends extends Fragment {
     }
 
 
-    private void searchFriend(){
 
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        if(!isDetached()){
+            dbRef.child("Friends").child(myPhoneNumber).orderByChild("status").equalTo("Pending").removeEventListener(listener);
+        }
 
 
     }
+
+
+
+
 }

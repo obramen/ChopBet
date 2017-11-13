@@ -200,7 +200,7 @@ public class activityPhoneVerify extends AppCompatActivity {
 
 
 
-                spinner.setVisibility(View.VISIBLE);
+                //spinner.setVisibility(View.VISIBLE);
 
                 PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, verificationCode.getText().toString().trim());
                 signInWithPhoneAuthCredential(credential);

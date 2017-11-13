@@ -15,4 +15,23 @@
     <color name="blue_grey_100">#CFD8DC</color>
     <color name="divider">#ECEFF1</color>
 
+
+    <color name="colorConsolePS4">#3D5AFE</color>
+    <color name="colorConsoleXBOXONE">#00C853</color>
+    <color name="colorConsolePC">#B71C1C</color>
+
+    <color name="colorGameFIFA">#FFAB00</color>
+    <color name="colorGameMKXL">#FF5252</color>
+
+    <color name="colorAmount10">#CE93D8</color>
+    <color name="colorAmount20">#AB47BC</color>
+    <color name="colorAmount50">#8E24AA</color>
+    <color name="colorAmount100">#6A1B9A</color>
+    <color name="colorAmount200">#4A148C</color>
+
+    <color name="colorInternet3g">#FF7043</color>
+    <color name="colorInternet4G">#F4511E</color>
+    <color name="colorInternetBroadband">#BF360C</color>
+    <color name="colorInternetFibre">#DD2C00</color>
+
 </resources>

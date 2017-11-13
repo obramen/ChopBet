@@ -3,14 +3,19 @@ package antrix.chopbet.Activities;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.ActionBar;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,13 +23,17 @@ import android.widget.Toast;
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
@@ -38,16 +47,17 @@ import antrix.chopbet.BetClasses.BaseActivity;
 import antrix.chopbet.BetClasses.BetUtilities;
 import antrix.chopbet.Models.BetBuddy;
 import antrix.chopbet.R;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class activityAddFriend extends BaseActivity{
 
-    BetUtilities betUtilities;
 
 
     String myPhoneNumber;
     String myUID;
     FirebaseAuth mAuth;
     FirebaseFirestore fireDbRef;
+    DatabaseReference dbRef;
 
     FirebaseListAdapter<BetBuddy> adapterFriends;
     ListView listView;
@@ -60,11 +70,12 @@ public class activityAddFriend extends BaseActivity{
     SharedPreferences sharedPreferences;
 
 
-    Query queryFriends;
     Activity activity;
 
-    ActionBar actionBar;
-    Map<String, ArrayList<String>> retrievedFriends;
+    TextInputEditText searchText;
+
+    ValueEventListener listener;
+    DatabaseReference friendsDbRef;
 
 
     @Override
@@ -77,7 +88,8 @@ public class activityAddFriend extends BaseActivity{
 
 
         declarations();
-        listFriends();
+
+        //listFriends();
 
     }
 
@@ -86,6 +98,8 @@ public class activityAddFriend extends BaseActivity{
 
         activity = activityAddFriend.this;
         context = this;
+
+        dbRef = FirebaseDatabase.getInstance().getReference();
 
         fireDbRef = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
@@ -97,218 +111,198 @@ public class activityAddFriend extends BaseActivity{
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         myUserName = sharedPreferences.getString("myUserName", null);
 
+        searchText = (TextInputEditText)findViewById(R.id.searchEditText);
+
 
     }
 
 
+    private void searchFriends(String username){
 
 
-    private void listFriends(){
+        final Query userDbRef = dbRef.child("UserNames").orderByKey().equalTo(username);
+        friendsDbRef = dbRef.child("Friends").child(myPhoneNumber);
 
-        queryFriends = fireDbRef.collection("UserNames").orderBy("userName", Query.Direction.ASCENDING);
-        queryFriends.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+
+        adapterFriends = new FirebaseListAdapter<BetBuddy>(activity, BetBuddy.class, R.layout.list_friends, userDbRef) {
             @Override
-            public void onEvent(final QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                if(documentSnapshots.isEmpty()){
-                    //....
-
-                }else {
-                    final ArrayList<BetBuddy> arrayList = new ArrayList<BetBuddy>();
+            protected void populateView(View v, final BetBuddy model, int position) {
 
 
-                    //BetBuddy betBuddy = dSnap.toObject(BetBuddy.class);
+                    TextView name = (TextView) v.findViewById(R.id.name);
+                    CircleImageView profileImage = (CircleImageView) v.findViewById(R.id.profileImage);
+                    final TextView addFriend = (TextView) v.findViewById(R.id.addFriend);
 
-                    for(int x = 0; x<documentSnapshots.size(); x++){
-
-                        DocumentSnapshot dSnap = documentSnapshots.getDocuments().get(x);
-                        final BetBuddy betBuddy = dSnap.toObject(BetBuddy.class);
-
-
-                        fireDbRef.collection("Friends/"+myUserName+"/All/").addSnapshotListener(new EventListener<QuerySnapshot>() {
-                            @Override
-                            public void onEvent(QuerySnapshot documentSnapshotsB, FirebaseFirestoreException e) {
+                    String phoneNumber = model.getPhoneNumber();
+                    name.setText(model.getUserName());
 
 
-                                if (documentSnapshotsB.isEmpty()
-                                        ){
-
-                                    if (Objects.equals(betBuddy.getUserName(), myUserName)) {
-                                        //....
-                                    } else {
-                                        arrayList.add(betBuddy);
-
-                                    }
-
-                                } else {
+                    listener = friendsDbRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.child(model.getUserName()).exists()) {
+                                String status = dataSnapshot.child(model.getUserName()).child("status").getValue().toString();
 
 
-                                    if (Objects.equals(betBuddy.getUserName(), myUserName)) {
-                                        //....
-                                    } else {
+                                switch (status) {
+                                    case "Add Friend":
+                                        addFriend.setEnabled(true);
+                                        addFriend.setTypeface(null, Typeface.NORMAL);
+                                        addFriend.setTextColor(getResources().getColor(R.color.colorPrimary));
+                                        addFriend.setText("Add Friend");
+                                        addFriend.setVisibility(View.VISIBLE);
 
-                                        for (int y = 0; y < documentSnapshotsB.size(); y++){
+                                        break;
+                                    case "Pending":
+                                        addFriend.setEnabled(true);
+                                        addFriend.setTypeface(null, Typeface.NORMAL);
+                                        addFriend.setTextColor(getResources().getColor(R.color.colorPrimary));
+                                        addFriend.setText("Accept");
+                                        addFriend.setVisibility(View.VISIBLE);
 
+                                        break;
+                                    case "Sent":
+                                        addFriend.setEnabled(false);
+                                        addFriend.setTypeface(null, Typeface.ITALIC);
+                                        addFriend.setTextColor(getResources().getColor(R.color.selector));
+                                        addFriend.setText("Sent");
+                                        addFriend.setVisibility(View.VISIBLE);
 
-                                            BetBuddy xbuddy = documentSnapshotsB.getDocuments().get(y).toObject(BetBuddy.class);
-                                            if (Objects.equals(betBuddy.getUserName(), xbuddy.getUserName())){
-                                                Toast.makeText(activityAddFriend.this, "TOASTED", Toast.LENGTH_SHORT).show();
+                                        break;
+                                    case "Friend":
+                                        addFriend.setEnabled(false);
+                                        addFriend.setTypeface(null, Typeface.ITALIC);
+                                        addFriend.setTextColor(getResources().getColor(R.color.selector));
+                                        addFriend.setText("Friend");
+                                        addFriend.setVisibility(View.VISIBLE);
 
-
-                                                String mmUserName = xbuddy.getUserName();
-
-                                                fireDbRef.document("Friends/" + myUserName + "/All/" + mmUserName)
-                                                        .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                    @Override
-                                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-                                                        arrayList.add(documentSnapshot.toObject(BetBuddy.class));
-
-                                                    }
-                                                });
-
-
-
-                                            }
-
-
-                                        }
-
-                                    }
-
-
-
+                                        break;
 
                                 }
 
 
-
-
-
-
+                            } else {
+                                addFriend.setVisibility(View.VISIBLE);
                             }
-                        });
 
-                        //listenerA.remove();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+
+                    addFriend.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            final BetBuddy myBetBuddy = new BetBuddy(model.getUserName(), model.getPhoneNumber(), "Sent", "false");
+                            BetBuddy hisBetBuddy = new BetBuddy(myUserName, myPhoneNumber, "Pending", "false");
+
+
+                            switch (addFriend.getText().toString()) {
+                                case "Add Friend":
+                                    dbRef.child("Friends").child(myPhoneNumber).child(model.getUserName()).setValue(myBetBuddy);
+                                    dbRef.child("Friends").child(model.getPhoneNumber()).child(myUserName).setValue(hisBetBuddy);
+
+
+                                    break;
+                                case "Accept":
+                                    dbRef.child("Friends").child(myPhoneNumber).child(model.getUserName()).child("status").setValue("Friend");
+                                    dbRef.child("Friends").child(model.getPhoneNumber()).child(myUserName).child("status").setValue("Friend");
+
+                                    break;
+                                case "Sent":
+
+                                    break;
+                            }
+                        }
+                    });
+
+
+                }
+
+        };
+
+        listView.setAdapter(adapterFriends);
 
 
 
+
+
+
+
+
+/*
+
+
+        userDbRef.child("UserNames").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.hasChildren()){
+
+                    for(DataSnapshot buddySnapShot: dataSnapshot.getChildren()){
+                        BetBuddy betBuddy = dataSnapshot.getValue(BetBuddy.class);
+
+                        searchResult.add(betBuddy);
 
                     }
 
 
-                    ///get list of current friends
-
-
-
-
-                    //arrayList.add(betBuddy);
-                    AdapterBetBuddy adapterFriends = new AdapterBetBuddy(arrayList, context){
-                        @Override
-                        public void onClick(View v) {
-                            super.onClick(v);
-
-                            int position=(Integer) v.getTag();
-                            Object object = getItem(position);
-                            BetBuddy mBetBuddy = (BetBuddy) object;
-
-                            switch (v.getId())
-                            {
-                                case R.id.addFriend:
-                                    //Snackbar.make(v, "UserName is " + betBuddy.getUserName(), Snackbar.LENGTH_LONG)
-                                    //      .setAction("No action", null).show();
-                                    Toast.makeText(context, "Request sent", Toast.LENGTH_SHORT).show();
-
-                                    BetBuddy xBetBuddy = new BetBuddy(mBetBuddy.getUserName(), "pending", "false");
-                                    BetBuddy yBetBuddy = new BetBuddy(myUserName, "received", "false");
-
-                                    TextView view = (TextView)v.findViewById(R.id.addFriend);
-                                    view.setEnabled(false);
-                                    view.setText("Sent");
-                                    view.setTextColor(getResources().getColor(R.color.selector));
-
-
-                                    fireDbRef.document("Friends/"+myUserName+"/All/"+mBetBuddy.getUserName()).set(xBetBuddy, SetOptions.merge());
-                                    fireDbRef.document("Friends/"+mBetBuddy.getUserName()+"/All/"+myUserName).set(yBetBuddy, SetOptions.merge());
-                                    break;
-                            }
-                        }
-
-                    };
-
-                    listView.setAdapter(adapterFriends);
-
                 }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });
 
-
-
-
-
-        /*
-
-        fireDbRef.document("Users/Collections/UserNames").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-                if(documentSnapshot.exists()) {
-
-                    ArrayList<BetBuddy> arrayList = new ArrayList<BetBuddy>();
-
-
-                    //retrievedFriends.put(arrayList, documentSnapshots.getQuery());
-                    BetBuddy betBuddy = documentSnapshot.toObject(BetBuddy.class);
-
-
-                    arrayList.add(betBuddy);
-
-
-
-                    AdapterBetBuddy adapterFriends = new AdapterBetBuddy(arrayList, context);
-
-                    listView.setAdapter(adapterFriends);
-
-                }
-
-
-
-
-            }
-        });
-
-
-*/
-
-
-        /*
-
-        adapterFriends = new FirebaseListAdapter<BetBuddy>(activity, BetBuddy.class, R.layout.list_friends, (com.google.firebase.database.Query) retrievedFriends) {
-            @Override
-            protected void populateView(View v, BetBuddy model, int position) {
-
-                TextView name = (TextView)v.findViewById(R.id.name);
-                TextView addFriend = (TextView)v.findViewById(R.id.addFriend);
-
-                CircleImageView profileImage = (CircleImageView)v.findViewById(R.id.profileImage);
-
-                name.setText(model.getUserName());
-
-
-
-
-
-            }
-        };
-
-        listView.setAdapter(adapterFriends);
 
         */
 
 
 
+
+
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(!isFinishing()){
+            friendsDbRef.removeEventListener(listener);
+        }
+
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+            if (Objects.equals(searchText.getText().toString().trim(), "")){
+
+            } else if(Objects.equals(searchText.getText().toString().trim(), myUserName)){
+
+            }
+            else {
+                searchFriends(searchText.getText().toString().trim());
+            }
+
+            return true;
+        }
+        return super.dispatchKeyEvent(e);
+    }
+
+
+
+
+
+
 
 
 
@@ -342,4 +336,6 @@ public class activityAddFriend extends BaseActivity{
         finish();
         return super.onSupportNavigateUp();
     }
+
+
 }

@@ -12,34 +12,45 @@ public class NewMatch {
     private long betDate;
     private long index;
     private String betStatus;
+    private String betConsole;
+    private String betGame;
+    private String betInternet;
+    private String wonOrLost;
 
 
     public NewMatch(){
 
     }
 
-    public NewMatch(String matchID, String playerOne, String playerTwo, String betAmount, String betFee) {
+    public NewMatch(String matchID, String playerOne, String playerTwo, String betAmount, String betFee, String betConsole, String betGame, String betInternet) {
         this.matchID = matchID;
         this.playerOne = playerOne;
         this.playerTwo = playerTwo;
         this.betAmount = betAmount;
         this.betFee = betFee;
+        this.betConsole = betConsole;
+        this.betGame = betGame;
+        this.betInternet = betInternet;
 
         betDate = new Date().getTime();
         index = -1 * betDate;
     }
 
-    public NewMatch(String matchID, String playerOne, String playerTwo, String betAmount, String betFee, String betStatus) {
+    public NewMatch(String matchID, String playerOne, String playerTwo, String betAmount, String betFee, String betConsole, String betGame, String betInternet, String wonOrLost) {
         this.matchID = matchID;
         this.playerOne = playerOne;
         this.playerTwo = playerTwo;
         this.betAmount = betAmount;
         this.betFee = betFee;
-        this.betStatus = betStatus;
+        this.betConsole = betConsole;
+        this.betGame = betGame;
+        this.betInternet = betInternet;
+        this.wonOrLost = wonOrLost;
 
         betDate = new Date().getTime();
         index = -1 * betDate;
     }
+
 
     public String getMatchID() {
         return matchID;
@@ -103,5 +114,37 @@ public class NewMatch {
 
     public void setBetStatus(String betStatus) {
         this.betStatus = betStatus;
+    }
+
+    public String getBetConsole() {
+        return betConsole;
+    }
+
+    public void setBetConsole(String betConsole) {
+        this.betConsole = betConsole;
+    }
+
+    public String getBetGame() {
+        return betGame;
+    }
+
+    public void setBetGame(String betGame) {
+        this.betGame = betGame;
+    }
+
+    public String getBetInternet() {
+        return betInternet;
+    }
+
+    public void setBetInternet(String betInternet) {
+        this.betInternet = betInternet;
+    }
+
+    public String getWonOrLost() {
+        return wonOrLost;
+    }
+
+    public void setWonOrLost(String wonOrLost) {
+        this.wonOrLost = wonOrLost;
     }
 }

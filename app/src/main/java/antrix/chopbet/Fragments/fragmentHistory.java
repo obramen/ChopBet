@@ -3,6 +3,8 @@ package antrix.chopbet.Fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,6 +13,8 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -48,6 +52,11 @@ public class fragmentHistory extends Fragment {
 
     long previousItemDate = 0;
 
+    SharedPreferences sharedPreferences;
+
+    String myUserName;
+    TextView matchID;
+
 
     @Nullable
     @Override
@@ -58,6 +67,72 @@ public class fragmentHistory extends Fragment {
 
 
         declarations();
+        loadHistory();
+        clickers();
+
+
+
+
+
+
+        return view;
+    }
+
+
+
+
+    private void declarations(){
+
+        activity = getActivity();
+        context = getActivity();
+        myView = view;
+
+        dbRef = FirebaseDatabase.getInstance().getReference();
+        mAuth = FirebaseAuth.getInstance();
+        myPhoneNumber = mAuth.getCurrentUser().getPhoneNumber();
+        myUID = mAuth.getCurrentUser().getUid();
+
+        listView = (ListView)myView.findViewById(R.id.list_History);
+
+
+
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        //currentMatchID = sharedPreferences.getString("currentMatchID", null);
+        myUserName = sharedPreferences.getString("myUserName", null);
+
+
+        query = dbRef.child("Matches").child(myUserName).orderByChild("index").limitToLast(10);
+
+
+
+
+
+
+    }
+
+    private void clickers(){
+
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                matchID = (TextView) view.findViewById(R.id.matchID);
+                Intent intent = new Intent(activity, activityBetDetails.class);
+                intent.putExtra("matchID", matchID.getText().toString());
+                startActivity(intent);
+            }
+        });
+
+
+    }
+
+
+
+
+    private void loadHistory(){
+
+
 
 
 
@@ -74,9 +149,13 @@ public class fragmentHistory extends Fragment {
                 RelativeLayout bottomDividor = (RelativeLayout)v.findViewById(R.id.bottomDividor);
                 CircleImageView profileImage = (CircleImageView)v.findViewById(R.id.profileImage);
                 RelativeLayout gameLayout = (RelativeLayout)v.findViewById(R.id.gameLayout);
+                matchID = (TextView)v.findViewById(R.id.matchID);
 
 
 
+
+
+                matchID.setText(model.getMatchID());
 
                 /// DETERMINE OPPONENT
                 if(Objects.equals(model.getPlayerOne(), myPhoneNumber)){
@@ -88,13 +167,30 @@ public class fragmentHistory extends Fragment {
 
                 amount.setText(model.getBetAmount());
 
-                if(Objects.equals(model.getBetStatus(), "pending")){
+                betResult.setText(model.getWonOrLost());
+
+
+                /*
+
+                if(Objects.equals(model.getBetStatus(), "Pending")){
                     betResult.setText(R.string.pending);
                 } else if (Objects.equals(model.getBetStatus(), myPhoneNumber)){
                     betResult.setText("WON");
                 } else {
                     betResult.setText("LOST");
                 }
+
+
+*/
+
+                if (Objects.equals(myUserName, model.getPlayerOne())) {
+
+                    name.setText(model.getPlayerTwo());
+
+                } else if (Objects.equals(myUserName, model.getPlayerTwo())) {
+                    name.setText(model.getPlayerOne());
+                }
+
 
 
 
@@ -111,8 +207,8 @@ public class fragmentHistory extends Fragment {
                     }
 
                 }else if (previousItemDate == model.getBetDate()){
-                        topDividor.setVisibility(View.VISIBLE);
-                        date.setVisibility(View.GONE);
+                    topDividor.setVisibility(View.VISIBLE);
+                    date.setVisibility(View.GONE);
                 } else{
                     bottomDividor.setVisibility(View.VISIBLE);
                     if(DateUtils.isToday(model.getBetDate())){
@@ -157,31 +253,12 @@ public class fragmentHistory extends Fragment {
 
 
 
-        return view;
-    }
-
-
-    private void declarations(){
-
-        activity = getActivity();
-        context = getActivity();
-        myView = view;
-
-        dbRef = FirebaseDatabase.getInstance().getReference();
-        mAuth = FirebaseAuth.getInstance();
-        myPhoneNumber = mAuth.getCurrentUser().getPhoneNumber();
-        myUID = mAuth.getCurrentUser().getUid();
-
-        listView = (ListView)myView.findViewById(R.id.list_History);
-
-        query = dbRef.child("matches").child(myPhoneNumber).limitToLast(10);
 
 
 
 
 
     }
-
 
 
 

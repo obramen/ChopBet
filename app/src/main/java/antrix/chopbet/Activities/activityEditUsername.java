@@ -111,6 +111,52 @@ public class activityEditUsername extends BaseActivity {
 
                 username = userNameTextView.getText().toString();
 
+                final DatabaseReference userDbRef = dbRef.child("UserNames");
+
+                userDbRef.child("UserNames").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        if (dataSnapshot.hasChildren()){
+
+                            if (dataSnapshot.child(username).exists()){
+                                hintTextView.setText(username + " is not available");
+                                progressDialog.dismiss();
+
+                                userNameTextView.setEnabled(true);
+                                acceptButton.setEnabled(true);
+
+
+                            }else {
+                                saveUserName();
+                                userDbRef.removeEventListener(this);
+                                progressDialog.dismiss();
+                            }
+                        }
+
+                        else {
+                            saveUserName();
+                            userDbRef.removeEventListener(this);
+                            progressDialog.dismiss();
+
+
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+
+
+
+
+/*
+
 
                 fireDbRef.document("Users/UserNames").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -144,6 +190,7 @@ public class activityEditUsername extends BaseActivity {
                     }
                 });
 
+*/
 
 
             }
@@ -157,9 +204,31 @@ public class activityEditUsername extends BaseActivity {
         Map<String, Object> xUserName = new HashMap<>();
         mUserName.put(username, myPhoneNumber);
         xUserName.put("userName", username);
+        xUserName.put("phoneNumber", myPhoneNumber);
 
-        BetBuddy betBuddy = new BetBuddy(username, "Add Friend");
+        BetBuddy betBuddy = new BetBuddy(username);
 
+
+        dbRef.child("UserNames").child(username).setValue(xUserName);
+        dbRef.child("UserInfo").child(myPhoneNumber).updateChildren(xUserName).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Intent intent = new Intent(context, activityChopBet.class);
+                intent.putExtra("countryCodeStatus", "0");
+                intent.putExtra("countryCode", "0");
+                startActivity(intent);
+                finish();
+                dbRef.child("MatchObserver").child(username).child("matchStatus").setValue("Open");
+                dbRef.child("MatchObserver").child(username).child("currentMatchID").setValue("null");
+                Toast.makeText(context, "Username created successfully", Toast.LENGTH_LONG).show();
+
+
+
+            }
+        });
+
+
+/*
         fireDbRef.document("Users/UserNames").set(mUserName, SetOptions.merge());
         fireDbRef.collection("UserNames").add(betBuddy);
         fireDbRef.document("Users/UserInfo/PhoneNumber/"+myPhoneNumber).set(xUserName, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -173,6 +242,9 @@ public class activityEditUsername extends BaseActivity {
                 Toast.makeText(context, "Username created successfully", Toast.LENGTH_LONG).show();
             }
         });
+
+
+        */
     }
 
 }

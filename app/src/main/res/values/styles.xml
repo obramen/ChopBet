@@ -30,6 +30,7 @@
     <style name="radioButtonStyle">
         <item name="android:color">@color/green</item>
         <item name="colorControlNormal">@color/selector</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
 

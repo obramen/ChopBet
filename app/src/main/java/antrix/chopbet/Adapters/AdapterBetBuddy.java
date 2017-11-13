@@ -107,7 +107,7 @@ public class AdapterBetBuddy extends ArrayAdapter<BetBuddy> implements View.OnCl
             viewHolder.addFriend.setEnabled(false);
         }
 
-        
+
         viewHolder.addFriend.setOnClickListener(this);
         viewHolder.addFriend.setTag(position);
         // Return the completed view to render on screen

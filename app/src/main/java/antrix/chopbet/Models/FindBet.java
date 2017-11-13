@@ -5,9 +5,10 @@ import java.util.Date;
 public class FindBet {
 
     String findID;
-    String finderName;
+    String finderUserName;
     String betAmount;
     String findStatus;
+    String internet;
     long findTime;
     long index;
 
@@ -15,11 +16,12 @@ public class FindBet {
     public FindBet(){
     }
 
-    public FindBet(String findID, String finderName, String betAmount, String findStatus) {
+    public FindBet(String findID, String finderName, String betAmount, String findStatus, String internet) {
         this.findID = findID;
-        this.finderName = finderName;
+        this.finderUserName = finderName;
         this.betAmount = betAmount;
         this.findStatus = findStatus;
+        this.internet = internet;
 
         findTime = new Date().getTime();
         index = -1 * findTime;
@@ -32,14 +34,6 @@ public class FindBet {
 
     public void setFindID(String findID) {
         this.findID = findID;
-    }
-
-    public String getFinderName() {
-        return finderName;
-    }
-
-    public void setFinderName(String finderName) {
-        this.finderName = finderName;
     }
 
     public String getBetAmount() {
@@ -72,5 +66,21 @@ public class FindBet {
 
     public void setIndex(long index) {
         this.index = index;
+    }
+
+    public String getFinderUserName() {
+        return finderUserName;
+    }
+
+    public void setFinderUserName(String finderUserName) {
+        this.finderUserName = finderUserName;
+    }
+
+    public String getInternet() {
+        return internet;
+    }
+
+    public void setInternet(String internet) {
+        this.internet = internet;
     }
 }

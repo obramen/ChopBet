@@ -39,6 +39,8 @@
 
         </activity>
         <activity android:name=".Activities.activityAddFriend"/>
+        <activity android:name=".Activities.activityFriendRequests"/>
+
 
     </application>
 
