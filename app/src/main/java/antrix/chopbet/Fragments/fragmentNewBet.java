@@ -157,13 +157,13 @@ public class fragmentNewBet extends Fragment {
 
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        //currentMatchID = sharedPreferences.getString("currentMatchID", null);
+        currentMatchID = sharedPreferences.getString("currentMatchID", null);
         myUserName = sharedPreferences.getString("myUserName", null);
 
         p1Accept = "null";
         p2Accept = "null";
 
-        currentMatchID = ((activityChopBet)context).currentMatchID;
+        ///currentMatchID = ((activityChopBet)context).currentMatchID;
 
 
 
@@ -429,14 +429,14 @@ public class fragmentNewBet extends Fragment {
                                     String xInternet = dataSnapshot.child("betInternet").getValue().toString();
 
 
-                                    String matchKey = dbRef.child("Matches").child(myUserName).push().getKey();
-                                    NewMatch newMatch = new NewMatch(matchKey, myUserName, playerTwoUserName, xAmount, "Fee", xConsole, xGame, xInternet, "Pending");
+                                    //String matchKey = dbRef.child("Matches").child(myUserName).push().getKey();
+                                    NewMatch newMatch = new NewMatch(currentMatchID, myUserName, playerTwoUserName, xAmount, "Fee", xConsole, xGame, xInternet, "Pending");
 
 
 
 
-                                    dbRef.child("Matches").child(myUserName).child(matchKey).setValue(newMatch);
-                                    dbRef.child("Matches").child(playerTwoUserName).child(matchKey).setValue(newMatch);
+                                    dbRef.child("Matches").child(myUserName).child(currentMatchID).setValue(newMatch);
+                                    dbRef.child("Matches").child(playerTwoUserName).child(currentMatchID).setValue(newMatch);
 
 
 
@@ -495,7 +495,7 @@ public class fragmentNewBet extends Fragment {
 
                 acceptButton.setEnabled(false);
 
-                Toast.makeText(context, "Toasted", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Match Accepted", Toast.LENGTH_SHORT).show();
 
                 dbRef.child("PendingMatches").child(myUserName).child(currentMatchID).child("betStatus").setValue("true");
 
@@ -538,13 +538,14 @@ public class fragmentNewBet extends Fragment {
 
 
         wonMatchButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
 
                 dbRef.child("MatchObserver").child(myUserName).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshotF) {
-                        String mCurrentMatchID = dataSnapshotF.child("currentMatchID").getValue().toString();
+                        final String mCurrentMatchID = dataSnapshotF.child("currentMatchID").getValue().toString();
 
 
 
@@ -552,12 +553,14 @@ public class fragmentNewBet extends Fragment {
 
 
 
-                        dbRef.child("Matches").child(myUserName).child(mCurrentMatchID).addValueEventListener(new ValueEventListener() {
+                        dbRef.child("Matches").child(myUserName).child(currentMatchID).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshotE) {
 
                                 String firstPlayer = dataSnapshotE.child("playerOne").getValue().toString();
                                 String secondPlayer = dataSnapshotE.child("playerTwo").getValue().toString();
+
+
 
                                 if (Objects.equals(myUserName, firstPlayer)) {
                                     playerTwoUserName = secondPlayer;
@@ -612,74 +615,58 @@ public class fragmentNewBet extends Fragment {
             @Override
             public void onClick(View v) {
 
+                if(isAdded()) {
 
 
-
-                dbRef.child("MatchObserver").child(myUserName).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshotF) {
-                        String mCurrentMatchID = dataSnapshotF.child("currentMatchID").getValue().toString();
-
+                    dbRef.child("MatchObserver").child(myUserName).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshotF) {
+                            final String mCurrentMatchID = dataSnapshotF.child("currentMatchID").getValue().toString();
 
 
+                            dbRef.child("Matches").child(myUserName).child(currentMatchID).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                    String firstPlayer = dataSnapshot.child("playerOne").getValue().toString();
+                                    String secondPlayer = dataSnapshot.child("playerTwo").getValue().toString();
+
+                                    if (Objects.equals(myUserName, firstPlayer)) {
+                                        playerTwoUserName = secondPlayer;
+                                    } else if (Objects.equals(myUserName, secondPlayer)) {
+                                        playerTwoUserName = firstPlayer;
+                                    }
 
 
+                                    dbRef.child("Matches").child(playerTwoUserName).child(currentMatchID).child("wonOrLost").setValue("WON");
+                                    dbRef.child("Matches").child(myUserName).child(currentMatchID).child("wonOrLost").setValue("LOST");
+
+                                    dbRef.child("MatchObserver").child(myUserName).child("matchStatus").setValue("Open");
+                                    dbRef.child("MatchObserver").child(playerTwoUserName).child("matchStatus").setValue("Open");
+
+                                    dbRef.child("MatchObserver").child(playerTwoUserName).child("matchAccepted").removeValue();
+                                    dbRef.child("MatchObserver").child(myUserName).child("matchAccepted").removeValue();
 
 
-
-
-                        dbRef.child("Matches").child(myUserName).child(mCurrentMatchID).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                                String firstPlayer = dataSnapshot.child("playerOne").getValue().toString();
-                                String secondPlayer = dataSnapshot.child("playerTwo").getValue().toString();
-
-                                if (Objects.equals(myUserName, firstPlayer)) {
-                                    playerTwoUserName = secondPlayer;
-                                } else if (Objects.equals(myUserName, secondPlayer)) {
-                                    playerTwoUserName = firstPlayer;
                                 }
 
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
 
 
-                                dbRef.child("Matches").child(playerTwoUserName).child(currentMatchID).child("wonOrLost").setValue("WON");
-                                dbRef.child("Matches").child(myUserName).child(currentMatchID).child("wonOrLost").setValue("LOST");
+                        }
 
-                                dbRef.child("MatchObserver").child(myUserName).child("matchStatus").setValue("Open");
-                                dbRef.child("MatchObserver").child(playerTwoUserName).child("matchStatus").setValue("Open");
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
 
-                                dbRef.child("MatchObserver").child(playerTwoUserName).child("matchAccepted").removeValue();
-                                dbRef.child("MatchObserver").child(myUserName).child("matchAccepted").removeValue();
-
+                        }
+                    });
 
 
-
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
-
-
-
-
-
-
-
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
-
-
+                }
 
 
 

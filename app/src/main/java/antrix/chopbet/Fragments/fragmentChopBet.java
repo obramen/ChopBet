@@ -384,14 +384,11 @@ public class fragmentChopBet extends Fragment {
                                 mBets.put(y, mData.getKey());
                                 y++;
 
-
-
-
-
-
                             }
 
                         }
+
+
 
                         Random pooledMatches = new Random();
                         int pairedMatch = pooledMatches.nextInt(mBets.size());
@@ -411,40 +408,40 @@ public class fragmentChopBet extends Fragment {
 
 
 
-                        String matchKey = dbRef.child("PendingMatches").child(myUserName).push().getKey();
-                        NewMatch newMatch = new NewMatch(matchKey, myUserName, playerTwoUserName, mAmount, "Fee", mConsole, mGame, mInternet, "Pending");
+
+                        if (myUserName.substring(1).compareTo(playerTwoUserName.substring(1)) > 0){
+
+                            String matchKey = dbRef.child("PendingMatches").child(myUserName).push().getKey();
+                            NewMatch newMatch = new NewMatch(matchKey, myUserName, playerTwoUserName, mAmount, "Fee", mConsole, mGame, mInternet, "Pending");
+
+                            dbRef.child("PendingMatches").child(myUserName).child(matchKey).setValue(newMatch);
+                            dbRef.child("PendingMatches").child(playerTwoUserName).child(matchKey).setValue(newMatch);
 
 
-                        dbRef.child("PendingMatches").child(myUserName).child(matchKey).setValue(newMatch);
-                        dbRef.child("PendingMatches").child(playerTwoUserName).child(matchKey).setValue(newMatch);
+                            poolDbRef.child(mSelectedPool).child(key).removeValue();
+                            poolDbRef.child(mSelectedPool).child(pairedOpponent.toString()).removeValue();
+
+                            dbRef.child("MatchObserver").child(myUserName).child("matchStatus").setValue("Closed");
+                            dbRef.child("MatchObserver").child(myUserName).child("currentMatchID").setValue(matchKey);
+
+                            dbRef.child("MatchObserver").child(playerTwoUserName).child("matchStatus").setValue("Closed");
+                            dbRef.child("MatchObserver").child(playerTwoUserName).child("currentMatchID").setValue(matchKey);
+
+
+                        }
+
 
 
                         findBetButton.setVisibility(View.GONE);
-
-
-                        poolDbRef.child(mSelectedPool).child(key).removeValue();
-                        poolDbRef.child(mSelectedPool).child(pairedOpponent.toString()).removeValue();
-
-
-                        dbRef.child("MatchObserver").child(myUserName).child("matchStatus").setValue("Closed");
-                        dbRef.child("MatchObserver").child(myUserName).child("currentMatchID").setValue(matchKey);
-
-                        dbRef.child("MatchObserver").child(playerTwoUserName).child("matchStatus").setValue("Closed");
-                        dbRef.child("MatchObserver").child(playerTwoUserName).child("currentMatchID").setValue(matchKey);
-
-
-
-
 
                         stopMatchSearchOptions();
 
                         progressDialog.dismiss();
 
-
                         mBets.clear();
 
 
-                        poolDbRef.child(mSelectedPool).removeEventListener(listener);
+                        //poolDbRef.child(mSelectedPool).removeEventListener(listener);
 
 
                     }

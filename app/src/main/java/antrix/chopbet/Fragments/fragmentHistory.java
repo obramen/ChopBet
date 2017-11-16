@@ -170,6 +170,7 @@ public class fragmentHistory extends Fragment {
                 betResult.setText(model.getWonOrLost());
 
 
+
                 /*
 
                 if(Objects.equals(model.getBetStatus(), "Pending")){
@@ -228,6 +229,7 @@ public class fragmentHistory extends Fragment {
 
 
 
+
                 gameLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -248,11 +250,6 @@ public class fragmentHistory extends Fragment {
         };
 
         listView.setAdapter(adapter);
-
-
-
-
-
 
 
 

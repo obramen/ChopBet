@@ -91,9 +91,9 @@ public class activityChopBet extends BaseActivity {
                     progressDialog.setMessage("Loading...");
                     progressDialog.show();
                     if (Objects.equals(matchStatus, "Open")){
-                        transaction.replace(R.id.content, new fragmentChopBet()).commitAllowingStateLoss();
+                        transaction.replace(R.id.content, new fragmentChopBet()).commit();
                     }else{
-                        transaction.replace(R.id.content, new fragmentNewBet()).commitAllowingStateLoss();
+                        transaction.replace(R.id.content, new fragmentNewBet()).commit();
                     }
                     getSupportActionBar().setTitle("Chop Bet");
                     loadActionbar("Chop Bet");
@@ -215,17 +215,17 @@ public class activityChopBet extends BaseActivity {
     private void watchForNewMatch(){
 
 
-        matchListener = dbRef.child("MatchObserver").child(myUserName).addValueEventListener(new ValueEventListener() {
+        dbRef.child("MatchObserver").child(myUserName).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                progressDialog.setMessage("Loading...");
-                progressDialog.show();
+
 
                 matchStatus = dataSnapshot.child("matchStatus").getValue().toString();
                 currentMatchID = dataSnapshot.child("currentMatchID").getValue().toString();
                 editor.putString("matchStatus", matchStatus);
                 editor.putString("currentMatchID", currentMatchID);
+                editor.apply();
 
 
 
@@ -235,17 +235,16 @@ public class activityChopBet extends BaseActivity {
                 if (Objects.equals(matchStatus, "Open")){
 
 
-                    transaction.replace(R.id.content, new fragmentChopBet()).commitAllowingStateLoss();
+                    transaction.replace(R.id.content, new fragmentChopBet()).commit();
 
 
 
-                }else{
-                    transaction.replace(R.id.content, new fragmentNewBet()).commitAllowingStateLoss();
+                }else if (Objects.equals(matchStatus, "Closed")){
+                    transaction.replace(R.id.content, new fragmentNewBet()).commit();
                 }
 
 
 
-                progressDialog.dismiss();
 
             }
 
@@ -254,6 +253,14 @@ public class activityChopBet extends BaseActivity {
 
             }
         });
+
+
+
+
+
+
+
+
 
 
 
@@ -415,7 +422,7 @@ public class activityChopBet extends BaseActivity {
         super.onDestroy();
 
         if(!isFinishing()){
-            dbRef.child("MatchObserver").child(myPhoneNumber).removeEventListener(matchListener);
+            //dbRef.child("MatchObserver").child(myPhoneNumber).removeEventListener(matchListener);
         }
 
     }
