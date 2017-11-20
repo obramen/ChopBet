@@ -74,12 +74,15 @@
 
 
             <RelativeLayout
+                android:visibility="gone"
+                android:id="@+id/psnLayout"
                 android:layout_marginBottom="0.5dp"
                 android:background="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="50dp">
 
                 <TextView
+
                     android:id="@+id/psnHeader"
                     android:layout_marginStart="20dp"
                     android:layout_centerVertical="true"
@@ -106,6 +109,8 @@
             </RelativeLayout>
 
           <RelativeLayout
+              android:visibility="gone"
+              android:id="@+id/xboxLiveLayout"
               android:layout_marginBottom="0.5dp"
                 android:background="@color/white"
                 android:layout_width="match_parent"
@@ -139,6 +144,8 @@
 
 
           <RelativeLayout
+              android:visibility="gone"
+              android:id="@+id/originLayout"
               android:layout_marginBottom="0.5dp"
                 android:background="@color/white"
                 android:layout_width="match_parent"
@@ -174,6 +181,10 @@
                 android:background="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
+
+
+
 
             </RelativeLayout>
 

@@ -50,7 +50,7 @@ public class fragmentHistory extends Fragment {
     Query query;
     Activity activity;
 
-    long previousItemDate = 0;
+    CharSequence previousItemDate = null;
 
     SharedPreferences sharedPreferences;
 
@@ -194,30 +194,35 @@ public class fragmentHistory extends Fragment {
 
 
 
+                CharSequence compareDate = DateFormat.format(getString(R.string.dateformat), model.getBetDate());
+
 
                 ////// SETTING THE DATE
-                if (previousItemDate == 0){
+                if (previousItemDate == null){
                     topDividor.setVisibility(View.GONE);
                     if(DateUtils.isToday(model.getBetDate())){
                         date.setText("Today");
-                        previousItemDate = model.getBetDate();
+                        previousItemDate = compareDate;
                     } else {
                         date.setText(DateFormat.format(getString(R.string.dateformat), model.getBetDate()));
-                        previousItemDate = model.getBetDate();
+                        previousItemDate = compareDate;
 
                     }
 
-                }else if (previousItemDate == model.getBetDate()){
+                }
+                else if (Objects.equals(previousItemDate, compareDate)){
                     topDividor.setVisibility(View.VISIBLE);
                     date.setVisibility(View.GONE);
-                } else{
+                    previousItemDate = compareDate;
+                }
+                else{
                     bottomDividor.setVisibility(View.VISIBLE);
                     if(DateUtils.isToday(model.getBetDate())){
                         date.setText("Today");
-                        previousItemDate = model.getBetDate();
+                        previousItemDate = compareDate;
                     } else {
                         date.setText(DateFormat.format(getString(R.string.dateformat), model.getBetDate()));
-                        previousItemDate = model.getBetDate();
+                        previousItemDate = compareDate;
 
                     }
 

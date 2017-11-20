@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -62,6 +64,9 @@ public class activityPhoneVerify extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_phone_verify);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        loadActionbar("Phone Verify");
+        getSupportActionBar().setElevation(0);
+
 
         spinner = (ProgressBar) findViewById(R.id.progressBar1);
         spinner.setVisibility(View.GONE);
@@ -235,6 +240,25 @@ public class activityPhoneVerify extends AppCompatActivity {
 
 
 
+    public void loadActionbar(String title){
+
+        final ActionBar abar = getSupportActionBar();
+        //abar.setBackgroundDrawable(getResources().getDrawable(R.drawable.actionbar_background));//line under the action bar
+        View viewActionBar = getLayoutInflater().inflate(R.layout.actionbar_titletext_layout, null);
+        ActionBar.LayoutParams params = new ActionBar.LayoutParams(//Center the textview in the ActionBar !
+                ActionBar.LayoutParams.WRAP_CONTENT,
+                ActionBar.LayoutParams.MATCH_PARENT,
+                Gravity.CENTER);
+        TextView textviewTitle = (TextView) viewActionBar.findViewById(R.id.actionbar_textview);
+        textviewTitle.setText(title);
+        abar.setCustomView(viewActionBar, params);
+        abar.setDisplayShowCustomEnabled(true);
+        abar.setDisplayShowTitleEnabled(false);
+        //abar.setDisplayHomeAsUpEnabled(true);
+        abar.setIcon(R.color.transparent);
+        abar.setHomeButtonEnabled(true);
+
+    }
 
 
 

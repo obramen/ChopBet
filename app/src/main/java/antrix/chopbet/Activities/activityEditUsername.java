@@ -6,13 +6,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dx.dxloadingbutton.lib.LoadingButton;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -53,10 +56,14 @@ public class activityEditUsername extends BaseActivity {
 
     ProgressDialog progressDialog;
 
+    LoadingButton btnSave;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_username);
+        loadActionbar("Set Username");
+        getSupportActionBar().setElevation(0);
 
         declarations();
         clickers();
@@ -84,10 +91,33 @@ public class activityEditUsername extends BaseActivity {
 
         progressDialog = new ProgressDialog(context);
 
+        btnSave = (LoadingButton)findViewById(R.id.btnSave);
+
 
 
 
     }
+
+    public void loadActionbar(String title){
+
+        final ActionBar abar = getSupportActionBar();
+        //abar.setBackgroundDrawable(getResources().getDrawable(R.drawable.actionbar_background));//line under the action bar
+        View viewActionBar = getLayoutInflater().inflate(R.layout.actionbar_titletext_layout, null);
+        ActionBar.LayoutParams params = new ActionBar.LayoutParams(//Center the textview in the ActionBar !
+                ActionBar.LayoutParams.WRAP_CONTENT,
+                ActionBar.LayoutParams.MATCH_PARENT,
+                Gravity.CENTER);
+        TextView textviewTitle = (TextView) viewActionBar.findViewById(R.id.actionbar_textview);
+        textviewTitle.setText(title);
+        abar.setCustomView(viewActionBar, params);
+        abar.setDisplayShowCustomEnabled(true);
+        abar.setDisplayShowTitleEnabled(false);
+        //abar.setDisplayHomeAsUpEnabled(true);
+        abar.setIcon(R.color.transparent);
+        abar.setHomeButtonEnabled(true);
+
+    }
+
 
     private void clickers(){
 
@@ -155,42 +185,85 @@ public class activityEditUsername extends BaseActivity {
 
 
 
-/*
+
+            }
+        });
 
 
-                fireDbRef.document("Users/UserNames").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                hintTextView.setText("");
+
+                if (TextUtils.isEmpty(userNameTextView.getText().toString())) {
+                    textInputLayout.setHint("Enter username");
+                    return;
+                }
+
+                btnSave.startLoading();
+
+                userNameTextView.setEnabled(false);
+                acceptButton.setEnabled(false);
+
+                progressDialog.setMessage("Verifying username...");
+                //progressDialog.show();
+
+                username = userNameTextView.getText().toString();
+
+                final DatabaseReference userDbRef = dbRef.child("UserNames");
+
+                userDbRef.child("UserNames").addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    public void onDataChange(DataSnapshot dataSnapshot) {
 
-                        if (documentSnapshot.exists()){
-                            if (documentSnapshot.contains(username)){
+                        if (dataSnapshot.hasChildren()){
+
+                            if (dataSnapshot.child(username).exists()){
                                 hintTextView.setText(username + " is not available");
                                 progressDialog.dismiss();
+                                btnSave.cancelLoading();
+                                btnSave.reset();
 
                                 userNameTextView.setEnabled(true);
                                 acceptButton.setEnabled(true);
-                            } else {
+
+
+                            }else {
                                 saveUserName();
+                                userDbRef.removeEventListener(this);
                                 progressDialog.dismiss();
-
+                                btnSave.cancelLoading();
+                                btnSave.reset();
                             }
-
                         }
 
-                        else{
-
+                        else {
                             saveUserName();
+                            userDbRef.removeEventListener(this);
                             progressDialog.dismiss();
+                            btnSave.cancelLoading();
+                            btnSave.reset();
+
 
 
                         }
 
+                    }
 
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
                     }
                 });
 
-*/
+
+
+
+
+
 
 
             }

@@ -77,6 +77,7 @@ public class activityBetDetails extends BaseActivity{
         setContentView(R.layout.activity_bet_details);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         loadActionbar("Bet Details");
+        getSupportActionBar().setElevation(0);
 
         declarations();
         loadHistory();
@@ -136,8 +137,6 @@ public class activityBetDetails extends BaseActivity{
                 TextView fee = (TextView)v.findViewById(R.id.fee);
                 TextView report = (TextView)v.findViewById(R.id.report);
                 TextView dispute = (TextView)v.findViewById(R.id.dispute);
-
-
 
 
                 matchID.setText(model.getMatchID());

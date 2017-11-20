@@ -7,6 +7,7 @@
 
 
     <RelativeLayout
+        android:visibility="gone"
         android:id="@+id/actionLayout"
         android:layout_width="match_parent"
         android:layout_height="40dp">
@@ -40,7 +41,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="140dp">
+            android:layout_height="150dp">
 
             <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/profileImage"
@@ -60,7 +61,7 @@
                 android:ellipsize="end"
                 android:textSize="10sp"
                 android:layout_marginStart="23dp"
-                android:layout_marginBottom="25dp"
+                android:layout_marginBottom="35dp"
                 android:layout_width="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_height="wrap_content"
@@ -162,6 +163,18 @@
                 android:background="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
+
+                <com.dx.dxloadingbutton.lib.LoadingButton
+                    android:id="@+id/btnSave"
+                    android:layout_alignParentBottom="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:lb_resetAfterFailed="true"
+                    app:lb_btnRippleColor="#000000"
+                    app:lb_btnText="SAVE"
+                    app:lb_btnColor="@color/colorPrimary"
+                    />
 
             </RelativeLayout>
 

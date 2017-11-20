@@ -83,7 +83,7 @@ public class fragmentNewBet extends Fragment {
     ProgressBar acceptProgressBar;
 
     Button wonMatchButton, lostMatchButton;
-    TextView wonText, lostText;
+    TextView wonText, lostText, winsTextView, lossesTextView;
 
 
 
@@ -133,6 +133,8 @@ public class fragmentNewBet extends Fragment {
         declineButton = (Button)myView.findViewById(R.id.declineButton);
         playerTwoImageView = (CircleImageView)myView.findViewById(R.id.playerTwoImageView);
         acceptText = (TextView) myView.findViewById(R.id.acceptText);
+        winsTextView = (TextView) myView.findViewById(R.id.winsTextView);
+        lossesTextView = (TextView) myView.findViewById(R.id.lossesTextView);
 
 
         console = (TextView)myView.findViewById(R.id.console);
@@ -242,7 +244,7 @@ public class fragmentNewBet extends Fragment {
                 if(dataSnapshot.child("matchAccepted").getValue() == null){
 
                     listenForPendingMatchChanges();
-                    pendingTextColours();
+                    //pendingTextColours();
 
                     wonMatchButton.setVisibility(View.GONE);
                     lostMatchButton.setVisibility(View.GONE);
@@ -260,6 +262,7 @@ public class fragmentNewBet extends Fragment {
 
 
                     matchTextColours();
+                    winsAndLosses();
                     wonMatchButton.setVisibility(View.VISIBLE);
                     lostMatchButton.setVisibility(View.VISIBLE);
                     wonText.setVisibility(View.VISIBLE);
@@ -453,6 +456,9 @@ public class fragmentNewBet extends Fragment {
 
 
 
+                            winsAndLosses();
+                            pendingTextColours();
+
 
 
 
@@ -530,7 +536,7 @@ public class fragmentNewBet extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, activityUserProfile.class);
-                intent.putExtra("phoneNumber", myPhoneNumber);
+                intent.putExtra("userName", playerTwoUserName);
                 context.startActivity(intent);
             }
         });
@@ -1074,6 +1080,46 @@ public class fragmentNewBet extends Fragment {
 
 
         }
+    }
+
+    private void winsAndLosses(){
+
+        if(isAdded()){
+            dbRef.child("Matches").child(playerTwoUserName).orderByChild("wonOrLost").equalTo("WON").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    long numberOfWins = dataSnapshot.getChildrenCount();
+                    winsTextView.setText(String.valueOf(numberOfWins));
+
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+            dbRef.child("Matches").child(playerTwoUserName).orderByChild("wonOrLost").equalTo("LOST").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    long numberOfLosses = dataSnapshot.getChildrenCount();
+                    lossesTextView.setText(String.valueOf(numberOfLosses));
+
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+
+
     }
 
 

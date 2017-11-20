@@ -64,6 +64,7 @@ public class activityFriendRequests extends BaseActivity{
         setContentView(R.layout.activity_friend_requests);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         loadActionbar("Friend Requests");
+        getSupportActionBar().setElevation(0);
 
 
 

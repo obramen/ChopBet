@@ -84,6 +84,8 @@ public class activityAddFriend extends BaseActivity{
         setContentView(R.layout.activity_add_friend);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         loadActionbar("Add Friend");
+        getSupportActionBar().setElevation(0);
+
 
 
 

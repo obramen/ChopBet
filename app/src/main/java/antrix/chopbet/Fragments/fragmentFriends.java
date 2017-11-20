@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -33,6 +34,7 @@ import com.google.firebase.storage.StorageReference;
 
 import antrix.chopbet.Activities.activityAddFriend;
 import antrix.chopbet.Activities.activityFriendRequests;
+import antrix.chopbet.Activities.activityUserProfile;
 import antrix.chopbet.BetClasses.BetUtilities;
 import antrix.chopbet.Models.BetBuddy;
 import antrix.chopbet.Models.NewMatch;
@@ -147,6 +149,20 @@ public class fragmentFriends extends Fragment {
                 Intent intent = new Intent(context, activityFriendRequests.class);
                 startActivity(intent);
             }
+        });
+
+
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                TextView name = (TextView)view.findViewById(R.id.name);
+                Intent intent = new Intent(context, activityUserProfile.class);
+                intent.putExtra("userName", name.getText().toString());
+                context.startActivity(intent);
+            }
+
         });
     }
 
