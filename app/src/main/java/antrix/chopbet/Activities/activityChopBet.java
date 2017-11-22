@@ -15,6 +15,7 @@ import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -52,7 +53,6 @@ public class activityChopBet extends BaseActivity {
 
     FirebaseAuth.AuthStateListener mAuthListener;
     String myPhoneNumber;
-    String myUID;
     Context context;
     FirebaseAuth mAuth;
 
@@ -112,7 +112,7 @@ public class activityChopBet extends BaseActivity {
                     progressDialog.setMessage("Loading...");
                     progressDialog.show();
                     transaction.replace(R.id.content, new fragmentHistory()).commit();
-                    getSupportActionBar().setTitle("History");
+                    getSupportActionBar().setTitle("Match History");
                     loadActionbar("History");
                     progressDialog.dismiss();
                     return true;
@@ -177,7 +177,6 @@ public class activityChopBet extends BaseActivity {
         mAuth = FirebaseAuth.getInstance();
 
         myPhoneNumber = mAuth.getCurrentUser().getPhoneNumber();
-        myUID = mAuth.getCurrentUser().getUid();
 
         loginTime = new Date().getTime();
 
@@ -307,7 +306,6 @@ public class activityChopBet extends BaseActivity {
         if (x == 1) {
             Map<String, Object> userInfo = new HashMap<>();
             userInfo.put("phoneNumber", myPhoneNumber);
-            userInfo.put("uid", myUID);
             userInfo.put("countryCode", countryCode);
             //fireDbRef.document("Users/UserInfo/PhoneNumber/"+myPhoneNumber).set(userInfo, SetOptions.merge());
             dbRef.child("UserInfo").child(myPhoneNumber).setValue(userInfo);
@@ -430,6 +428,43 @@ public class activityChopBet extends BaseActivity {
     }
 
 
+
+
+
+
+
+
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_chop_bet, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+
+        //noinspection SimplifiableIfStatement
+        if(item != null && id == R.id.profileIcon) {
+
+            Intent intent = new Intent(context, activityUserProfile.class);
+            intent.putExtra("userName", myUserName);
+            startActivity(intent);
+
+        }
+
+        return super.onOptionsItemSelected(item);
+
+
+
+
+    }
 
 
 

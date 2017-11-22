@@ -35,7 +35,6 @@ public class activityFriendRequests extends BaseActivity{
 
 
     String myPhoneNumber;
-    String myUID;
     FirebaseAuth mAuth;
     FirebaseFirestore fireDbRef;
     DatabaseReference dbRef;
@@ -86,7 +85,6 @@ public class activityFriendRequests extends BaseActivity{
         fireDbRef = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         myPhoneNumber = mAuth.getCurrentUser().getPhoneNumber();
-        myUID = mAuth.getCurrentUser().getUid();
 
 
         listView = (ListView)findViewById(R.id.list_FriendRequests);

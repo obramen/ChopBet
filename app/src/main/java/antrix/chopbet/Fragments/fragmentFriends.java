@@ -45,7 +45,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class fragmentFriends extends Fragment {
 
     String myPhoneNumber;
-    String myUID;
     FirebaseAuth mAuth;
     DatabaseReference dbRef;
     FirebaseFirestore fireDbRef;
@@ -170,12 +169,46 @@ public class fragmentFriends extends Fragment {
     private void listFriends(){
         adapterFriends = new FirebaseListAdapter<BetBuddy>(activity, BetBuddy.class, R.layout.list_friends, queryFriends) {
             @Override
-            protected void populateView(View v, BetBuddy model, int position) {
+            protected void populateView(View v, final BetBuddy model, int position) {
 
                 TextView name = (TextView)v.findViewById(R.id.name);
-                CircleImageView profileImage = (CircleImageView)v.findViewById(R.id.profileImage);
+                final CircleImageView profileImage = (CircleImageView)v.findViewById(R.id.profileImage);
 
                 name.setText(model.getUserName());
+
+
+
+
+                    dbRef.child("profileImageTimestamp").child(model.getUserName())
+                            .addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                    if (dataSnapshot.hasChildren()){
+
+                                        String timestamp = dataSnapshot.child(model.getUserName()).getValue().toString();
+                                        StorageReference profileStorageRef = FirebaseStorage.getInstance().getReference()
+                                                .child("ProfileImages").child(model.getUserName()).child(model.getUserName());
+
+
+                                        betUtilities.CircleImageFromFirebase(context, profileStorageRef, profileImage, timestamp);
+
+                                    }
+
+
+
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+
+
+
+
+
 
 
 
@@ -254,7 +287,6 @@ public class fragmentFriends extends Fragment {
         fireDbRef = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         myPhoneNumber = mAuth.getCurrentUser().getPhoneNumber();
-        myUID = mAuth.getCurrentUser().getUid();
 
         viewAll = (TextView)myView.findViewById(R.id.viewAll);
         addFriend = (TextView)myView.findViewById(R.id.addFriend);

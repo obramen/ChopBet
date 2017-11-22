@@ -44,9 +44,14 @@ dependencies {
     compile 'com.github.rasoulmiri:buttonloading:v1.0.7'
     compile 'com.github.rasoulmiri:Skeleton:v1.0.5'
     compile 'com.hbb20:ccp:2.0.3'
+    compile 'com.android.support:support-vector-drawable:25.4.0'
     compile 'com.github.StevenDXC:DxLoadingButton:1.5'
+    compile 'com.github.deluakin:hubtel-payment:v1.3'
+    compile 'com.github.tgio:rncryptor-native:0.0.9'
     testCompile 'junit:junit:4.12'
 }
+
+
 
 
 apply plugin: 'com.google.gms.google-services'

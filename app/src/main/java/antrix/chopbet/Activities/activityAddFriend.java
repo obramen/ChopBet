@@ -2,6 +2,7 @@ package antrix.chopbet.Activities;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListAdapter;
@@ -35,6 +37,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +58,6 @@ public class activityAddFriend extends BaseActivity{
 
 
     String myPhoneNumber;
-    String myUID;
     FirebaseAuth mAuth;
     FirebaseFirestore fireDbRef;
     DatabaseReference dbRef;
@@ -76,6 +79,8 @@ public class activityAddFriend extends BaseActivity{
 
     ValueEventListener listener;
     DatabaseReference friendsDbRef;
+
+    BetUtilities betUtilities;
 
 
     @Override
@@ -106,7 +111,7 @@ public class activityAddFriend extends BaseActivity{
         fireDbRef = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         myPhoneNumber = mAuth.getCurrentUser().getPhoneNumber();
-        myUID = mAuth.getCurrentUser().getUid();
+
 
 
         listView = (ListView)findViewById(R.id.list_Friends);
@@ -114,6 +119,8 @@ public class activityAddFriend extends BaseActivity{
         myUserName = sharedPreferences.getString("myUserName", null);
 
         searchText = (TextInputEditText)findViewById(R.id.searchEditText);
+
+        betUtilities = new BetUtilities();
 
 
     }
@@ -131,15 +138,50 @@ public class activityAddFriend extends BaseActivity{
             protected void populateView(View v, final BetBuddy model, int position) {
 
 
-                    TextView name = (TextView) v.findViewById(R.id.name);
-                    CircleImageView profileImage = (CircleImageView) v.findViewById(R.id.profileImage);
-                    final TextView addFriend = (TextView) v.findViewById(R.id.addFriend);
+                TextView name = (TextView) v.findViewById(R.id.name);
+                final CircleImageView profileImage = (CircleImageView) v.findViewById(R.id.profileImage);
+                final TextView addFriend = (TextView) v.findViewById(R.id.addFriend);
 
-                    String phoneNumber = model.getPhoneNumber();
-                    name.setText(model.getUserName());
+                String phoneNumber = model.getPhoneNumber();
+                name.setText(model.getUserName());
 
 
-                    listener = friendsDbRef.addValueEventListener(new ValueEventListener() {
+
+
+                dbRef.child("profileImageTimestamp").child(model.getUserName())
+                        .addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                if (dataSnapshot.hasChildren()){
+
+                                    String timestamp = dataSnapshot.child(model.getUserName()).getValue().toString();
+                                    StorageReference profileStorageRef = FirebaseStorage.getInstance().getReference()
+                                            .child("ProfileImages").child(model.getUserName()).child(model.getUserName());
+
+
+                                    betUtilities.CircleImageFromFirebase(context, profileStorageRef, profileImage, timestamp);
+
+                                }
+
+
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+
+
+
+
+
+
+
+                listener = friendsDbRef.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (dataSnapshot.child(model.getUserName()).exists()) {
@@ -229,6 +271,19 @@ public class activityAddFriend extends BaseActivity{
         };
 
         listView.setAdapter(adapterFriends);
+
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                TextView name = (TextView)view.findViewById(R.id.name);
+                Intent intent = new Intent(context, activityUserProfile.class);
+                intent.putExtra("userName", name.getText().toString());
+                context.startActivity(intent);
+            }
+
+        });
 
 
 

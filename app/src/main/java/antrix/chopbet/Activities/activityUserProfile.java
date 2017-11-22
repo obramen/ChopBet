@@ -21,10 +21,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.Objects;
 
 import antrix.chopbet.BetClasses.BaseActivity;
+import antrix.chopbet.BetClasses.BetUtilities;
 import antrix.chopbet.R;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -38,7 +41,7 @@ public class activityUserProfile extends BaseActivity{
     View view;
     Context context;
 
-    String myPhoneNumber, myUID, userName;
+    String myPhoneNumber, userName;
     String phoneNumber, sourceActivity;
     FirebaseAuth mAuth;
 
@@ -51,6 +54,8 @@ public class activityUserProfile extends BaseActivity{
     String myUserName;
 
     ProgressDialog progressDialog;
+
+    BetUtilities betUtilities;
 
 
 
@@ -76,6 +81,7 @@ public class activityUserProfile extends BaseActivity{
         }
 
 
+        loadProfileImage();
 
 
 
@@ -90,7 +96,6 @@ public class activityUserProfile extends BaseActivity{
         dbRef = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         myPhoneNumber = mAuth.getCurrentUser().getPhoneNumber();
-        myUID = mAuth.getCurrentUser().getUid();
 
 
         name = (TextView)findViewById(R.id.name);
@@ -122,6 +127,7 @@ public class activityUserProfile extends BaseActivity{
 
 
         progressDialog = new ProgressDialog(context);
+        betUtilities = new BetUtilities();
 
     }
 
@@ -171,6 +177,40 @@ public class activityUserProfile extends BaseActivity{
         });
 
         progressDialog.dismiss();
+
+
+    }
+
+    private void loadProfileImage(){
+
+
+
+        dbRef.child("profileImageTimestamp").child(userName)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        if (dataSnapshot.hasChildren()){
+
+                            String timestamp = dataSnapshot.child(userName).getValue().toString();
+                            StorageReference profileStorageRef = FirebaseStorage.getInstance().getReference()
+                                    .child("ProfileImages").child(userName).child(userName);
+
+
+                            betUtilities.CircleImageFromFirebase(activityUserProfile.this, profileStorageRef, profileImage, timestamp);
+
+                        }
+
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
 
 
     }

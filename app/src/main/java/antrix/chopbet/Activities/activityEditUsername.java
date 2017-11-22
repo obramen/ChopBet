@@ -3,11 +3,16 @@ package antrix.chopbet.Activities;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -15,7 +20,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.signature.StringSignature;
 import com.dx.dxloadingbutton.lib.LoadingButton;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -26,17 +36,31 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 
 import antrix.chopbet.BetClasses.BaseActivity;
+import antrix.chopbet.BetClasses.BetUtilities;
+import antrix.chopbet.BetClasses.ImageUtils;
 import antrix.chopbet.Models.BetBuddy;
 import antrix.chopbet.R;
 import de.hdodenhof.circleimageview.CircleImageView;
+import tgio.rncryptor.RNCryptorNative;
 
 
-public class activityEditUsername extends BaseActivity {
+public class activityEditUsername extends BaseActivity implements ImageUtils.ImageAttachmentListener{
 
     EditText userNameTextView;
     Button acceptButton;
@@ -44,10 +68,12 @@ public class activityEditUsername extends BaseActivity {
 
     Context context;
 
-    String myPhoneNumber, myUID;
+    String myPhoneNumber;
     FirebaseAuth mAuth;
     DatabaseReference dbRef;
     FirebaseFirestore fireDbRef;
+    StorageReference storageReference;
+    StorageReference profileStorageRef;
 
     public String username;
 
@@ -57,6 +83,13 @@ public class activityEditUsername extends BaseActivity {
     ProgressDialog progressDialog;
 
     LoadingButton btnSave;
+
+    ImageUtils imageUtils;
+    private Bitmap bitmap;
+    private String file_name;
+    byte[] data = null;
+    TextView changeProfilePicture;
+    BetUtilities betUtilities;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,7 +111,6 @@ public class activityEditUsername extends BaseActivity {
         fireDbRef = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         myPhoneNumber = mAuth.getCurrentUser().getPhoneNumber();
-        myUID = mAuth.getCurrentUser().getUid();
 
 
         userNameTextView = (EditText)findViewById(R.id.userNameTextView);
@@ -86,12 +118,20 @@ public class activityEditUsername extends BaseActivity {
         acceptButton = (Button)findViewById(R.id.acceptButton);
         textInputLayout = (TextInputLayout)findViewById(R.id.textInputLayout);
         hintTextView = (TextView)findViewById(R.id.hintTextView);
+        changeProfilePicture = (TextView)findViewById(R.id.changeProfilePicture);
+
 
         username = "";
 
         progressDialog = new ProgressDialog(context);
 
         btnSave = (LoadingButton)findViewById(R.id.btnSave);
+
+        imageUtils = new ImageUtils(this);
+
+        storageReference = FirebaseStorage.getInstance().getReference();
+
+
 
 
 
@@ -270,6 +310,28 @@ public class activityEditUsername extends BaseActivity {
         });
 
 
+
+
+        profileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (imageUtils.isDeviceSupportCamera())
+                    imageUtils.imagepicker(1);
+                else imageUtils.imagepicker(0);
+            }
+        });
+
+        changeProfilePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (imageUtils.isDeviceSupportCamera())
+                    imageUtils.imagepicker(1);
+                else imageUtils.imagepicker(0);
+            }
+        });
+
+
+
     }
 
     public void saveUserName(){
@@ -282,7 +344,21 @@ public class activityEditUsername extends BaseActivity {
         BetBuddy betBuddy = new BetBuddy(username);
 
 
+
+        String myUID = mAuth.getUid();
+        String rUserName = new StringBuffer(username).reverse().toString();
+
+        String goldKey = dbRef.child("Xperience").push().getKey();
+        dbRef.child("Xperience").child(goldKey).child("Oxygen").setValue("0.00");
+
+
+        RNCryptorNative rnCryptorNative = new RNCryptorNative();
+        String diamondKey = new String(rnCryptorNative.encrypt(goldKey, myUID));
+
+
+
         dbRef.child("UserNames").child(username).setValue(xUserName);
+        dbRef.child("Xhaust").child(rUserName).child("liquidNitrogen").setValue(diamondKey);
         dbRef.child("UserInfo").child(myPhoneNumber).updateChildren(xUserName).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -301,23 +377,116 @@ public class activityEditUsername extends BaseActivity {
         });
 
 
-/*
-        fireDbRef.document("Users/UserNames").set(mUserName, SetOptions.merge());
-        fireDbRef.collection("UserNames").add(betBuddy);
-        fireDbRef.document("Users/UserInfo/PhoneNumber/"+myPhoneNumber).set(xUserName, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Intent intent = new Intent(context, activityChopBet.class);
-                intent.putExtra("countryCodeStatus", "0");
-                intent.putExtra("countryCode", "0");
-                startActivity(intent);
-                finish();
-                Toast.makeText(context, "Username created successfully", Toast.LENGTH_LONG).show();
-            }
-        });
 
 
-        */
+
+
+
+
+        if (data != null){
+
+
+
+
+            progressDialog.setMessage("Image uploading...");
+            progressDialog.show();
+
+
+            profileStorageRef = storageReference.child("ProfileImages").child(username).child(username);
+
+
+            UploadTask uploadTask = profileStorageRef.putBytes(data);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+
+
+                    progressDialog.dismiss();
+                    Toast.makeText(activityEditUsername.this, "error encountered, retry", Toast.LENGTH_SHORT).show();
+
+                    // Handle unsuccessful uploads
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                    /// add new timestamp for image for caching purposes
+                    FirebaseDatabase.getInstance().getReference().child("profileImageTimestamp")
+                            .child(username).child(username).setValue(new Date().getTime());
+
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                    Uri downloadUrl = taskSnapshot.getDownloadUrl();
+
+                    //Toast.makeText(activityEditUsername.this, "Profile picture changed", Toast.LENGTH_SHORT).show();
+                    /*Glide.with(activityEditUsername.this).using(new FirebaseImageLoader()).load(profileStorageRef)
+                            .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                            .signature(new StringSignature(String.valueOf(System.currentTimeMillis())))
+                            .error(R.drawable.ic_profile).centerCrop().into(profileImage);*/
+                    progressDialog.dismiss();
+
+
+                }
+            });
+
+
+
+        }
+
+
+
+
+
     }
+
+
+
+    public void image_attachment(int from, String filename, Bitmap file, Uri uri) {
+
+
+
+        this.bitmap=file;
+        this.file_name=filename;
+        profileImage.setImageBitmap(file);
+
+        String path =  Environment.getExternalStorageDirectory() + File.separator + "ImageAttach" + File.separator;
+        imageUtils.createImage(file,filename,path,false);
+
+
+        // Get the data from an ImageView as bytes
+        profileImage.setDrawingCacheEnabled(true);
+        profileImage.buildDrawingCache();
+        Bitmap bitmap = profileImage.getDrawingCache();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        data = baos.toByteArray();
+
+
+
+
+
+
+
+
+
+
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        super.onActivityResult(requestCode, resultCode, data);
+        imageUtils.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        imageUtils.request_permission_result(requestCode, permissions, grantResults);
+    }
+
 
 }

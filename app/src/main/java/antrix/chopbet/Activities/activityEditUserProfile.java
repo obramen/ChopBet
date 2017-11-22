@@ -2,7 +2,12 @@ package antrix.chopbet.Activities;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.view.Gravity;
@@ -10,17 +15,37 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.signature.StringSignature;
 import com.dx.dxloadingbutton.lib.LoadingButton;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.Date;
+import java.util.Objects;
 
 import antrix.chopbet.BetClasses.BaseActivity;
+import antrix.chopbet.BetClasses.BetUtilities;
+import antrix.chopbet.BetClasses.ImageUtils;
 import antrix.chopbet.R;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class activityEditUserProfile extends BaseActivity {
+public class activityEditUserProfile extends BaseActivity implements ImageUtils.ImageAttachmentListener {
 
     EditText nameTextView, psnTextView, originTextView, xboxLiveTextView;
     CircleImageView profileImage;
@@ -28,11 +53,13 @@ public class activityEditUserProfile extends BaseActivity {
 
     Context context;
 
-    String myPhoneNumber, myUID;
+    String myPhoneNumber;
     String phoneNumber;
     FirebaseAuth mAuth;
     DatabaseReference dbRef;
     DatabaseReference profileDbRef;
+    StorageReference storageReference;
+    StorageReference profileStorageRef;
 
     Bundle bundle;
     String userName;
@@ -40,6 +67,12 @@ public class activityEditUserProfile extends BaseActivity {
     ProgressDialog progressDialog;
 
     LoadingButton btnSave;
+
+    ImageUtils imageUtils;
+    private Bitmap bitmap;
+    private String file_name;
+    TextView changeProfilePicture;
+    BetUtilities betUtilities;
 
 
     @Override
@@ -53,6 +86,9 @@ public class activityEditUserProfile extends BaseActivity {
 
         declarations();
         clickers();
+
+        loadProfileImage();
+        loadOldValued();
 
 
 
@@ -69,7 +105,9 @@ public class activityEditUserProfile extends BaseActivity {
         dbRef = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         myPhoneNumber = mAuth.getCurrentUser().getPhoneNumber();
-        myUID = mAuth.getCurrentUser().getUid();
+
+        imageUtils = new ImageUtils(this);
+
 
         nameTextView = (EditText)findViewById(R.id.nameTextView);
         psnTextView = (EditText)findViewById(R.id.psnTextView);
@@ -78,6 +116,7 @@ public class activityEditUserProfile extends BaseActivity {
         profileImage = (CircleImageView)findViewById(R.id.profileImage);
         cancelButton = (Button)findViewById(R.id.cancelButton);
         acceptButton = (Button)findViewById(R.id.acceptButton);
+        changeProfilePicture = (TextView)findViewById(R.id.changeProfilePicture);
 
 
 
@@ -91,8 +130,87 @@ public class activityEditUserProfile extends BaseActivity {
 
         btnSave = (LoadingButton)findViewById(R.id.btnSave);
 
+        storageReference = FirebaseStorage.getInstance().getReference();
+        profileStorageRef = storageReference.child("ProfileImages").child(userName).child(userName);
+
+
+        betUtilities = new BetUtilities();
+
 
     }
+
+
+    private void loadProfileImage(){
+
+
+
+        dbRef.child("profileImageTimestamp").child(userName)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        if (dataSnapshot.hasChildren()){
+
+                            String timestamp = dataSnapshot.child(userName).getValue().toString();
+                            StorageReference profileStorageRef = FirebaseStorage.getInstance().getReference()
+                                    .child("ProfileImages").child(userName).child(userName);
+
+
+                            betUtilities.CircleImageFromFirebase(activityEditUserProfile.this, profileStorageRef, profileImage, timestamp);
+
+                        }
+
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+
+
+    }
+
+    private void loadOldValued(){
+
+        profileDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChildren()){
+                    if (dataSnapshot.child("psn").getValue() != null){
+                        psnTextView.setText(dataSnapshot.child("psn").getValue().toString());
+                    }
+
+                    if (dataSnapshot.child("xboxLive").getValue() != null){
+                        xboxLiveTextView.setText(dataSnapshot.child("xboxLive").getValue().toString());
+                    }
+
+
+                    if (dataSnapshot.child("origin").getValue() != null){
+                        originTextView.setText(dataSnapshot.child("origin").getValue().toString());
+                    }
+
+                    if (dataSnapshot.child("name").getValue() != null){
+                        nameTextView.setText(dataSnapshot.child("name").getValue().toString());
+                    }
+
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+
+
 
     private void clickers(){
 
@@ -106,11 +224,21 @@ public class activityEditUserProfile extends BaseActivity {
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 progressDialog.setMessage("Saving profile...");
                 progressDialog.show();
-                profileDbRef.child("psn").setValue(psnTextView.getText().toString());
-                profileDbRef.child("origin").setValue(originTextView.getText().toString());
-                profileDbRef.child("xboxLive").setValue(xboxLiveTextView.getText().toString());
+                if (!Objects.equals(nameTextView.getText().toString(), "")){
+                    profileDbRef.child("name").setValue(nameTextView.getText().toString());
+                }
+                if(!Objects.equals(psnTextView.getText().toString(), "")){
+                    profileDbRef.child("psn").setValue(psnTextView.getText().toString());
+                }
+                if(!Objects.equals(originTextView.getText().toString(), "")){
+                    profileDbRef.child("origin").setValue(originTextView.getText().toString());
+                }
+                if(!Objects.equals(xboxLiveTextView.getText().toString(), "")){
+                    profileDbRef.child("xboxLive").setValue(xboxLiveTextView.getText().toString());
+                }
                 progressDialog.dismiss();
                 finish();
             }
@@ -120,12 +248,18 @@ public class activityEditUserProfile extends BaseActivity {
             @Override
             public void onClick(View v) {
                 btnSave.startLoading();
-                progressDialog.setMessage("Saving profile...");
-                progressDialog.show();
-                profileDbRef.child("psn").setValue(psnTextView.getText().toString());
-                profileDbRef.child("origin").setValue(originTextView.getText().toString());
-                profileDbRef.child("xboxLive").setValue(xboxLiveTextView.getText().toString());
-                progressDialog.dismiss();
+                if (!Objects.equals(nameTextView.getText().toString().trim(), "")){
+                    profileDbRef.child("name").setValue(nameTextView.getText().toString().trim());
+                }
+                if(!Objects.equals(psnTextView.getText().toString().trim(), "")){
+                    profileDbRef.child("psn").setValue(psnTextView.getText().toString().trim());
+                }
+                if(!Objects.equals(originTextView.getText().toString().trim(), "")){
+                    profileDbRef.child("origin").setValue(originTextView.getText().toString().trim());
+                }
+                if(!Objects.equals(xboxLiveTextView.getText().toString().trim(), "")){
+                    profileDbRef.child("xboxLive").setValue(xboxLiveTextView.getText().toString().trim());
+                }
                 finish();
                 btnSave.cancelLoading();
                 btnSave.reset();
@@ -133,6 +267,24 @@ public class activityEditUserProfile extends BaseActivity {
         });
 
 
+
+        profileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (imageUtils.isDeviceSupportCamera())
+                    imageUtils.imagepicker(1);
+                else imageUtils.imagepicker(0);
+            }
+        });
+
+        changeProfilePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (imageUtils.isDeviceSupportCamera())
+                    imageUtils.imagepicker(1);
+                else imageUtils.imagepicker(0);
+            }
+        });
 
 
     }
@@ -160,6 +312,97 @@ public class activityEditUserProfile extends BaseActivity {
 
 
 
+    public void image_attachment(int from, String filename, Bitmap file, Uri uri) {
 
+
+
+            this.bitmap=file;
+            this.file_name=filename;
+            profileImage.setImageBitmap(file);
+
+            String path =  Environment.getExternalStorageDirectory() + File.separator + "ImageAttach" + File.separator;
+            imageUtils.createImage(file,filename,path,false);
+
+
+            // Get the data from an ImageView as bytes
+            profileImage.setDrawingCacheEnabled(true);
+            profileImage.buildDrawingCache();
+            Bitmap bitmap = profileImage.getDrawingCache();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] data = baos.toByteArray();
+
+            progressDialog.setMessage("Image uploading...");
+            progressDialog.show();
+
+
+
+            UploadTask uploadTask = profileStorageRef.putBytes(data);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+
+
+                    progressDialog.dismiss();
+                    Toast.makeText(activityEditUserProfile.this, "error encountered, retry", Toast.LENGTH_SHORT).show();
+
+                    // Handle unsuccessful uploads
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                    /// add new timestamp for image for caching purposes
+                    FirebaseDatabase.getInstance().getReference().child("profileImageTimestamp")
+                            .child(userName).child(userName).setValue(new Date().getTime());
+
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                    Uri downloadUrl = taskSnapshot.getDownloadUrl();
+
+                    Toast.makeText(activityEditUserProfile.this, "Profile picture changed", Toast.LENGTH_SHORT).show();
+                    Glide.with(activityEditUserProfile.this).using(new FirebaseImageLoader()).load(profileStorageRef)
+                            .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                            .signature(new StringSignature(String.valueOf(System.currentTimeMillis())))
+                            .error(R.drawable.ic_profile).centerCrop().into(profileImage);
+                    progressDialog.dismiss();
+
+
+                }
+            });
+
+
+
+
+
+
+
+
+
+
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        super.onActivityResult(requestCode, resultCode, data);
+        imageUtils.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        imageUtils.request_permission_result(requestCode, permissions, grantResults);
+    }
+
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return super.onSupportNavigateUp();
+    }
 }
 

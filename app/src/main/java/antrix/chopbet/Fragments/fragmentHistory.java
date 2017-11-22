@@ -21,13 +21,19 @@ import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.Objects;
 
 import antrix.chopbet.Activities.activityBetDetails;
+import antrix.chopbet.BetClasses.BetUtilities;
 import antrix.chopbet.Models.NewMatch;
 import antrix.chopbet.R;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -36,7 +42,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class fragmentHistory extends Fragment {
 
     String myPhoneNumber;
-    String myUID;
     FirebaseAuth mAuth;
     DatabaseReference dbRef;
 
@@ -56,6 +61,8 @@ public class fragmentHistory extends Fragment {
 
     String myUserName;
     TextView matchID;
+
+    BetUtilities betUtilities;
 
 
     @Nullable
@@ -90,7 +97,6 @@ public class fragmentHistory extends Fragment {
         dbRef = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         myPhoneNumber = mAuth.getCurrentUser().getPhoneNumber();
-        myUID = mAuth.getCurrentUser().getUid();
 
         listView = (ListView)myView.findViewById(R.id.list_History);
 
@@ -106,6 +112,7 @@ public class fragmentHistory extends Fragment {
 
 
 
+        betUtilities = new BetUtilities();
 
 
 
@@ -147,9 +154,10 @@ public class fragmentHistory extends Fragment {
                 TextView betResult = (TextView)v.findViewById(R.id.betResult);
                 RelativeLayout topDividor = (RelativeLayout)v.findViewById(R.id.topDividor);
                 RelativeLayout bottomDividor = (RelativeLayout)v.findViewById(R.id.bottomDividor);
-                CircleImageView profileImage = (CircleImageView)v.findViewById(R.id.profileImage);
+                final CircleImageView profileImage = (CircleImageView)v.findViewById(R.id.profileImage);
                 RelativeLayout gameLayout = (RelativeLayout)v.findViewById(R.id.gameLayout);
                 matchID = (TextView)v.findViewById(R.id.matchID);
+
 
 
 
@@ -165,31 +173,80 @@ public class fragmentHistory extends Fragment {
                 }
 
 
-                amount.setText(model.getBetAmount());
+                amount.setText("GHS " + model.getBetAmount());
 
                 betResult.setText(model.getWonOrLost());
 
 
 
-                /*
-
-                if(Objects.equals(model.getBetStatus(), "Pending")){
-                    betResult.setText(R.string.pending);
-                } else if (Objects.equals(model.getBetStatus(), myPhoneNumber)){
-                    betResult.setText("WON");
-                } else {
-                    betResult.setText("LOST");
-                }
-
-
-*/
 
                 if (Objects.equals(myUserName, model.getPlayerOne())) {
 
                     name.setText(model.getPlayerTwo());
 
+
+
+                    dbRef.child("profileImageTimestamp").child(model.getPlayerTwo())
+                            .addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                    if (dataSnapshot.hasChildren()){
+
+                                        String timestamp = dataSnapshot.child(model.getPlayerTwo()).getValue().toString();
+                                        StorageReference profileStorageRef = FirebaseStorage.getInstance().getReference()
+                                                .child("ProfileImages").child(model.getPlayerTwo()).child(model.getPlayerTwo());
+
+
+                                        betUtilities.CircleImageFromFirebase(context, profileStorageRef, profileImage, timestamp);
+
+                                    }
+
+
+
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+
+
+
+
                 } else if (Objects.equals(myUserName, model.getPlayerTwo())) {
                     name.setText(model.getPlayerOne());
+
+
+                    dbRef.child("profileImageTimestamp").child(model.getPlayerOne())
+                            .addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                    if (dataSnapshot.hasChildren()){
+
+                                        String timestamp = dataSnapshot.child(model.getPlayerOne()).getValue().toString();
+                                        StorageReference profileStorageRef = FirebaseStorage.getInstance().getReference()
+                                                .child("ProfileImages").child(model.getPlayerOne()).child(model.getPlayerOne());
+
+
+                                        betUtilities.CircleImageFromFirebase(context, profileStorageRef, profileImage, timestamp);
+
+                                    }
+
+
+
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+
+
+
                 }
 
 
@@ -227,6 +284,8 @@ public class fragmentHistory extends Fragment {
                     }
 
                 }
+
+
 
 
 

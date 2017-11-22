@@ -2,19 +2,16 @@ package antrix.chopbet.Activities;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
@@ -28,14 +25,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.Objects;
 
 import antrix.chopbet.BetClasses.BaseActivity;
-import antrix.chopbet.Models.BetBuddy;
 import antrix.chopbet.Models.NewMatch;
+import antrix.chopbet.Models.NewTransaction;
 import antrix.chopbet.R;
-import de.hdodenhof.circleimageview.CircleImageView;
 
-
-public class activityBetDetails extends BaseActivity{
-
+public class activityTransactionDetails extends BaseActivity {
 
 
 
@@ -53,7 +47,7 @@ public class activityBetDetails extends BaseActivity{
     String myUserName;
     SharedPreferences sharedPreferences;
 
-    FirebaseListAdapter<NewMatch> adapter;
+    FirebaseListAdapter<NewTransaction> adapter;
 
 
     Activity activity;
@@ -64,24 +58,22 @@ public class activityBetDetails extends BaseActivity{
     ValueEventListener listener;
     DatabaseReference matchDetailsDbRef;
 
-    String currentMatchID;
+    String transactionID;
 
     Query query;
 
 
-
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bet_details);
+        setContentView(R.layout.activity_transaction_details);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        loadActionbar("Bet Details");
+        loadActionbar("Transaction Details");
         getSupportActionBar().setElevation(0);
 
         declarations();
+
         loadHistory();
-
-
 
 
     }
@@ -90,7 +82,7 @@ public class activityBetDetails extends BaseActivity{
     private void declarations(){
 
 
-        activity = activityBetDetails.this;
+        activity = activityTransactionDetails.this;
         context = this;
 
         dbRef = FirebaseDatabase.getInstance().getReference();
@@ -100,16 +92,15 @@ public class activityBetDetails extends BaseActivity{
         myPhoneNumber = mAuth.getCurrentUser().getPhoneNumber();
 
 
-        listView = (ListView)findViewById(R.id.list_BetDetails);
+        listView = (ListView)findViewById(R.id.list_TransactionDetails);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         myUserName = sharedPreferences.getString("myUserName", null);
 
         bundle = getIntent().getExtras();
-        currentMatchID = bundle.getString("matchID");
+        transactionID = bundle.getString("transactionID");
+        String goldKey = bundle.getString("string");
 
-        query = dbRef.child("Matches").child(myUserName).orderByChild("matchID").equalTo(currentMatchID);
-
-
+        query = dbRef.child("Xperience").child(goldKey).child("Injection").orderByChild("transactionID").equalTo(transactionID);
 
 
     }
@@ -121,70 +112,35 @@ public class activityBetDetails extends BaseActivity{
 
 
 
-        adapter = new FirebaseListAdapter<NewMatch>(activity, NewMatch.class, R.layout.list_bet_details, query) {
+        adapter = new FirebaseListAdapter<NewTransaction>(activity, NewTransaction.class, R.layout.list_transaction_details, query) {
             @Override
-            protected void populateView(View v, final NewMatch model, int position) {
+            protected void populateView(View v, final NewTransaction model, int position) {
 
                 TextView date = (TextView)v.findViewById(R.id.date);
-                TextView name = (TextView)v.findViewById(R.id.name);
-                TextView contactSource = (TextView)v.findViewById(R.id.contactSource);
-                TextView wonOrLost = (TextView)v.findViewById(R.id.wonOrLost);
-                TextView matchID = (TextView)v.findViewById(R.id.matchID);
+                TextView transactionType = (TextView)v.findViewById(R.id.transactionType);
+                TextView transactionID = (TextView)v.findViewById(R.id.transactionID);
                 TextView bottomAmount = (TextView)v.findViewById(R.id.bottomAmount);
                 TextView topAmount = (TextView)v.findViewById(R.id.topAmount);
                 TextView fee = (TextView)v.findViewById(R.id.fee);
-                TextView report = (TextView)v.findViewById(R.id.report);
-                TextView dispute = (TextView)v.findViewById(R.id.dispute);
+                TextView transactionResult = (TextView)v.findViewById(R.id.transactionResult);
 
 
-                matchID.setText(model.getMatchID());
+                transactionID.setText(model.getTransactionID());
+                transactionType.setText(model.getTransactionType());
 
-                /// DETERMINE OPPONENT
-                if(Objects.equals(model.getPlayerOne(), myPhoneNumber)){
-                    name.setText(model.getPlayerTwo());
-                } else if (Objects.equals(model.getPlayerTwo(), myPhoneNumber)){
-                    name.setText(model.getPlayerOne());
-                }
+                bottomAmount.setText("GHS " + model.getAmount());
+                topAmount.setText("GHS " + model.getAmount());
 
 
-                bottomAmount.setText("GHS " + model.getBetAmount());
-                topAmount.setText("GHS " + model.getBetAmount());
+                transactionResult.setText(model.getResult());
+
+                fee.setText(model.getFee());
 
 
-                wonOrLost.setText(model.getWonOrLost());
-
-                if (Objects.equals(model.getWonOrLost(), "WON")){
-                    fee.setText(String.valueOf((Integer.parseInt(model.getBetAmount()))*(0.05)));
-                } else {
-                    fee.setText("0.00");
-                }
-
-                /*
-
-                if(Objects.equals(model.getBetStatus(), "Pending")){
-                    betResult.setText(R.string.pending);
-                } else if (Objects.equals(model.getBetStatus(), myPhoneNumber)){
-                    betResult.setText("WON");
-                } else {
-                    betResult.setText("LOST");
-                }
-
-
-*/
-
-                if (Objects.equals(myUserName, model.getPlayerOne())) {
-
-                    name.setText(model.getPlayerTwo());
-
-                } else if (Objects.equals(myUserName, model.getPlayerTwo())) {
-                    name.setText(model.getPlayerOne());
-                }
-
-
-                if(DateUtils.isToday(model.getBetDate())){
+                if(DateUtils.isToday(model.getDate())){
                     date.setText("Today");
                 } else {
-                    date.setText(DateFormat.format(getString(R.string.dateformat), model.getBetDate()));
+                    date.setText(DateFormat.format(getString(R.string.dateformat), model.getDate()));
                 }
 
 
@@ -212,12 +168,9 @@ public class activityBetDetails extends BaseActivity{
 
     }
 
-    private void clickers(){
 
 
 
-
-    }
 
 
 
@@ -244,11 +197,6 @@ public class activityBetDetails extends BaseActivity{
         finish();
         return super.onSupportNavigateUp();
     }
-
-
-
-
-
 
 
 

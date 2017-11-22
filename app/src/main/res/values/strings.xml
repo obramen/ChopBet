@@ -29,4 +29,7 @@
     <string name="favourites">FAVOURITES</string>
     <string name="win">WIN</string>
     <string name="transactions">Transactions</string>
+    <string name="ghs_0_00">GHS 0.00</string>
+    <string name="enter_amount">ENTER AMOUNT</string>
+    <string name="ghs_500_00_max">GHS 500.00 MAX</string>
 </resources>

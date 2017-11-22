@@ -53,7 +53,6 @@ public class fragmentNewBet extends Fragment {
     CircleImageView acceptButton, playerTwoImageView;
 
     String myPhoneNumber;
-    String myUID;
     FirebaseAuth mAuth;
     DatabaseReference dbRef;
 
@@ -125,8 +124,6 @@ public class fragmentNewBet extends Fragment {
         dbRef = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         myPhoneNumber = mAuth.getCurrentUser().getPhoneNumber();
-        myUID = mAuth.getCurrentUser().getUid();
-
 
         coverLayout = (RelativeLayout)myView.findViewById(R.id.coverLayout);
         acceptButton = (CircleImageView)myView.findViewById(R.id.acceptButton);

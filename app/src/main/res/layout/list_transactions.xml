@@ -34,7 +34,7 @@
                 android:id="@+id/profileImage"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:src="@drawable/ic_profile"
+                android:src="@drawable/flag_ghana"
                 app:civ_fill_color="@color/colorAccent"
                 android:layout_alignParentStart="true"
                 android:layout_marginStart="15dp"
@@ -43,17 +43,17 @@
                 app:civ_border_width="2dp" />
 
             <TextView
-                android:id="@+id/matchID"
+                android:id="@+id/transactionID"
                 android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:id="@+id/name"
+                android:id="@+id/transactionType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:text="Name"
+                android:text="Deposit"
                 android:layout_toStartOf="@+id/amount"
                 android:layout_toEndOf="@+id/profileImage"
                 android:layout_marginTop="15dp"
@@ -63,12 +63,12 @@
                 android:ellipsize="end"/>
 
             <TextView
-                android:id="@+id/contactSource"
+                android:id="@+id/merchant"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:text="contact"
-                android:layout_below="@+id/name"
+                android:text="Hubtel"
+                android:layout_below="@+id/transactionType"
                 android:layout_marginTop="2dp"
                 android:layout_toEndOf="@+id/profileImage"
                 android:textSize="12sp"
@@ -90,15 +90,15 @@
                 android:ellipsize="end"/>
 
             <TextView
-                android:id="@+id/betResult"
+                android:id="@+id/transactionResult"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:textColor="@color/green"
-                android:text="@string/win"
+                android:text="SUCCESS"
                 android:layout_marginEnd="10dp"
                 android:layout_alignParentEnd="true"
-                android:layout_below="@+id/name"
+                android:layout_below="@+id/transactionType"
                 android:layout_marginTop="2dp"
                 android:textSize="12sp"
                 android:layout_marginStart="10dp"

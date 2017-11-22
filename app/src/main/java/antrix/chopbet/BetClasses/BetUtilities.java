@@ -1,6 +1,7 @@
 package antrix.chopbet.BetClasses;
 
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -9,18 +10,75 @@ import android.support.v7.app.ActionBar;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.signature.StringSignature;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.storage.StorageReference;
+
 import antrix.chopbet.R;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class BetUtilities extends BaseActivity {
 
     Context context;
     String title;
 
+
+    private StorageReference storageReference;
+    private CircleImageView circleImageView;
+    private DatabaseReference databaseReference;
+
+
+
+
+    private Bitmap bitmap;
+    private String file_name;
+
+    ProgressDialog progressDialog;
+
+
+
+    private String timestamp;
+
+
+
+
     public BetUtilities(){
 
     }
+
+
+
+
+    public void CircleImageFromFirebase(Context context, StorageReference storageReference, CircleImageView circleImageView, String timestamp){
+
+        this.context = context;
+        this.storageReference = storageReference;
+        this.circleImageView = circleImageView;
+        //this.timestamp = timestamp;
+
+
+
+
+
+        Glide.with(context).using(new FirebaseImageLoader()).load(storageReference)
+                .skipMemoryCache(true)
+                //.diskCacheStrategy(DiskCacheStrategy.RESULT)
+                .signature(new StringSignature(String.valueOf(timestamp)))
+                .error(R.drawable.ic_profile)
+                .centerCrop()
+                .into(circleImageView);
+
+    }
+
+
+
+
+
 
 
     public void loadActionbar(String title){
@@ -42,12 +100,6 @@ public class BetUtilities extends BaseActivity {
         abar.setHomeButtonEnabled(true);
 
     }
-
-
-
-
-
-
 
     public Drawable buildCounterDrawable(long count, int backgroundImageId, Context context) {
         this.context = context;

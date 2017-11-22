@@ -173,7 +173,7 @@
                     app:lb_resetAfterFailed="true"
                     app:lb_btnRippleColor="#000000"
                     app:lb_btnText="SAVE"
-                    app:lb_btnColor="@color/colorPrimary"
+                    app:lb_btnColor="@color/green"
                     />
 
             </RelativeLayout>

@@ -62,7 +62,6 @@ public class fragmentChopBet extends Fragment {
     private RelativeLayout coverLayout;
 
     String myPhoneNumber;
-    String myUID;
     FirebaseAuth mAuth;
     DatabaseReference dbRef;
     DatabaseReference poolDbRef;
@@ -114,7 +113,6 @@ public class fragmentChopBet extends Fragment {
         dbRef = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         myPhoneNumber = mAuth.getCurrentUser().getPhoneNumber();
-        myUID = mAuth.getCurrentUser().getUid();
 
         progressDialog = new ProgressDialog(context);
 
