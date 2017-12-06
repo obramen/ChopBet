@@ -74,6 +74,9 @@ public class activityEditUserProfile extends BaseActivity implements ImageUtils.
     TextView changeProfilePicture;
     BetUtilities betUtilities;
 
+    int nameCheck, psnCheck, xboxLiveCheck, originCheck = 0;
+
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -182,19 +185,24 @@ public class activityEditUserProfile extends BaseActivity implements ImageUtils.
                 if (dataSnapshot.hasChildren()){
                     if (dataSnapshot.child("psn").getValue() != null){
                         psnTextView.setText(dataSnapshot.child("psn").getValue().toString());
+                        psnCheck = 1;
+
                     }
 
                     if (dataSnapshot.child("xboxLive").getValue() != null){
                         xboxLiveTextView.setText(dataSnapshot.child("xboxLive").getValue().toString());
+                        xboxLiveCheck = 1;
                     }
 
 
                     if (dataSnapshot.child("origin").getValue() != null){
                         originTextView.setText(dataSnapshot.child("origin").getValue().toString());
+                        originCheck = 1;
                     }
 
                     if (dataSnapshot.child("name").getValue() != null){
                         nameTextView.setText(dataSnapshot.child("name").getValue().toString());
+                        nameCheck = 1;
                     }
 
 
@@ -221,45 +229,50 @@ public class activityEditUserProfile extends BaseActivity implements ImageUtils.
             }
         });
 
-        acceptButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                progressDialog.setMessage("Saving profile...");
-                progressDialog.show();
-                if (!Objects.equals(nameTextView.getText().toString(), "")){
-                    profileDbRef.child("name").setValue(nameTextView.getText().toString());
-                }
-                if(!Objects.equals(psnTextView.getText().toString(), "")){
-                    profileDbRef.child("psn").setValue(psnTextView.getText().toString());
-                }
-                if(!Objects.equals(originTextView.getText().toString(), "")){
-                    profileDbRef.child("origin").setValue(originTextView.getText().toString());
-                }
-                if(!Objects.equals(xboxLiveTextView.getText().toString(), "")){
-                    profileDbRef.child("xboxLive").setValue(xboxLiveTextView.getText().toString());
-                }
-                progressDialog.dismiss();
-                finish();
-            }
-        });
-
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 btnSave.startLoading();
                 if (!Objects.equals(nameTextView.getText().toString().trim(), "")){
                     profileDbRef.child("name").setValue(nameTextView.getText().toString().trim());
+                }else if (Objects.equals(nameTextView.getText().toString().trim(), "")){
+                    if (nameCheck == 1){
+                        nameTextView.setHint("Enter Name");
+                        nameTextView.setHintTextColor(getResources().getColor(R.color.colorPrimary));
+                        btnSave.cancelLoading();
+                        btnSave.reset();
+                        return;
+                    }
                 }
+
                 if(!Objects.equals(psnTextView.getText().toString().trim(), "")){
                     profileDbRef.child("psn").setValue(psnTextView.getText().toString().trim());
+                }else if(Objects.equals(psnTextView.getText().toString().trim(), "")){
+                   if (psnCheck == 1){
+                       profileDbRef.child("psn").removeValue();
+                   }
                 }
+
+
                 if(!Objects.equals(originTextView.getText().toString().trim(), "")){
                     profileDbRef.child("origin").setValue(originTextView.getText().toString().trim());
+                }else if(Objects.equals(originTextView.getText().toString().trim(), "")){
+                    if (originCheck == 1){
+                        profileDbRef.child("origin").removeValue();
+                    }
                 }
+
+
                 if(!Objects.equals(xboxLiveTextView.getText().toString().trim(), "")){
                     profileDbRef.child("xboxLive").setValue(xboxLiveTextView.getText().toString().trim());
+                }else if(Objects.equals(xboxLiveTextView.getText().toString().trim(), "")){
+                    if (xboxLiveCheck == 1){
+                        profileDbRef.child("xboxLive").removeValue();
+                    }
                 }
+
+
+
                 finish();
                 btnSave.cancelLoading();
                 btnSave.reset();

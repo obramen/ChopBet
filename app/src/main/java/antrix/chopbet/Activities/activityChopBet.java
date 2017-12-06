@@ -12,18 +12,14 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -31,9 +27,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -88,49 +82,30 @@ public class activityChopBet extends BaseActivity {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             switch (item.getItemId()) {
                 case R.id.nav_home:
-                    progressDialog.setMessage("Loading...");
-                    progressDialog.show();
-                    if (Objects.equals(matchStatus, "Open")){
-                        transaction.replace(R.id.content, new fragmentChopBet()).commit();
-                    }else{
-                        transaction.replace(R.id.content, new fragmentNewBet()).commit();
-                    }
+                    transaction.replace(R.id.content, new fragmentChopBet()).commit();
                     getSupportActionBar().setTitle("Chop Bet");
                     loadActionbar("Chop Bet");
-                    progressDialog.dismiss();
-
                     return true;
                 case R.id.nav_friends:
-                    progressDialog.setMessage("Loading...");
-                    progressDialog.show();
                     transaction.replace(R.id.content, new fragmentFriends()).commit();
                     getSupportActionBar().setTitle("Friends");
                     loadActionbar("Friends");
-                    progressDialog.dismiss();
                     return true;
                 case R.id.nav_history:
-                    progressDialog.setMessage("Loading...");
-                    progressDialog.show();
                     transaction.replace(R.id.content, new fragmentHistory()).commit();
                     getSupportActionBar().setTitle("Match History");
                     loadActionbar("History");
-                    progressDialog.dismiss();
                     return true;
                 case R.id.nav_transactions:
-                    progressDialog.setMessage("Loading...");
-                    progressDialog.show();
                     transaction.replace(R.id.content, new fragmentTransactions()).commit();
                     getSupportActionBar().setTitle("Transactions");
                     loadActionbar("Transactions");
-                    progressDialog.dismiss();
                     return true;
                 case R.id.nav_wallet:
-                    progressDialog.setMessage("Loading...");
-                    progressDialog.show();
+
                     transaction.replace(R.id.content, new fragmentWallet()).commit();
                     getSupportActionBar().setTitle("Wallet");
                     loadActionbar("Wallet");
-                    progressDialog.dismiss();
                     return true;
             }
             return false;
@@ -145,6 +120,7 @@ public class activityChopBet extends BaseActivity {
         getSupportActionBar().setElevation(0);
 
 
+
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
@@ -152,6 +128,7 @@ public class activityChopBet extends BaseActivity {
         loadDefaults();
         initialSetup();
         clickers();
+
 
 
 
@@ -222,6 +199,7 @@ public class activityChopBet extends BaseActivity {
 
 
 
+
                 matchStatus = dataSnapshot.child("matchStatus").getValue().toString();
                 currentMatchID = dataSnapshot.child("currentMatchID").getValue().toString();
                 editor.putString("matchStatus", matchStatus);
@@ -236,12 +214,18 @@ public class activityChopBet extends BaseActivity {
                 if (Objects.equals(matchStatus, "Open")){
 
 
-                    transaction.replace(R.id.content, new fragmentChopBet()).commit();
+                    //transaction.replace(R.id.content, new fragmentChopBet()).commit();
 
 
 
                 }else if (Objects.equals(matchStatus, "Closed")){
-                    transaction.replace(R.id.content, new fragmentNewBet()).commit();
+                    //transaction.replace(R.id.content, new fragmentNewBet()).commit();
+
+                    Intent betIntent = new Intent(activityChopBet.this, activityNewBet.class);
+                    betIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    betIntent.putExtra("currentMatchID", currentMatchID);
+                    startActivity(betIntent);
+                    finish();
                 }
 
 
@@ -308,7 +292,7 @@ public class activityChopBet extends BaseActivity {
             userInfo.put("phoneNumber", myPhoneNumber);
             userInfo.put("countryCode", countryCode);
             //fireDbRef.document("Users/UserInfo/PhoneNumber/"+myPhoneNumber).set(userInfo, SetOptions.merge());
-            dbRef.child("UserInfo").child(myPhoneNumber).setValue(userInfo);
+            dbRef.child("UserInfo").child(myPhoneNumber).updateChildren(userInfo);
 
             //dbRef.child("phoneNumbers").child(myPhoneNumber).child("uid").setValue(myUID);
             //dbRef.child("users").child(myPhoneNumber).setValue(myPhoneNumber);
@@ -347,7 +331,12 @@ public class activityChopBet extends BaseActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 if (dataSnapshot.hasChildren()){
-                    if (dataSnapshot.child("userName").getValue() != null){
+                    if (dataSnapshot.child("userName").getValue() == null){
+                        Intent intent = new Intent (context, activityEditUsername.class);
+                        startActivity(intent);
+                        finish();
+
+                    } else {
 
                         myUserName = dataSnapshot.child("userName").getValue().toString();
                         editor.putString("myUserName", myUserName);
@@ -356,10 +345,6 @@ public class activityChopBet extends BaseActivity {
                         watchForNewMatch();
 
                         //Toast.makeText(context, "Username is " +userName, Toast.LENGTH_SHORT).show();
-                    } else {
-                        Intent intent = new Intent (context, activityEditUsername.class);
-                        startActivity(intent);
-                        finish();
                     }
 
                 }

@@ -82,6 +82,8 @@ public class activityAddFriend extends BaseActivity{
 
     BetUtilities betUtilities;
 
+    Button searchButton;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -95,6 +97,7 @@ public class activityAddFriend extends BaseActivity{
 
 
         declarations();
+        clickers();
 
         //listFriends();
 
@@ -122,7 +125,27 @@ public class activityAddFriend extends BaseActivity{
 
         betUtilities = new BetUtilities();
 
+        searchButton = (Button)findViewById(R.id.searchButton);
 
+
+    }
+
+    private void clickers(){
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (Objects.equals(searchText.getText().toString().trim(), "")){
+
+                } else if(Objects.equals(searchText.getText().toString().trim(), myUserName)){
+
+                }
+                else {
+                    searchFriends(searchText.getText().toString().trim().toLowerCase());
+                }
+
+            }
+        });
     }
 
 

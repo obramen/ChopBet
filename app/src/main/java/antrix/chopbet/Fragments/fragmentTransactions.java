@@ -15,7 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,6 +27,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 
 import java.util.Objects;
 
@@ -65,6 +71,8 @@ public class fragmentTransactions extends Fragment {
     private String diamondKey = null;
     private String goldKey = null;
 
+    String regenRune, invisRune;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -101,6 +109,24 @@ public class fragmentTransactions extends Fragment {
 
 
         rnCryptorNative = new RNCryptorNative();
+
+
+
+        dbRef.child("Xplosion").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                regenRune = dataSnapshot.child("regenRune").getValue().toString();
+                invisRune = dataSnapshot.child("invisRune").getValue().toString();
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
 
 
 
@@ -143,14 +169,68 @@ public class fragmentTransactions extends Fragment {
 
                 TextView date = (TextView)v.findViewById(R.id.date);
                 TextView transactionType = (TextView)v.findViewById(R.id.transactionType);
-                TextView amount = (TextView)v.findViewById(R.id.amount);
+                final TextView amount = (TextView)v.findViewById(R.id.amount);
                 TextView merchant = (TextView)v.findViewById(R.id.merchant);
-                TextView transactionResult = (TextView)v.findViewById(R.id.transactionResult);
+                final TextView transactionResult = (TextView)v.findViewById(R.id.transactionResult);
                 RelativeLayout topDividor = (RelativeLayout)v.findViewById(R.id.topDividor);
                 RelativeLayout bottomDividor = (RelativeLayout)v.findViewById(R.id.bottomDividor);
                 CircleImageView profileImage = (CircleImageView)v.findViewById(R.id.profileImage);
                 RelativeLayout gameLayout = (RelativeLayout)v.findViewById(R.id.gameLayout);
                 TextView transactionID = (TextView)v.findViewById(R.id.transactionID);
+
+
+                if (Objects.equals(model.getResult(), "Pending") || (Objects.equals(model.getResult(), "New Transaction"))){
+
+                    Ion.with(context)
+                            .load(invisRune + model.getMerchantTransactionID())
+                            .setHeader("Authorization", regenRune)
+                            //.setHeader("Host", "api.hubtel.com")
+                            //.setHeader("Accept", "application/json")
+                            .setHeader("Content-Type", "application/json")
+                            .asJsonObject()
+                            .setCallback(new FutureCallback<JsonObject>() {
+                                @Override
+                                public void onCompleted(Exception e, JsonObject result2) {
+                                    String finalResponseCode = result2.get("ResponseCode").getAsString();
+
+                                    if (Objects.equals(finalResponseCode, "0000")){
+
+                                        JsonArray data = result2.get("Data").getAsJsonArray();
+
+
+
+                                        JsonObject info = data.get(0).getAsJsonObject();
+                                        String status = info.get("TransactionStatus").getAsString();
+                                        // do stuff with the result or error
+
+
+                                        if (Objects.equals(status, "Success")){
+
+                                            dbRef.child("Xperience").child(goldKey).child("Injection").child(model.getTransactionID()).child("result")
+                                                    .setValue(status);
+
+
+                                        } else if (Objects.equals(status, "Failed")){
+                                            dbRef.child("Xperience").child(goldKey).child("Injection").child(model.getTransactionID()).child("result")
+                                                    .setValue(status);
+                                            transactionResult.setTextColor(getResources().getColor(R.color.colorPrimary));
+
+                                        }
+
+
+
+
+                                    }
+
+                                }
+                            });
+                }
+
+
+
+
+
+
 
 
 
@@ -201,7 +281,24 @@ public class fragmentTransactions extends Fragment {
 
 
 
+                switch (model.getResult()){
 
+                    case "Success":
+                        transactionResult.setTextColor(getResources().getColor(R.color.green));
+
+                        break;
+
+                    case "Failed":
+                        transactionResult.setTextColor(getResources().getColor(R.color.colorPrimary));
+                        break;
+                    case "New Transaction":
+                        transactionResult.setTextColor(getResources().getColor(R.color.colorGameFIFA));
+                        break;
+                    default:
+                        transactionResult.setTextColor(getResources().getColor(R.color.black));
+
+
+                }
 
 
 

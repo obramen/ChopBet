@@ -56,6 +56,7 @@ public class activityUserProfile extends BaseActivity{
     ProgressDialog progressDialog;
 
     BetUtilities betUtilities;
+    TextView sendBet;
 
 
 
@@ -78,6 +79,7 @@ public class activityUserProfile extends BaseActivity{
 
         if (Objects.equals(userName, myUserName)){
             editProfileTextView.setVisibility(View.VISIBLE);
+            sendBet.setVisibility(View.GONE);
         }
 
 
@@ -113,6 +115,9 @@ public class activityUserProfile extends BaseActivity{
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         myUserName = sharedPreferences.getString("myUserName", null);
+
+        sendBet = (TextView)findViewById(R.id.sendBet);
+
 
         profileDbRef = dbRef.child("UserNames").child(userName);
 
@@ -231,6 +236,13 @@ public class activityUserProfile extends BaseActivity{
                 intent.putExtra("userName", userName);
                 intent.putExtra("sourceActivity", 2);
                 startActivity(intent);
+            }
+        });
+
+        sendBet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
 

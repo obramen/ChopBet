@@ -20,6 +20,105 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
+                    <LinearLayout
+                        android:weightSum="2"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:layout_margin="10dp"
+                                android:text="Console"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                            <Spinner
+                                android:layout_marginTop="-5dp"
+                                android:layout_marginBottom="5dp"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginEnd="20dp"
+                                android:id="@+id/spinner1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                 />
+
+                            <TextView
+                                android:layout_margin="10dp"
+                                android:text="Amount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                            <Spinner
+                                android:layout_marginTop="-5dp"
+                                android:layout_marginBottom="5dp"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginEnd="20dp"
+                                android:id="@+id/spinner3"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                 />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:layout_margin="10dp"
+                                android:text="Game"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                            <Spinner
+                                android:layout_marginTop="-5dp"
+                                android:layout_marginBottom="5dp"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginEnd="20dp"
+                                android:id="@+id/spinner2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                 />
+
+
+                            <TextView
+                                android:layout_margin="10dp"
+                                android:text="Internet"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                            <Spinner
+                                android:layout_marginTop="-5dp"
+                                android:layout_marginBottom="5dp"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginEnd="20dp"
+                                android:id="@+id/spinner4"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                 />
+
+
+
+                        </LinearLayout>
+
+
+
+
+                    </LinearLayout>
+
+
+
+
+
+
 
 
                 </android.support.v7.widget.CardView>
@@ -27,31 +126,40 @@
         </RelativeLayout>
 
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
 
 
-                        <io.rmiri.buttonloading.ButtonLoading
+                <io.rmiri.buttonloading.ButtonLoading
 
-                            android:visibility="gone"
-                            android:id="@+id/findBetButton"
-                            android:layout_width="100dp"
-                            android:layout_height="100dp"
-                            android:elevation="2dp"
-                            android:layout_centerInParent="true"
-                            app:BL_backgroundColor="#80000000"
-                            app:BL_circleColor="@color/green"
-                            app:BL_circleColorSecond="@color/white"
-                            app:BL_enable="true"
-                            app:BL_font="fonts/IRANSans_Light.ttf"
-                            app:BL_stateShow="normal"
-                            app:BL_text="FIND BET"
-                            app:BL_textColor="@color/white"
-                            app:BL_textSize="16sp" />
+                    android:visibility="visible"
+                    android:id="@+id/findBetButton"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:elevation="2dp"
+                    android:layout_centerInParent="true"
+                    app:BL_backgroundColor="#80000000"
+                    app:BL_circleColor="@color/green"
+                    app:BL_circleColorSecond="@color/white"
+                    app:BL_enable="true"
+                    app:BL_font="fonts/IRANSans_Light.ttf"
+                    app:BL_stateShow="normal"
+                    app:BL_text="FIND BET"
+                    app:BL_textColor="@color/white"
+                    app:BL_textSize="16sp" />
 
-            </RelativeLayout>
+            <TextView
+                android:layout_below="@id/findBetButton"
+                android:textSize="30sp"
+                android:text="GHS 100"
+                android:layout_marginTop="50dp"
+                android:layout_centerHorizontal="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
 
 
     <Button
@@ -81,12 +189,6 @@
             android:foregroundGravity="top"
             android:textSize="18dp"
             android:textColor="@color/white"/>
-
-
-
-
-
-
 
 
 </RelativeLayout>

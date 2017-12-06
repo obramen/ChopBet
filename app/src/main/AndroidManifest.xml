@@ -54,7 +54,14 @@
             android:name=".Activities.activityAddFunds"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".Activities.activityTransactionDetails"
+        <activity
+            android:name=".Activities.activityTransactionDetails"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activities.activityWithdrawFunds"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".Activities.activityNewBet"
             android:screenOrientation="portrait"></activity>
     </application>
 

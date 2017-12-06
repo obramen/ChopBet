@@ -19,6 +19,8 @@ import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
@@ -137,6 +139,13 @@ public class activityBetDetails extends BaseActivity{
                 TextView dispute = (TextView)v.findViewById(R.id.dispute);
 
 
+
+                final TextView internet = (TextView)v.findViewById(R.id.internet);
+                final TextView console = (TextView)v.findViewById(R.id.console);
+                final TextView game = (TextView)v.findViewById(R.id.game);
+
+
+
                 matchID.setText(model.getMatchID());
 
                 /// DETERMINE OPPONENT
@@ -191,10 +200,15 @@ public class activityBetDetails extends BaseActivity{
 
 
 
+                matchTextColours(model.getMatchID(), console, game, internet);
 
 
 
             }
+
+
+
+
 
 
         };
@@ -218,6 +232,157 @@ public class activityBetDetails extends BaseActivity{
 
 
     }
+
+
+
+
+    private void matchTextColours(final String currentMatchID, final TextView console, final TextView game, final TextView internet){
+
+
+
+        dbRef.child("Matches").child(myUserName).child(currentMatchID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshotC) {
+
+
+                if (dataSnapshotC.hasChildren()) {
+
+
+                    String mConsole = dataSnapshotC.child("betConsole").getValue().toString();
+                    String mGame = dataSnapshotC.child("betGame").getValue().toString();
+                    String mAmount = dataSnapshotC.child("betAmount").getValue().toString();
+                    String mInternet = dataSnapshotC.child("betInternet").getValue().toString();
+
+                    switch (mConsole) {
+                        case "PS4":
+                            console.setText("PS4");
+                            console.setTextColor(getResources().getColor(R.color.colorConsolePS4));
+                            console.setVisibility(View.VISIBLE);
+                            break;
+
+                        case "XBOX ONE":
+                            console.setText("XBOX ONE");
+                            console.setTextColor(getResources().getColor(R.color.colorConsoleXBOXONE));
+                            console.setVisibility(View.VISIBLE);
+                            break;
+
+                        case "PC":
+                            console.setText("PC");
+                            console.setTextColor(getResources().getColor(R.color.colorConsolePC));
+                            console.setVisibility(View.VISIBLE);
+
+                            break;
+
+                    }
+
+
+                    switch (mGame) {
+                        case "FIFA 18":
+                            game.setText("FIFA 18");
+                            game.setTextColor(getResources().getColor(R.color.colorGameFIFA));
+                            game.setVisibility(View.VISIBLE);
+                            break;
+
+                        case "MK XL":
+                            game.setText("MK XL");
+                            game.setTextColor(getResources().getColor(R.color.colorGameMKXL));
+                            game.setVisibility(View.VISIBLE);
+                            break;
+
+
+                    }
+
+/*
+
+                    switch (mAmount) {
+                        case "10":
+                            amount.setText("GHS 10");
+                            amount.setTextColor(getResources().getColor(R.color.colorAmount10));
+                            amount.setVisibility(View.VISIBLE);
+                            break;
+
+                        case "20":
+                            amount.setText("GHS 20");
+                            amount.setTextColor(getResources().getColor(R.color.colorAmount20));
+                            amount.setVisibility(View.VISIBLE);
+                            break;
+
+
+                        case "50":
+                            amount.setText("GHS 50");
+                            amount.setTextColor(getResources().getColor(R.color.colorAmount50));
+                            amount.setVisibility(View.VISIBLE);
+                            break;
+
+
+                        case "100":
+                            amount.setText("GHS 100");
+                            amount.setTextColor(getResources().getColor(R.color.colorAmount100));
+                            amount.setVisibility(View.VISIBLE);
+                            break;
+
+
+                        case "200":
+                            amount.setText("GHS 200");
+                            amount.setTextColor(getResources().getColor(R.color.colorAmount200));
+                            amount.setVisibility(View.VISIBLE);
+                            break;
+
+
+                    }
+
+*/
+
+
+                    switch (mInternet) {
+                        case "3G":
+                            internet.setText("3G");
+                            internet.setTextColor(getResources().getColor(R.color.colorInternet3g));
+                            internet.setVisibility(View.VISIBLE);
+                            break;
+
+                        case "4G":
+                            internet.setText("4G");
+                            internet.setTextColor(getResources().getColor(R.color.colorInternet4G));
+                            internet.setVisibility(View.VISIBLE);
+                            break;
+
+
+                        case "BROADBAND":
+                            internet.setText("BROADBAND");
+                            internet.setTextColor(getResources().getColor(R.color.colorInternetBroadband));
+                            internet.setVisibility(View.VISIBLE);
+                            break;
+
+
+                        case "FIBRE":
+                            internet.setText("FIBRE");
+                            internet.setTextColor(getResources().getColor(R.color.colorInternetFibre));
+                            internet.setVisibility(View.VISIBLE);
+                            break;
+
+
+                    }
+
+
+                }
+
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+
+    }
+
+
 
 
 

@@ -14,38 +14,33 @@ public class NewTransaction {
     String result;
     long date;
     long index;
+    String channel;
 
 
     public NewTransaction(){
     }
 
-    public NewTransaction(String transactionID, String amount, String fee, String merchant, String merchantTransactionID, String transactionType, String result) {
+    public NewTransaction(String transactionID, String transactionType, String amount, String fee, String merchant, String merchantTransactionID, String phoneNumber, String result, String channel) {
         this.transactionID = transactionID;
+        this.transactionType = transactionType;
         this.amount = amount;
         this.fee = fee;
         this.merchant = merchant;
         this.merchantTransactionID = merchantTransactionID;
-        this.transactionType = transactionType;
-        this.result = result;
-
-        date = new Date().getTime();
-        index = -1 * date;
-
-    }
-
-    public NewTransaction(String transactionID, String amount, String fee, String merchant, String merchantTransactionID, String transactionType, String result, String phoneNumber) {
-        this.transactionID = transactionID;
-        this.amount = amount;
-        this.fee = fee;
-        this.merchant = merchant;
-        this.merchantTransactionID = merchantTransactionID;
-        this.transactionType = transactionType;
         this.phoneNumber = phoneNumber;
         this.result = result;
+        this.channel = channel;
 
         date = new Date().getTime();
         index = -1 * date;
+    }
 
+    public String getChannel() {
+        return channel;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel;
     }
 
     public String getTransactionID() {

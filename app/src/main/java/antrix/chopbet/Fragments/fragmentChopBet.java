@@ -290,6 +290,7 @@ public class fragmentChopBet extends Fragment {
             public void onSuccess(Void aVoid) {
 
 
+/*
 
                 listenerB = poolDbRef.child(mSelectedPool).child(key).addValueEventListener(new ValueEventListener() {
                     @Override
@@ -298,7 +299,7 @@ public class fragmentChopBet extends Fragment {
 
                         if (dataSnapshotC.getValue() != null){
 
-                            if(Objects.equals(dataSnapshotC.child("findStatus").getValue().toString(), "Closed")){
+                            if(Objects.equals(dataSnapshotC.child("findStatus").getValue().toString(), "true")){
                                 ///...... you found a match, do something here
 
                                 stopMatchSearchOptions();
@@ -316,7 +317,7 @@ public class fragmentChopBet extends Fragment {
 
                                         ///... wait 3 seconds to be paired
 
-                                        matchPair();
+                                        //matchPair();
 
 
 
@@ -340,6 +341,7 @@ public class fragmentChopBet extends Fragment {
 
                     }
                 });
+*/
 
 
             }

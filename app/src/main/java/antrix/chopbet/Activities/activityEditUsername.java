@@ -179,7 +179,7 @@ public class activityEditUsername extends BaseActivity implements ImageUtils.Ima
                 progressDialog.setMessage("Verifying username...");
                 progressDialog.show();
 
-                username = userNameTextView.getText().toString();
+                username = userNameTextView.getText().toString().trim().toLowerCase();
 
                 final DatabaseReference userDbRef = dbRef.child("UserNames");
 
@@ -240,7 +240,10 @@ public class activityEditUsername extends BaseActivity implements ImageUtils.Ima
 
                 if (TextUtils.isEmpty(userNameTextView.getText().toString())) {
                     textInputLayout.setHint("Enter username");
+                    btnSave.cancelLoading();
+                    btnSave.reset();
                     return;
+
                 }
 
                 btnSave.startLoading();
@@ -251,11 +254,11 @@ public class activityEditUsername extends BaseActivity implements ImageUtils.Ima
                 progressDialog.setMessage("Verifying username...");
                 //progressDialog.show();
 
-                username = userNameTextView.getText().toString();
+                username = userNameTextView.getText().toString().trim().toLowerCase();
 
                 final DatabaseReference userDbRef = dbRef.child("UserNames");
 
-                userDbRef.child("UserNames").addValueEventListener(new ValueEventListener() {
+                dbRef.child("UserNames").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -335,13 +338,18 @@ public class activityEditUsername extends BaseActivity implements ImageUtils.Ima
     }
 
     public void saveUserName(){
+
+        long joinDate = new Date().getTime();
+
+
         Map<String, Object> mUserName = new HashMap<>();
         Map<String, Object> xUserName = new HashMap<>();
         mUserName.put(username, myPhoneNumber);
         xUserName.put("userName", username);
         xUserName.put("phoneNumber", myPhoneNumber);
-
+        xUserName.put("joinDate", joinDate);
         BetBuddy betBuddy = new BetBuddy(username);
+
 
 
 
@@ -349,7 +357,7 @@ public class activityEditUsername extends BaseActivity implements ImageUtils.Ima
         String rUserName = new StringBuffer(username).reverse().toString();
 
         String goldKey = dbRef.child("Xperience").push().getKey();
-        dbRef.child("Xperience").child(goldKey).child("Oxygen").setValue("0.00");
+        dbRef.child("Xperience").child(goldKey).child("Oxygen").child("Bounty").setValue("0.00");
 
 
         RNCryptorNative rnCryptorNative = new RNCryptorNative();
