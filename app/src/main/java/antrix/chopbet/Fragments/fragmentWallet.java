@@ -83,7 +83,6 @@ public class fragmentWallet extends Fragment {
 
         declarations();
         clickers();
-        //loadBalance();
         loadPrimeKey();
 
 
@@ -203,7 +202,6 @@ public class fragmentWallet extends Fragment {
 
                 loadBalance();
 
-                loadDeposits();
             }
 
             @Override
@@ -218,23 +216,23 @@ public class fragmentWallet extends Fragment {
 
     private void loadBalance(){
 
-        //loadPrimeKey();
 
         goldKey = rnCryptorNative.decrypt(diamondKey, myUID);
 
         Log.d(TAG, "diamondKey: " + diamondKey);
 
-        dbRef.child("Xperience").child(goldKey).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
 
-                if (dataSnapshot.hasChildren()){
-                    String mGold = dataSnapshot.child("Oxygen").getValue().toString();
-                    //balance.setText(mGold);
+        dbRef.child("Xperience").child(goldKey).child("Oxygen").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshotB) {
+
+                if(dataSnapshotB.hasChildren()) {
+
+
+                    balance.setText(String.valueOf("GHS " + dataSnapshotB.child("Bounty").getValue().toString()));
 
 
                 }
-
 
 
             }
@@ -244,6 +242,9 @@ public class fragmentWallet extends Fragment {
 
             }
         });
+
+
+
 
 
 
@@ -357,49 +358,6 @@ public class fragmentWallet extends Fragment {
         fundsSelector.setVisibility(View.GONE);
     }
 
-
-
-    // use cloud functions for this
-
-    private void loadDeposits(){
-
-        final ArrayList<Long> depositArray = new ArrayList<Long>();
-
-
-        dbRef.child("Xperience").child(goldKey).child("Oxygen").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshotB) {
-
-                if(dataSnapshotB.hasChildren()) {
-
-                 /*
-                    for (DataSnapshot mData : dataSnapshotB.getChildren()) {
-
-                        //depositArray.add(Long.parseLong(mData.child("amount").getValue().toString()));
-
-                        totalDepost = totalDepost + Double.parseDouble(mData.child("amount").getValue().toString());
-
-                    }
-*/
-                    balance.setText(String.valueOf("GHS " + dataSnapshotB.child("Bounty").getValue().toString()));
-
-
-                }
-
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        //Log.d(TAG, "Total Deposits: " + totalDepost);
-        //Toast.makeText(context, totalDepost, Toast.LENGTH_SHORT).show();
-
-
-    }
 
 
 

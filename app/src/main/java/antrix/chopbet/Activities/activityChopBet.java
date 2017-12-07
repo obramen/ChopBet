@@ -12,12 +12,14 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,9 +28,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +46,9 @@ import antrix.chopbet.Fragments.fragmentNewBet;
 import antrix.chopbet.Fragments.fragmentTransactions;
 import antrix.chopbet.Fragments.fragmentWallet;
 import antrix.chopbet.R;
+import tgio.rncryptor.RNCryptorNative;
+
+import static android.content.ContentValues.TAG;
 
 public class activityChopBet extends BaseActivity {
 
@@ -69,6 +76,15 @@ public class activityChopBet extends BaseActivity {
     Handler mHandler;
 
     ProgressDialog progressDialog;
+
+    public String deviceOnlinekey = null;
+
+
+
+    String myUID;
+    RNCryptorNative rnCryptorNative;
+    private String diamondKey = null;
+    private String goldKey = null;
 
 
 
@@ -128,6 +144,10 @@ public class activityChopBet extends BaseActivity {
         loadDefaults();
         initialSetup();
         clickers();
+        onlinePresence();
+
+
+        loadPrimeKey();
 
 
 
@@ -185,6 +205,9 @@ public class activityChopBet extends BaseActivity {
 
         mHandler = new Handler();
         progressDialog = new ProgressDialog(context);
+
+        rnCryptorNative = new RNCryptorNative();
+
 
 
     }
@@ -414,6 +437,53 @@ public class activityChopBet extends BaseActivity {
 
 
 
+    private void onlinePresence(){
+
+
+
+
+
+            final DatabaseReference myConnectionsRef = dbRef.child("OnlinePresence").child(myPhoneNumber);
+
+            // stores the timestamp of my last disconnect (the last time I was seen online)
+            final DatabaseReference lastOnlineRef = dbRef.child("OnlinePresence").child(myPhoneNumber).child("lastOnline");
+
+            final DatabaseReference connectedRef = dbRef.child(".info").child("connected");
+            connectedRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    boolean connected = snapshot.getValue(Boolean.class);
+                    if (connected) {
+
+
+                        DatabaseReference con = myConnectionsRef.child("onlineNow");
+                        //deviceOnlinekey = con.getKey();
+
+                        // when this device disconnects, remove it
+                        con.onDisconnect().setValue(Boolean.FALSE);
+
+                        // when I disconnect, update the last time I was seen online
+                        lastOnlineRef.onDisconnect().setValue(ServerValue.TIMESTAMP);
+
+                        // add this device to my connections list
+                        // this value could contain info about the device or a timestamp too
+                        con.setValue(Boolean.TRUE);
+
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    System.err.println("Listener was cancelled at .info/connected");
+                }
+            });
+
+
+
+
+    }
+
 
 
 
@@ -450,6 +520,95 @@ public class activityChopBet extends BaseActivity {
 
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //.....................MONEY MATTERS........................
+
+
+    private void loadPrimeKey(){
+
+        String xUserName = sharedPreferences.getString("myUserName", null);
+        if(xUserName == null){
+
+        } else{
+            myUID = mAuth.getUid();
+            String rUserName = new StringBuffer(xUserName).reverse().toString();
+
+            dbRef.child("Xhaust").child(rUserName).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    diamondKey = dataSnapshot.child("liquidNitrogen").getValue().toString();
+
+                    loadBalance();
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+
+    }
+
+
+
+    private void loadBalance(){
+
+
+        goldKey = rnCryptorNative.decrypt(diamondKey, myUID);
+
+        Log.d(TAG, "diamondKey: " + diamondKey);
+
+
+        dbRef.child("Xperience").child(goldKey).child("Oxygen").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshotB) {
+
+                if(dataSnapshotB.hasChildren()) {
+
+
+                    editor.putString("balance", dataSnapshotB.child("Bounty").getValue().toString());
+                    editor.apply();
+
+
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+    }
+
+
+
+
+
+
+
 
 
 

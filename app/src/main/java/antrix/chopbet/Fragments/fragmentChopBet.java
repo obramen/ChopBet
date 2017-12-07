@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -17,11 +18,14 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dx.dxloadingbutton.lib.LoadingButton;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -70,6 +74,8 @@ public class fragmentChopBet extends Fragment {
     ValueEventListener listener;
     ValueEventListener listenerB;
     SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+
     String myUserName;
 
 
@@ -81,6 +87,17 @@ public class fragmentChopBet extends Fragment {
 
 
     ProgressDialog progressDialog;
+
+    TextView consoleTextView, gameTextView, amountTextView, internetTextView;
+    ImageView searchParameters;
+    NestedScrollView matchParametersSheet;
+
+    String console, game, amount, internet;
+
+    LoadingButton btnSave;
+
+    RadioButton ps4Button, xboxButton, pcButton, fifaButton, mkButton, a10Button, a20Button, a50Button,
+                a100Button, i3GButton, i4GButton, broadbandButton, fibreButton;
 
 
 
@@ -98,6 +115,8 @@ public class fragmentChopBet extends Fragment {
         declarations();
         loadDefaults();
         clickers();
+
+
 
 
         return view;
@@ -123,7 +142,80 @@ public class fragmentChopBet extends Fragment {
         //coverLayout = (RelativeLayout)myView.findViewById(R.id.coverLayout);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        editor = sharedPreferences.edit();
+
         myUserName = sharedPreferences.getString("myUserName", null);
+        mConsole = sharedPreferences.getString("console", null);
+        mGame = sharedPreferences.getString("game", null);
+        mAmount = sharedPreferences.getString("amount", null);
+        mInternet = sharedPreferences.getString("internet", null);
+
+        consoleTextView = (TextView)myView.findViewById(R.id.console);
+        gameTextView = (TextView)myView.findViewById(R.id.game);
+        amountTextView = (TextView)myView.findViewById(R.id.amount);
+        internetTextView = (TextView)myView.findViewById(R.id.internet);
+        searchParameters = (ImageView) myView.findViewById(R.id.searchParameters);
+
+        matchParametersSheet = (NestedScrollView)myView.findViewById(R.id.matchParametersSheet);
+
+        btnSave = (LoadingButton)myView.findViewById(R.id.btnSave);
+
+
+        ps4Button = (RadioButton)myView.findViewById(R.id.ps4Button);
+        xboxButton = (RadioButton)myView.findViewById(R.id.xboxOneButton);
+        pcButton = (RadioButton)myView.findViewById(R.id.pcButton);
+        fifaButton = (RadioButton)myView.findViewById(R.id.fifaButton);
+        mkButton = (RadioButton)myView.findViewById(R.id.mkButton);
+        a10Button = (RadioButton)myView.findViewById(R.id.a10Button);
+        a20Button = (RadioButton)myView.findViewById(R.id.a20Button);
+        a50Button = (RadioButton)myView.findViewById(R.id.a50Button);
+        a100Button = (RadioButton)myView.findViewById(R.id.a100Button);
+        i3GButton = (RadioButton)myView.findViewById(R.id.i3GButton);
+        i4GButton = (RadioButton)myView.findViewById(R.id.i4GButton);
+        broadbandButton = (RadioButton)myView.findViewById(R.id.broadbandButton);
+        fibreButton = (RadioButton)myView.findViewById(R.id.fibreButton);
+
+
+
+
+
+
+
+
+        if (mConsole != null){
+            consoleTextView.setText(mConsole);
+        } else{
+            consoleTextView.setText("");
+            mConsole = "";
+        }
+
+
+        if (mGame != null){
+            gameTextView.setText(mGame);
+        } else{
+            gameTextView.setText("");
+            mGame = "";
+        }
+
+
+        if (mAmount != null){
+            amountTextView.setText(mAmount);
+        } else{
+            amountTextView.setText("");
+            mAmount = "";
+        }
+
+
+        if (mInternet != null){
+            internetTextView.setText(mInternet);
+        } else{
+            internetTextView.setText("");
+            mInternet = "";
+        }
+
+
+        matchTextColours(consoleTextView, gameTextView, internetTextView, amountTextView);
+
 
 
     }
@@ -186,38 +278,132 @@ public class fragmentChopBet extends Fragment {
             public void onClick() {
 
 
-                findBetButton.setEnabled(true);
-                dbRef.child("MatchObserver").child(myUserName).child("matchAccepted").removeValue();
-                dbRef.child("PendingMatches").child(myUserName).removeValue();
 
-                //...
+
+
+
+
+
+                if(mConsole  == null || Objects.equals(mConsole, "")){
+                    Toast.makeText(context, "Select console", Toast.LENGTH_SHORT).show();
+                    findBetButton.setProgress(false);
+                    findBetButton.setEnabled(true);
+                    return;
+                }
+
+
+                if(mGame  == null || Objects.equals(mGame, "")){
+                    Toast.makeText(context, "Select game", Toast.LENGTH_SHORT).show();
+                    findBetButton.setProgress(false);
+                    findBetButton.setEnabled(true);
+                    return;
+                }
+
+
+                if(mAmount  == null || Objects.equals(mAmount, "")){
+                    Toast.makeText(context, "Select amount", Toast.LENGTH_SHORT).show();
+                    findBetButton.setProgress(false);
+                    findBetButton.setEnabled(true);
+                    return;
+                }
+
+
+                if(mInternet  == null || Objects.equals(mInternet, "")){
+                    Toast.makeText(context, "Select internet", Toast.LENGTH_SHORT).show();
+                    findBetButton.setProgress(false);
+                    findBetButton.setEnabled(true);
+                    return;
+                }
+
+
+                String currentBalance = sharedPreferences.getString("balance", null);
+
+                if (Double.valueOf(currentBalance) < Double.valueOf(mAmount)){
+                    Toast.makeText(context, "You no get money you want play bet, go find money come", Toast.LENGTH_LONG).show();
+                    findBetButton.setProgress(false);
+                    findBetButton.setEnabled(true);
+                    return;
+                } else {
+                    findBetButton.setEnabled(true);
+                    dbRef.child("MatchObserver").child(myUserName).child("matchAccepted").removeValue();
+                    dbRef.child("PendingMatches").child(myUserName).removeValue();
+
+                    //...
+                }
+
+
+
+
             }
 
             @Override
             public void onStart() {
 
 
-                mHandler.postDelayed(new Runnable() {
-                    public void run() {
 
 
-                        stopSearchButton.setVisibility(View.VISIBLE);
-                        findingMatchTextView.setVisibility(View.VISIBLE);
+                if(mConsole  == null || Objects.equals(mConsole, "")){
+                    Toast.makeText(context, "Select console", Toast.LENGTH_SHORT).show();
+                    findBetButton.setProgress(false);
+                    findBetButton.setEnabled(true);
+                    return;
+                }
+
+
+                if(mGame  == null || Objects.equals(mGame, "")){
+                    Toast.makeText(context, "Select game", Toast.LENGTH_SHORT).show();
+                    findBetButton.setProgress(false);
+                    findBetButton.setEnabled(true);
+                    return;
+                }
+
+
+                if(mAmount  == null || Objects.equals(mAmount, "")){
+                    Toast.makeText(context, "Select amount", Toast.LENGTH_SHORT).show();
+                    findBetButton.setProgress(false);
+                    findBetButton.setEnabled(true);
+                    return;
+                }
+
+
+                if(mInternet  == null || Objects.equals(mInternet, "")){
+                    Toast.makeText(context, "Select internet", Toast.LENGTH_SHORT).show();
+                    findBetButton.setProgress(false);
+                    findBetButton.setEnabled(true);
+                    return;
+                }
+
+                String currentBalance = sharedPreferences.getString("balance", null);
+
+                if (Double.valueOf(currentBalance) < Double.valueOf(mAmount)){
+                    Toast.makeText(context, "You no get money you want play bet, go find money come", Toast.LENGTH_LONG).show();
+                    findBetButton.setProgress(false);
+                    findBetButton.setEnabled(true);
+                    return;
+                } else {
+
+                    mHandler.postDelayed(new Runnable() {
+                        public void run() {
+
+
+                            stopSearchButton.setVisibility(View.VISIBLE);
+                            findingMatchTextView.setVisibility(View.VISIBLE);
+
+                            matchSearch(mConsole, mGame, mAmount, mInternet);
+                            Log.d("Search", "Match search in progress");
 
 
 
-                        mConsole = "PS4";
-                        mGame = "FIFA 18";
-                        mAmount = "50";
-                        mInternet = "FIBRE";
-                        matchSearch(mConsole, mGame, mAmount, mInternet);
-                        Log.d("Search", "Match search in progress");
+
+                        }
+                    }, 3000);
+
+
+                }
 
 
 
 
-                    }
-                }, 3000);
 
 
                 //...
@@ -231,6 +417,124 @@ public class fragmentChopBet extends Fragment {
 
 
 
+        searchParameters.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                loadSearchSheet();
+
+            }
+        });
+
+        amountTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                loadSearchSheet();
+
+            }
+        });
+
+        internetTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                loadSearchSheet();
+
+            }
+        });
+
+        consoleTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                loadSearchSheet();
+
+            }
+        });
+
+
+        gameTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                loadSearchSheet();
+
+            }
+        });
+
+
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                matchParametersSheet.setVisibility(View.GONE);
+
+                onAmountClicked(a10Button);
+                onAmountClicked(a20Button);
+                onAmountClicked(a50Button);
+                onAmountClicked(a100Button);
+
+                onConsoleClicked(ps4Button);
+                onConsoleClicked(xboxButton);
+                onConsoleClicked(pcButton);
+
+                onGameClicked(mkButton);
+                onGameClicked(fifaButton);
+
+                onInternetClicked(i3GButton);
+                onInternetClicked(i4GButton);
+                onInternetClicked(broadbandButton);
+                onInternetClicked(fibreButton);
+
+
+                if (mConsole != null){
+                    consoleTextView.setText(mConsole);
+                    editor.putString("console", mConsole);
+                    editor.apply();
+                } else{
+                    consoleTextView.setText("");
+                }
+
+
+                if (mGame != null){
+                    gameTextView.setText(mGame);
+                    editor.putString("game", mGame);
+                    editor.apply();
+
+                } else{
+                    gameTextView.setText("");
+                }
+
+
+                if (mAmount != null){
+                    amountTextView.setText("GHS " + mAmount);
+                    editor.putString("amount", mAmount);
+                    editor.apply();
+
+                } else{
+                    amountTextView.setText("");
+                }
+
+
+                if (mInternet != null){
+                    internetTextView.setText(mInternet);
+                    editor.putString("internet", mInternet);
+                    editor.apply();
+
+                } else{
+                    internetTextView.setText("");
+                }
+
+
+                matchTextColours(consoleTextView, gameTextView, internetTextView, amountTextView);
+
+
+
+
+            }
+        });
 
 
 
@@ -270,7 +574,7 @@ public class fragmentChopBet extends Fragment {
 
 
 
-    private void matchSearch(String console, String game, String amount, @Nullable String internet){
+    private void matchSearch(final String console, final String game, final String amount, @Nullable String internet){
 
 
 
@@ -289,6 +593,15 @@ public class fragmentChopBet extends Fragment {
             @Override
             public void onSuccess(Void aVoid) {
 
+                Map<String, Object> myMatchPath = new HashMap<>();
+                myMatchPath.put("console", console);
+                myMatchPath.put("game", game);
+                myMatchPath.put("amount", amount);
+                myMatchPath.put("pool", mSelectedPool);
+
+
+
+                dbRef.child("OnlinePresence").child(myPhoneNumber).child("currentMatchPool").setValue(myMatchPath);
 
 /*
 
@@ -355,6 +668,360 @@ public class fragmentChopBet extends Fragment {
 
 
 
+
+
+    public void onAmountClicked(View view){
+
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        //Check which radio button was clicked
+        switch(view.getId()){
+            case R.id.a10Button:
+                if(checked)
+                    // change amount to 10
+                mAmount = "10";
+                break;
+
+            case R.id.a20Button:
+                if(checked)
+                    // change amount to 10
+                    mAmount = "20";
+                break;
+
+            case R.id.a50Button:
+                if(checked)
+                    // change amount to 10
+                    mAmount = "50";
+                break;
+
+
+            case R.id.a100Button:
+                if(checked)
+                    // change amount to 10
+                    mAmount = "100";
+                break;
+
+        }
+    }
+
+
+    public void onConsoleClicked(View view){
+
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        //Check which radio button was clicked
+        switch(view.getId()){
+            case R.id.ps4Button:
+                if(checked)
+                    // change amount to 10
+                mConsole = "PS4";
+                break;
+
+            case R.id.xboxOneButton:
+                if(checked)
+                    // change amount to 10
+                    mConsole = "XBOX ONE";
+                break;
+
+            case R.id.pcButton:
+                if(checked)
+                    // change amount to 10
+                    mConsole = "PC";
+                break;
+        }
+    }
+
+
+    public void onGameClicked(View view){
+
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        //Check which radio button was clicked
+        switch(view.getId()){
+            case R.id.fifaButton:
+                if(checked)
+                    // change amount to 10
+                    mGame = "FIFA 18";
+                break;
+
+            case R.id.mkButton:
+                if(checked)
+                    // change amount to 10
+                    mGame = "MK XL";
+                break;
+        }
+    }
+
+
+
+    public void onInternetClicked(View view){
+
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        //Check which radio button was clicked
+        switch(view.getId()){
+            case R.id.i3GButton:
+                if(checked)
+                    // change amount to 10
+                    mInternet = "3G";
+                break;
+
+            case R.id.i4GButton:
+                if(checked)
+                    // change amount to 10
+                    mInternet = "4G";
+                break;
+
+            case R.id.broadbandButton:
+                if(checked)
+                    // change amount to 10
+                    mInternet = "BROADBAND";
+                break;
+
+
+            case R.id.fibreButton:
+                if(checked)
+                    // change amount to 10
+                    mInternet = "FIBRE";
+                break;
+
+        }
+    }
+
+
+
+
+    public void onInternetLoad(String string){
+
+        switch(string){
+            case "3G":
+                    i3GButton.setChecked(true);
+                break;
+
+            case "4G":
+                    i4GButton.setChecked(true);
+                break;
+
+            case "BROADBAND":
+                    broadbandButton.setChecked(true);
+                break;
+
+            case "FIBRE":
+                    fibreButton.setChecked(true);
+                break;
+            case "":
+                break;
+
+        }
+    }
+
+
+
+    public void onConsoleLoad(String string){
+
+        switch(string){
+            case "PS4":
+                    ps4Button.setChecked(true);
+                break;
+
+            case "XBOX ONE":
+                    xboxButton.setChecked(true);
+                break;
+
+            case "PC":
+                    pcButton.setChecked(true);
+                break;
+            case "":
+                break;
+
+        }
+    }
+
+
+    public void onGameLoad(String string){
+
+        switch(string){
+            case "FIFA 18":
+                    fifaButton.setChecked(true);
+                break;
+
+            case "MK XL":
+                    mkButton.setChecked(true);
+                break;
+
+            case "":
+                break;
+
+        }
+    }
+
+
+
+    public void onAmountLoad(String string){
+
+        switch(string){
+            case "10":
+                a10Button.setChecked(true);
+                break;
+
+            case "20":
+                a20Button.setChecked(true);
+                break;
+
+            case "50":
+                a50Button.setChecked(true);
+                break;
+
+            case "100":
+                a100Button.setChecked(true);
+                break;
+            case "":
+                break;
+
+        }
+    }
+
+
+
+
+
+    private void matchTextColours(final TextView console, final TextView game, final TextView internet, final TextView amount){
+
+
+                    switch (mConsole) {
+                        case "PS4":
+                            console.setText("PS4");
+                            console.setTextColor(getResources().getColor(R.color.colorConsolePS4));
+                            console.setVisibility(View.VISIBLE);
+                            break;
+
+                        case "XBOX ONE":
+                            console.setText("XBOX ONE");
+                            console.setTextColor(getResources().getColor(R.color.colorConsoleXBOXONE));
+                            console.setVisibility(View.VISIBLE);
+                            break;
+
+                        case "PC":
+                            console.setText("PC");
+                            console.setTextColor(getResources().getColor(R.color.colorConsolePC));
+                            console.setVisibility(View.VISIBLE);
+
+                            break;
+
+                    }
+
+
+                    switch (mGame) {
+                        case "FIFA 18":
+                            game.setText("FIFA 18");
+                            game.setTextColor(getResources().getColor(R.color.colorGameFIFA));
+                            game.setVisibility(View.VISIBLE);
+                            break;
+
+                        case "MK XL":
+                            game.setText("MK XL");
+                            game.setTextColor(getResources().getColor(R.color.colorGameMKXL));
+                            game.setVisibility(View.VISIBLE);
+                            break;
+
+
+                    }
+
+
+
+                    switch (mAmount) {
+                        case "10":
+                            amount.setText("GHS 10");
+                            amount.setTextColor(getResources().getColor(R.color.colorAmount10));
+                            amount.setVisibility(View.VISIBLE);
+                            break;
+
+                        case "20":
+                            amount.setText("GHS 20");
+                            amount.setTextColor(getResources().getColor(R.color.colorAmount20));
+                            amount.setVisibility(View.VISIBLE);
+                            break;
+
+
+                        case "50":
+                            amount.setText("GHS 50");
+                            amount.setTextColor(getResources().getColor(R.color.colorAmount50));
+                            amount.setVisibility(View.VISIBLE);
+                            break;
+
+
+                        case "100":
+                            amount.setText("GHS 100");
+                            amount.setTextColor(getResources().getColor(R.color.colorAmount100));
+                            amount.setVisibility(View.VISIBLE);
+                            break;
+
+
+                        case "200":
+                            amount.setText("GHS 200");
+                            amount.setTextColor(getResources().getColor(R.color.colorAmount200));
+                            amount.setVisibility(View.VISIBLE);
+                            break;
+
+
+                    }
+
+
+
+
+                    switch (mInternet) {
+                        case "3G":
+                            internet.setText("3G");
+                            internet.setTextColor(getResources().getColor(R.color.colorInternet3g));
+                            internet.setVisibility(View.VISIBLE);
+                            break;
+
+                        case "4G":
+                            internet.setText("4G");
+                            internet.setTextColor(getResources().getColor(R.color.colorInternet4G));
+                            internet.setVisibility(View.VISIBLE);
+                            break;
+
+
+                        case "BROADBAND":
+                            internet.setText("BROADBAND");
+                            internet.setTextColor(getResources().getColor(R.color.colorInternetBroadband));
+                            internet.setVisibility(View.VISIBLE);
+                            break;
+
+
+                        case "FIBRE":
+                            internet.setText("FIBRE");
+                            internet.setTextColor(getResources().getColor(R.color.colorInternetFibre));
+                            internet.setVisibility(View.VISIBLE);
+                            break;
+
+
+                    }
+
+
+
+
+
+
+
+
+    }
+
+
+    private void loadSearchSheet(){
+
+        matchParametersSheet.setVisibility(View.VISIBLE);
+        onInternetLoad(mInternet);
+        onConsoleLoad(mConsole);
+        onGameLoad(mGame);
+        onAmountLoad(mAmount);
+
+    }
 
 
     private void matchPair(){

@@ -20,102 +20,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <LinearLayout
-                        android:weightSum="2"
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/searchParameters"
+                        android:layout_margin="10dp"
+                        android:layout_width="30dp"
+                        android:src="@drawable/ic_options"
+                        android:layout_height="30dp" />
 
-                        <LinearLayout
-                            android:orientation="vertical"
-                            android:layout_weight="1"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:layout_margin="10dp"
-                                android:text="Console"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-
-                            <Spinner
-                                android:layout_marginTop="-5dp"
-                                android:layout_marginBottom="5dp"
-                                android:layout_marginStart="10dp"
-                                android:layout_marginEnd="20dp"
-                                android:id="@+id/spinner1"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                 />
-
-                            <TextView
-                                android:layout_margin="10dp"
-                                android:text="Amount"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-
-                            <Spinner
-                                android:layout_marginTop="-5dp"
-                                android:layout_marginBottom="5dp"
-                                android:layout_marginStart="10dp"
-                                android:layout_marginEnd="20dp"
-                                android:id="@+id/spinner3"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                 />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:orientation="vertical"
-                            android:layout_weight="1"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:layout_margin="10dp"
-                                android:text="Game"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-
-                            <Spinner
-                                android:layout_marginTop="-5dp"
-                                android:layout_marginBottom="5dp"
-                                android:layout_marginStart="10dp"
-                                android:layout_marginEnd="20dp"
-                                android:id="@+id/spinner2"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                 />
-
-
-                            <TextView
-                                android:layout_margin="10dp"
-                                android:text="Internet"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-
-                            <Spinner
-                                android:layout_marginTop="-5dp"
-                                android:layout_marginBottom="5dp"
-                                android:layout_marginStart="10dp"
-                                android:layout_marginEnd="20dp"
-                                android:id="@+id/spinner4"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                 />
-
-
-
-                        </LinearLayout>
-
-
-
-
-                    </LinearLayout>
-
-
-
+                    <TextView
+                        android:layout_marginStart="45dp"
+                        android:textSize="12sp"
+                        android:text="change search options"
+                        android:layout_marginTop="18dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
 
 
 
@@ -130,9 +48,47 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <RelativeLayout
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="40dp"
+                android:layout_above="@+id/findBetButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_alignParentStart="true"
+                    android:text=""
+                    android:textSize="14sp"
+                    android:id="@+id/console"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text=""
+                    android:textSize="14sp"
+                    android:layout_marginStart="10dp"
+                    android:id="@+id/game"
+                    android:layout_toEndOf="@+id/console"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
 
-                <io.rmiri.buttonloading.ButtonLoading
+
+                <TextView
+                    android:text=""
+                    android:textSize="14sp"
+                    android:layout_marginStart="10dp"
+                    android:layout_toEndOf="@+id/game"
+                    android:id="@+id/internet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+
+
+
+            <io.rmiri.buttonloading.ButtonLoading
 
                     android:visibility="visible"
                     android:id="@+id/findBetButton"
@@ -151,13 +107,16 @@
                     app:BL_textSize="16sp" />
 
             <TextView
-                android:layout_below="@id/findBetButton"
+                android:id="@+id/amount"
+                android:layout_below="@+id/findBetButton"
                 android:textSize="30sp"
-                android:text="GHS 100"
-                android:layout_marginTop="50dp"
+                android:text=""
+                android:layout_marginTop="40dp"
                 android:layout_centerHorizontal="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+
+
 
         </RelativeLayout>
 
@@ -189,6 +148,328 @@
             android:foregroundGravity="top"
             android:textSize="18dp"
             android:textColor="@color/white"/>
+
+
+
+    <android.support.v4.widget.NestedScrollView
+        android:visibility="gone"
+        android:id="@+id/matchParametersSheet"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_below="@+id/btnSave"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <android.support.v7.widget.CardView
+                    android:layout_margin="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="110dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <RelativeLayout
+                            android:id="@+id/consoleImage"
+                            android:layout_width="80dp"
+                            android:layout_height="110dp"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentStart="true"
+                            android:background="@color/colorPrimary"
+                            android:layout_marginEnd="10dp"
+                            >
+
+                            <ImageView
+                                android:src="@drawable/ic_console"
+                                android:layout_centerInParent="true"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp" />
+
+
+                        </RelativeLayout>
+
+                        <RadioGroup
+                            android:layout_centerVertical="true"
+                            android:layout_width="wrap_content"
+                            android:layout_toEndOf="@+id/consoleImage"
+                            android:layout_height="wrap_content">
+
+                            <RadioButton
+                                android:textSize="14sp"
+                                android:id="@+id/ps4Button"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:text="PS4" />
+
+                            <RadioButton
+                                android:textSize="14sp"
+                                android:id="@+id/xboxOneButton"
+                                android:layout_toEndOf="@+id/ps4Button"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:text="XBOX ONE" />
+
+                            <RadioButton
+                                android:textSize="14sp"
+                                android:id="@+id/pcButton"
+                                android:layout_toEndOf="@+id/ps4Button"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:text="PC" />
+
+                        </RadioGroup>
+
+
+                    </RelativeLayout>
+
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <RelativeLayout
+                            android:id="@+id/gameImage"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_marginEnd="10dp"
+                            android:background="@color/colorPrimary">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_game"
+                                android:layout_centerVertical="true"
+                                android:layout_centerHorizontal="true" />
+
+                        </RelativeLayout>
+
+                        <RadioGroup
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@+id/gameImage">
+
+                            <RadioButton
+                                android:id="@+id/fifaButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:text="FIFA 18" />
+
+                            <RadioButton
+                                android:id="@+id/mkButton"
+                                android:layout_toEndOf="@+id/fifaButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:text="MK XL" />
+
+                        </RadioGroup>
+
+
+                    </RelativeLayout>
+
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <RelativeLayout
+                            android:id="@+id/amountImage"
+                            android:background="@color/colorPrimary"
+                            android:layout_width="80dp"
+                            android:layout_height="150dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_alignParentStart="true">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_centerInParent="true"
+                                android:src="@drawable/ic_money"/>
+
+                        </RelativeLayout>
+
+                        <RadioGroup
+                            android:orientation="vertical"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@+id/amountImage">
+
+
+
+                            <RadioButton
+                                android:id="@+id/a10Button"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="GHS 10"
+                                android:layout_gravity="center_vertical"
+                                />
+
+                            <RadioButton
+                                android:id="@+id/a20Button"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="GHS 20"
+                                android:layout_gravity="center_vertical"
+
+                                />
+
+
+                            <RadioButton
+                                android:id="@+id/a50Button"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="GHS 50"
+                                android:layout_gravity="center_vertical"
+                                />
+
+                            <RadioButton
+                                android:id="@+id/a100Button"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="GHS 100"
+                                />
+
+
+
+
+                        </RadioGroup>
+
+
+
+
+
+                    </RelativeLayout>
+
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:layout_margin="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <RelativeLayout
+                            android:id="@+id/internetImage"
+                            android:layout_width="80dp"
+                            android:layout_height="150dp"
+                            android:background="@color/colorPrimary"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginEnd="10dp"
+                            android:layout_alignParentStart="true" >
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_centerInParent="true"
+                                android:src="@drawable/ic_internet"/>
+
+                        </RelativeLayout>
+
+                        <RadioGroup
+                            android:orientation="vertical"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@+id/internetImage">
+
+
+                                <RadioButton
+                                    android:id="@+id/i3GButton"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:text="3G" />
+
+                                <RadioButton
+                                    android:id="@+id/i4GButton"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:text="4G" />
+
+
+
+
+                                <RadioButton
+                                    android:id="@+id/broadbandButton"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:text="Broadband" />
+
+                                <RadioButton
+                                    android:id="@+id/fibreButton"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:text="Fibre" />
+
+
+
+
+
+
+                        </RadioGroup>
+
+
+                    </RelativeLayout>
+
+                </android.support.v7.widget.CardView>
+
+            </LinearLayout>
+
+
+            <com.dx.dxloadingbutton.lib.LoadingButton
+                android:id="@+id/btnSave"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:lb_resetAfterFailed="true"
+                app:lb_btnRippleColor="#000000"
+                app:lb_btnText="Save"
+                app:lb_btnColor="@color/green"
+                />
+
+
+        </RelativeLayout>
+
+
+
+    </android.support.v4.widget.NestedScrollView>
+
+
 
 
 </RelativeLayout>
