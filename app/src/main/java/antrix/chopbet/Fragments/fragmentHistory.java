@@ -113,7 +113,7 @@ public class fragmentHistory extends Fragment {
         myUserName = sharedPreferences.getString("myUserName", null);
 
 
-        query = dbRef.child("Matches").child(myUserName).orderByChild("index").limitToLast(10);
+        query = dbRef.child("Matches").child(myUserName).orderByChild("index").limitToFirst(10);
 
 
 
@@ -348,23 +348,6 @@ public class fragmentHistory extends Fragment {
 
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -1,370 +1,396 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    
-    <android.support.v7.widget.CardView
-        android:id="@+id/balanceCard"
+    android:layout_height="match_parent"
+    android:scrollbars="none">
+
+
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_margin="20dp"
-        app:elevation="5dp"
-        app:cardBackgroundColor="@color/transparent">
+        android:layout_height="match_parent">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/colorPrimary">
+            android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/balance"
+            <android.support.v7.widget.CardView
+                android:id="@+id/balanceCard"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_margin="20dp"
+                app:cardBackgroundColor="@color/transparent"
+                app:elevation="5dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorPrimary">
+
+                    <TextView
+                        android:id="@+id/balance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="60dp"
+                        android:text="GHS 0.00"
+                        android:textColor="@color/white"
+                        android:textSize="30sp" />
+
+                    <RelativeLayout
+                        android:layout_width="60dp"
+                        android:layout_height="30dp"
+                        android:layout_margin="10dp">
+
+                        <ImageView
+                            android:layout_width="60dp"
+                            android:layout_height="30dp"
+                            android:background="@color/white" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:text="Wallet"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="12sp"
+                            android:textStyle="italic" />
+
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="70dp"
+                        android:layout_height="30dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_margin="10dp">
+
+                        <ImageView
+                            android:layout_width="70dp"
+                            android:layout_height="30dp"
+                            android:layout_alignParentTop="true"
+                            android:background="@drawable/background_curved_white" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:text="CHOP BET"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="12sp"
+                            android:textStyle="italic" />
+
+
+                    </RelativeLayout>
+
+
+                    <RelativeLayout
+                        android:id="@+id/stick1"
+                        android:layout_width="2dp"
+                        android:layout_height="60dp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginBottom="20dp"
+                        android:background="@color/white">
+
+
+                    </RelativeLayout>
+
+
+                    <RelativeLayout
+                        android:layout_width="100dp"
+                        android:layout_height="70dp"
+                        android:layout_alignTop="@+id/stick1"
+                        android:layout_marginEnd="10dp"
+                        android:layout_toStartOf="@+id/stick1">
+
+                        <TextView
+                            android:id="@+id/bonusHeader"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:text="BONUS"
+                            android:textColor="@color/white" />
+
+                        <TextView
+                            android:id="@+id/bonusTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/bonusHeader"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="10dp"
+                            android:text="0.00"
+                            android:textColor="@color/white" />
+
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="100dp"
+                        android:layout_height="70dp"
+                        android:layout_alignTop="@+id/stick1"
+                        android:layout_marginStart="10dp"
+                        android:layout_toEndOf="@+id/stick1">
+
+                        <TextView
+                            android:id="@+id/pointsHeader"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:text="POINTS"
+                            android:textColor="@color/white" />
+
+                        <TextView
+                            android:id="@+id/pointsTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/pointsHeader"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="10dp"
+                            android:text="0.00"
+                            android:textColor="@color/white" />
+
+
+                    </RelativeLayout>
+
+
+                </RelativeLayout>
+
+
+            </android.support.v7.widget.CardView>
+
+
+            <RelativeLayout
+                android:id="@+id/buttonCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/balanceCard"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp">
+
+                <RelativeLayout
+                    android:id="@+id/mid"
+                    android:layout_width="1dp"
+                    android:layout_height="20dp"
+                    android:layout_centerHorizontal="true"
+                    android:background="@color/divider" />
+
+                <TextView
+                    android:id="@+id/withdraw"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="30dp"
+                    android:layout_toStartOf="@+id/mid"
+                    android:text="WITHDRAW"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/addFunds"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="30dp"
+                    android:layout_toEndOf="@+id/mid"
+                    android:text="ADD FUNDS"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="13sp" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/bot"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/buttonCard"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/divider" />
+
+            <RelativeLayout
+                android:id="@+id/fundsSelector"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="GHS 0.00"
-                android:layout_marginTop="60dp"
-                android:textSize="30sp"
-                android:textColor="@color/white"
-                android:layout_centerHorizontal="true"/>
-
-            <RelativeLayout
-                android:layout_width="60dp"
-                android:layout_height="30dp"
-                android:layout_margin="10dp">
-
-                <ImageView
-                    android:layout_width="60dp"
-                    android:layout_height="30dp"
-                    android:background="@color/white"/>
+                android:layout_below="@+id/bot"
+                android:layout_margin="10dp"
+                android:background="@color/divider"
+                android:visibility="gone">
 
                 <TextView
+                    android:id="@+id/transactionTypeText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Wallet"
-                    android:textColor="@color/colorPrimary"
-                    android:textStyle="italic"
-                    android:textSize="12sp"
-                    android:layout_centerInParent="true"/>
+                    android:layout_alignParentStart="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="WITHDRAW"
+                    android:textColor="@color/black" />
+
+                <TextView
+                    android:id="@+id/cancelText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="Cancel"
+                    android:textColor="@color/black" />
+
+                <LinearLayout
+                    android:id="@+id/withdrawFundsSelector"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/cancelText"
+                    android:layout_centerInParent="true"
+                    android:padding="10dp"
+                    android:visibility="gone">
+
+                    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/mtnW"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_margin="10dp"
+                        android:layout_marginStart="15dp"
+                        android:src="@drawable/mtn"
+                        app:civ_border_color="#EEE"
+                        app:civ_border_width="2dp"
+                        app:civ_fill_color="@color/colorAccent"
+                        app:elevation="5dp" />
+
+                    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/vodafoneW"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_margin="10dp"
+                        android:layout_marginStart="15dp"
+                        android:src="@drawable/vodafone"
+                        app:civ_border_color="#EEE"
+                        app:civ_border_width="2dp"
+                        app:civ_fill_color="@color/colorAccent"
+                        app:elevation="5dp" />
+
+                    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/tigoW"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_margin="10dp"
+                        android:layout_marginStart="15dp"
+                        android:src="@drawable/tigo"
+                        app:civ_border_color="#EEE"
+                        app:civ_border_width="2dp"
+                        app:civ_fill_color="@color/colorAccent"
+                        app:elevation="5dp" />
+
+                    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/airtelW"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_margin="10dp"
+                        android:layout_marginStart="15dp"
+                        android:src="@drawable/airtel"
+                        app:civ_border_color="#EEE"
+                        app:civ_border_width="2dp"
+                        app:civ_fill_color="@color/colorAccent"
+                        app:elevation="5dp" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/addFundsSelector"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/cancelText"
+                    android:layout_centerInParent="true">
+
+                    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/mtn"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_margin="10dp"
+                        android:layout_marginStart="15dp"
+                        android:src="@drawable/mtn"
+                        app:civ_border_color="#EEE"
+                        app:civ_border_width="2dp"
+                        app:civ_fill_color="@color/colorAccent"
+                        app:elevation="5dp" />
+
+                    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/vodafone"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_margin="10dp"
+                        android:layout_marginStart="15dp"
+                        android:src="@drawable/vodafone"
+                        app:civ_border_color="#EEE"
+                        app:civ_border_width="2dp"
+                        app:civ_fill_color="@color/colorAccent"
+                        app:elevation="5dp" />
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/tigo"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_margin="10dp"
+                        android:layout_marginStart="15dp"
+                        android:src="@drawable/tigo"
+                        app:civ_border_color="#EEE"
+                        app:civ_border_width="2dp"
+                        app:civ_fill_color="@color/colorAccent"
+                        app:elevation="5dp" />
+
+                    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/airtel"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_margin="10dp"
+                        android:layout_marginStart="15dp"
+                        android:src="@drawable/airtel"
+                        app:civ_border_color="#EEE"
+                        app:civ_border_width="2dp"
+                        app:civ_fill_color="@color/colorAccent"
+                        app:elevation="5dp" />
+
+
+                </LinearLayout>
 
 
             </RelativeLayout>
 
-            <RelativeLayout
-                android:layout_alignParentEnd="true"
-                android:layout_width="70dp"
-                android:layout_height="30dp"
-                android:layout_margin="10dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/fundsSelector"
+                android:layout_marginTop="40dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp">
 
-                <ImageView
-                    android:layout_width="70dp"
-                    android:layout_height="30dp"
-                    android:background="@drawable/background_curved_white"
-                    android:layout_alignParentTop="true" />
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <antrix.chopbet.BetClasses.NestedListView
+                    android:id="@+id/list_cards"
+                    android:scrollbars="none"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="CHOP BET"
-                    android:textColor="@color/colorPrimary"
-                    android:textStyle="italic"
-                    android:textSize="12sp"
-                    android:layout_centerInParent="true"/>
+                    android:divider="@android:color/transparent"
+                    android:dividerHeight="10dp"
+                    android:scrollbarSize="0dp" />
 
 
-            </RelativeLayout>
-
-
-
-            <RelativeLayout
-                android:id="@+id/stick1"
-                android:layout_centerHorizontal="true"
-                android:layout_width="2dp"
-                android:layout_height="60dp"
-                android:layout_marginBottom="20dp"
-                android:background="@color/white"
-                android:layout_alignParentBottom="true">
-            </RelativeLayout>
-            
-            
-            <RelativeLayout
-                android:layout_width="100dp"
-                android:layout_height="70dp"
-                android:layout_marginEnd="10dp"
-                android:layout_toStartOf="@+id/stick1"
-                android:layout_alignTop="@+id/stick1">
-
-                <TextView
-                    android:id="@+id/bonusHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="BONUS"
-                    android:textColor="@color/white"
-                    android:layout_centerHorizontal="true"/>
-
-                <TextView
-                    android:id="@+id/bonusTextView"
-                    android:layout_below="@+id/bonusHeader"
-                    android:layout_marginTop="10dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0.00"
-                    android:textColor="@color/white"
-                    android:layout_centerHorizontal="true"/>
-
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="100dp"
-                android:layout_height="70dp"
-                android:layout_marginStart="10dp"
-                android:layout_toEndOf="@+id/stick1"
-                android:layout_alignTop="@+id/stick1">
-
-                <TextView
-                    android:id="@+id/pointsHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="POINTS"
-                    android:textColor="@color/white"
-                    android:layout_centerHorizontal="true"/>
-
-                <TextView
-                    android:id="@+id/pointsTextView"
-                    android:layout_below="@+id/pointsHeader"
-                    android:layout_marginTop="10dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0.00"
-                    android:textColor="@color/white"
-                    android:layout_centerHorizontal="true"/>
-
-
-            </RelativeLayout>
-
-            
-
-
-
-
-
+            </LinearLayout>
 
 
         </RelativeLayout>
 
-
-
-
-    </android.support.v7.widget.CardView>
-
-
-    <RelativeLayout
-        android:id="@+id/buttonCard"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_below="@+id/balanceCard"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <RelativeLayout
-            android:id="@+id/mid"
-            android:layout_centerHorizontal="true"
-            android:layout_width="1dp"
-            android:background="@color/divider"
-            android:layout_height="20dp" />
-
-        <TextView
-            android:id="@+id/withdraw"
-            android:layout_marginEnd="30dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="WITHDRAW"
-            android:layout_centerVertical="true"
-            android:layout_toStartOf="@+id/mid"
-            android:textSize="13sp"
-            android:textColor="@color/colorPrimary"/>
-
-        <TextView
-            android:id="@+id/addFunds"
-            android:layout_toEndOf="@+id/mid"
-            android:layout_marginStart="30dp"
-            android:layout_centerVertical="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ADD FUNDS"
-            android:textSize="13sp"
-            android:textColor="@color/colorPrimary"/>
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/bot"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_below="@+id/buttonCard"
-        android:layout_marginTop="10dp"
-        android:layout_centerHorizontal="true"
-        android:layout_width="match_parent"
-        android:background="@color/divider"
-        android:layout_height="1dp" />
-
-    <RelativeLayout
-        android:visibility="gone"
-        android:id="@+id/fundsSelector"
-        android:layout_below="@+id/bot"
-        android:layout_margin="10dp"
-        android:layout_width="wrap_content"
-        android:background="@color/divider"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:layout_alignParentStart="true"
-            android:layout_marginStart="20dp"
-            android:id="@+id/transactionTypeText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="5dp"
-            android:textColor="@color/black"
-            android:text="WITHDRAW"/>
-
-        <TextView
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="20dp"
-            android:id="@+id/cancelText"
-            android:layout_marginTop="5dp"
-            android:textColor="@color/black"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:text="Cancel"/>
-
-        <LinearLayout
-            android:visibility="gone"
-            android:layout_below="@+id/cancelText"
-            android:id="@+id/withdrawFundsSelector"
-            android:layout_centerInParent="true"
-            android:padding="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/mtnW"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/mtn"
-                app:civ_fill_color="@color/colorAccent"
-                app:elevation="5dp"
-                android:layout_marginStart="15dp"
-                android:layout_margin="10dp"
-                app:civ_border_color="#EEE"
-                app:civ_border_width="2dp" />
-
-            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/vodafoneW"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/vodafone"
-                app:civ_fill_color="@color/colorAccent"
-                app:elevation="5dp"
-                android:layout_marginStart="15dp"
-                android:layout_margin="10dp"
-                app:civ_border_color="#EEE"
-                app:civ_border_width="2dp" />
-
-            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/tigoW"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/tigo"
-                app:civ_fill_color="@color/colorAccent"
-                app:elevation="5dp"
-                android:layout_marginStart="15dp"
-                android:layout_margin="10dp"
-                app:civ_border_color="#EEE"
-                app:civ_border_width="2dp" />
-
-            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/airtelW"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/airtel"
-                app:civ_fill_color="@color/colorAccent"
-                app:elevation="5dp"
-                android:layout_marginStart="15dp"
-                android:layout_margin="10dp"
-                app:civ_border_color="#EEE"
-                app:civ_border_width="2dp" />
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_below="@+id/cancelText"
-            android:id="@+id/addFundsSelector"
-            android:layout_centerInParent="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/mtn"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/mtn"
-                app:civ_fill_color="@color/colorAccent"
-                app:elevation="5dp"
-                android:layout_marginStart="15dp"
-                android:layout_margin="10dp"
-                app:civ_border_color="#EEE"
-                app:civ_border_width="2dp" />
-
-            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/vodafone"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/vodafone"
-                app:civ_fill_color="@color/colorAccent"
-                app:elevation="5dp"
-                android:layout_marginStart="15dp"
-                android:layout_margin="10dp"
-                app:civ_border_color="#EEE"
-                app:civ_border_width="2dp" />
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/tigo"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_margin="10dp"
-                android:layout_marginStart="15dp"
-                android:src="@drawable/tigo"
-                app:civ_border_color="#EEE"
-                app:civ_border_width="2dp"
-                app:civ_fill_color="@color/colorAccent"
-                app:elevation="5dp" />
-
-            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/airtel"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/airtel"
-                app:civ_fill_color="@color/colorAccent"
-                app:elevation="5dp"
-                android:layout_marginStart="15dp"
-                android:layout_margin="10dp"
-                app:civ_border_color="#EEE"
-                app:civ_border_width="2dp" />
-
-
-        </LinearLayout>
-
-
-    </RelativeLayout>
+    </LinearLayout>
 
 
 
 
-
-
-
-</RelativeLayout>
+</android.support.v4.widget.NestedScrollView>

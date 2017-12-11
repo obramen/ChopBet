@@ -1,5 +1,6 @@
 package antrix.chopbet.Activities;
 
+import android.app.Notification;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -35,7 +37,11 @@ import java.util.Objects;
 
 import antrix.chopbet.Models.NewMatch;
 import antrix.chopbet.R;
+import br.com.goncalves.pugnotification.notification.PugNotification;
 import de.hdodenhof.circleimageview.CircleImageView;
+import tgio.rncryptor.RNCryptorNative;
+
+import static android.content.ContentValues.TAG;
 
 public class activityNewBet extends AppCompatActivity {
 
@@ -51,6 +57,8 @@ public class activityNewBet extends AppCompatActivity {
     String myPhoneNumber;
     FirebaseAuth mAuth;
     DatabaseReference dbRef;
+
+    String myUID;
 
     RelativeLayout winChanceLayout, acceptLayout, opponentLayout;
     RadioButton playerOneRadioButton, playerTwoRadioButton;
@@ -80,6 +88,10 @@ public class activityNewBet extends AppCompatActivity {
     Button wonMatchButton, lostMatchButton;
     TextView wonText, lostText, winsTextView, lossesTextView;
 
+    RNCryptorNative rnCryptorNative;
+    private String diamondKey = null;
+    private String goldKey = null;
+
 
 
 
@@ -102,6 +114,9 @@ public class activityNewBet extends AppCompatActivity {
 
 
         listenForMatchType();
+
+        loadPrimeKey();
+        //loadNotification();
 
     }
 
@@ -159,6 +174,9 @@ public class activityNewBet extends AppCompatActivity {
 
 
         ///currentMatchID = ((activityChopBet)context).currentMatchID;
+
+        rnCryptorNative = new RNCryptorNative();
+
 
 
 
@@ -597,6 +615,7 @@ public class activityNewBet extends AppCompatActivity {
                     public void onSuccess(Void aVoid) {
                         acceptButton.setEnabled(false);
 
+                        dbRef.child("MatchObserver").child(myUserName).child("keyString").setValue(goldKey);
                         Toast.makeText(context, "Match Accepted", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -645,10 +664,22 @@ public class activityNewBet extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                ProgressDialog progressDialog = new ProgressDialog(context);
+                progressDialog.setMessage("Setting match result");
+                progressDialog.setCanceledOnTouchOutside(false);
+                progressDialog.show();
 
 
 
                 dbRef.child("Matches").child(myUserName).child(currentMatchID).child("wonOrLost").setValue("WON");
+
+                progressDialog.dismiss();
+
+/*
+
+
+
+
                 dbRef.child("Matches").child(playerTwoUserName).child(currentMatchID).child("wonOrLost").setValue("LOST");
 
                 dbRef.child("MatchObserver").child(myUserName).child("matchStatus").setValue("Open");
@@ -656,6 +687,9 @@ public class activityNewBet extends AppCompatActivity {
 
                 dbRef.child("MatchObserver").child(playerTwoUserName).child("matchAccepted").removeValue();
                 dbRef.child("MatchObserver").child(myUserName).child("matchAccepted").removeValue();
+
+*/
+
 
 
 
@@ -670,6 +704,8 @@ public class activityNewBet extends AppCompatActivity {
 
 
                 dbRef.child("Matches").child(playerTwoUserName).child(currentMatchID).child("wonOrLost").setValue("WON");
+
+  /*
                 dbRef.child("Matches").child(myUserName).child(currentMatchID).child("wonOrLost").setValue("LOST");
 
                 dbRef.child("MatchObserver").child(myUserName).child("matchStatus").setValue("Open");
@@ -678,7 +714,7 @@ public class activityNewBet extends AppCompatActivity {
                 dbRef.child("MatchObserver").child(playerTwoUserName).child("matchAccepted").removeValue();
                 dbRef.child("MatchObserver").child(myUserName).child("matchAccepted").removeValue();
 
-
+*/
 
 
             }
@@ -1172,4 +1208,122 @@ public class activityNewBet extends AppCompatActivity {
         dbRef.child("PendingMatches").child(myUserName).child(currentMatchID).removeEventListener(listener);
         dbRef.child("PendingMatches").child(playerTwoUserName).child(currentMatchID).removeEventListener(listenerB);
     }
+
+
+
+
+    private void loadPrimeKey(){
+
+        String xUserName = sharedPreferences.getString("myUserName", null);
+        if(xUserName == null){
+
+        } else{
+            myUID = mAuth.getUid();
+            String rUserName = new StringBuffer(xUserName).reverse().toString();
+
+            dbRef.child("Xhaust").child(rUserName).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    diamondKey = dataSnapshot.child("liquidNitrogen").getValue().toString();
+
+                    goldKey = rnCryptorNative.decrypt(diamondKey, myUID);
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+
+    }
+
+
+    private void loadNotification(){
+
+        if (myUserName != null) {
+
+            dbRef.child("Notifications").child(myUserName).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.hasChildren()) {
+                        if (Objects.equals(dataSnapshot.child("status").getValue().toString(), "New")) {
+                            String type = dataSnapshot.child("type").getValue().toString();
+                            String opponenet = "";
+
+                            if (Objects.equals(dataSnapshot.child("playerOne").getValue().toString(), myUserName)) {
+                                opponenet = dataSnapshot.child("playerTwo").getValue().toString();
+
+                            } else {
+                                opponenet = dataSnapshot.child("playerOne").getValue().toString();
+
+                            }
+
+
+                            Bundle NBundle = new Bundle();
+                            NBundle.putString("Notification", null);
+
+                            switch (type){
+                                case "New Match":
+                                    PugNotification.with(context)
+                                            .load()
+                                            .title(type)
+                                            .message("Your match with - " + opponenet + " - has begun. Report after play. If match reported is not disputed within 7 minutes, reward goes to opponent")
+                                            .bigTextStyle("Your match with - " + opponenet + " - has begun. Report after play. If match reported is not disputed within 7 minutes, reward goes to opponent")
+                                            .smallIcon(R.mipmap.ic_launcher_round)
+                                            .largeIcon(R.mipmap.ic_launcher_round)
+                                            .flags(Notification.DEFAULT_ALL)
+                                            //.click(activityNewBet.class, NBundle)
+                                            .autoCancel(true)
+                                            .simple()
+                                            .build();
+                                    break;
+
+                                case "Match Found":
+                                    PugNotification.with(context)
+                                            .load()
+                                            .title(type)
+                                            .message("New match against - " + opponenet + ". Accept match within 20 secs to avoid bans")
+                                            .bigTextStyle("New match against - " + opponenet + ". Accept match within 20 secs to avoid bans")
+                                            .smallIcon(R.mipmap.ic_launcher_round)
+                                            .largeIcon(R.mipmap.ic_launcher_round)
+                                            .flags(Notification.DEFAULT_ALL)
+                                            //.click(activityNewBet.class, NBundle)
+                                            .autoCancel(true)
+                                            .simple()
+                                            .build();
+
+                                    break;
+                            }
+
+
+                            dbRef.child("Notifications").child(myUserName).child("status").setValue("Old");
+
+
+                        }
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+
+        }
+
+
+    }
+
+
+
+
+
+
+
+
 }

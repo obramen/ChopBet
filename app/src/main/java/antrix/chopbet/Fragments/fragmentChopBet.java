@@ -94,7 +94,7 @@ public class fragmentChopBet extends Fragment {
 
     String console, game, amount, internet;
 
-    LoadingButton btnSave;
+    LoadingButton btnSave, btnCancel;
 
     RadioButton ps4Button, xboxButton, pcButton, fifaButton, mkButton, a10Button, a20Button, a50Button,
                 a100Button, i3GButton, i4GButton, broadbandButton, fibreButton;
@@ -159,6 +159,7 @@ public class fragmentChopBet extends Fragment {
         matchParametersSheet = (NestedScrollView)myView.findViewById(R.id.matchParametersSheet);
 
         btnSave = (LoadingButton)myView.findViewById(R.id.btnSave);
+        btnCancel = (LoadingButton)myView.findViewById(R.id.btnCancel);
 
 
         ps4Button = (RadioButton)myView.findViewById(R.id.ps4Button);
@@ -464,6 +465,12 @@ public class fragmentChopBet extends Fragment {
         });
 
 
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                matchParametersSheet.setVisibility(View.GONE);
+            }
+        });
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override

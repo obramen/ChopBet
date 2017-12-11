@@ -161,7 +161,7 @@ public class fragmentTransactions extends Fragment {
     private void loadHistory(){
 
 
-        query = dbRef.child("Xperience").child(goldKey).child("Injection").orderByChild("index").limitToLast(10);
+        query = dbRef.child("Xperience").child(goldKey).child("Injection").orderByChild("index").limitToFirst(10);
 
         adapter = new FirebaseListAdapter<NewTransaction>(activity, NewTransaction.class, R.layout.list_transactions, query) {
             @Override
@@ -241,7 +241,30 @@ public class fragmentTransactions extends Fragment {
                 transactionType.setText(model.getTransactionType());
                 amount.setText("GHS " + model.getAmount());
                 transactionResult.setText(model.getResult());
-                merchant.setText(model.getMerchant());
+                merchant.setText(model.getPhoneNumber());
+
+
+
+
+                switch (model.getChannel()){
+
+                    case "mtn-gh":
+                        profileImage.setImageResource(R.drawable.mtn);
+                        break;
+
+                    case "vodafone-gh":
+                        profileImage.setImageResource(R.drawable.vodafone);
+                        break;
+
+                    case "tigo-gh":
+                        profileImage.setImageResource(R.drawable.tigo);
+                        break;
+
+                    case "airtel-gh":
+                        profileImage.setImageResource(R.drawable.airtel);
+                        break;
+
+                }
 
 
 

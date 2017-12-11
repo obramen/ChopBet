@@ -6,19 +6,19 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="300dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true">
 
         <RelativeLayout
             android:id="@+id/confirmLayout"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="60dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true">
 
             <TextView
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:layout_margin="20dp"
                 android:id="@+id/confirmHeader"
                 android:textAllCaps="true"
@@ -29,7 +29,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="@color/white"
+                android:background="@color/selector"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp">
 
@@ -44,6 +44,7 @@
             android:layout_height="match_parent">
 
             <TextView
+                android:textColor="@color/black"
                 android:layout_margin="40dp"
                 android:id="@+id/confirmMessage"
                 android:layout_centerInParent="true"
@@ -68,18 +69,17 @@
                 android:layout_alignParentTop="true"
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="@color/white"
+                android:background="@color/selector"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"/>
 
 
             <TextView
                 android:layout_centerInParent="true"
-                android:textColor="@color/white"
+                android:textColor="@color/colorPrimary"
                 android:id="@+id/confirmAccept"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
                 android:text="@string/yes"/>
 
 
@@ -97,7 +97,6 @@
 
 
             <TextView
-                android:textStyle="bold"
                 android:textColor="@color/white"
                 android:id="@+id/confirmCancel"
                 android:layout_centerInParent="true"

@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -26,10 +27,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-
 import antrix.chopbet.Activities.activityAddFunds;
-import antrix.chopbet.Models.NewMatch;
+import antrix.chopbet.BetClasses.ConfirmDialog;
+import antrix.chopbet.Models.NewCard;
 import antrix.chopbet.R;
 import antrix.chopbet.Activities.activityWithdrawFunds;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -44,8 +44,10 @@ public class fragmentWallet extends Fragment {
     FirebaseAuth mAuth;
     DatabaseReference dbRef;
 
-    FirebaseListAdapter<NewMatch> adapter;
+    FirebaseListAdapter<NewCard> adapter;
     ListView listView;
+
+
 
     Context context;
     View view;
@@ -70,6 +72,10 @@ public class fragmentWallet extends Fragment {
     LinearLayout addFundsSelector, withdrawFundsSelector;
 
     CircleImageView mtn, vodafone, airtel, tigo;
+
+    ConfirmDialog confirmDialog;
+
+
 
 
 
@@ -135,6 +141,11 @@ public class fragmentWallet extends Fragment {
         vodafone = (CircleImageView)myView.findViewById(R.id.vodafone);
         tigo = (CircleImageView)myView.findViewById(R.id.tigo);
         airtel = (CircleImageView)myView.findViewById(R.id.airtel);
+
+        listView = (ListView)myView.findViewById(R.id.list_cards);
+
+        confirmDialog = new ConfirmDialog();
+
 
 
 
@@ -232,6 +243,7 @@ public class fragmentWallet extends Fragment {
                     balance.setText(String.valueOf("GHS " + dataSnapshotB.child("Bounty").getValue().toString()));
 
 
+
                 }
 
 
@@ -242,6 +254,8 @@ public class fragmentWallet extends Fragment {
 
             }
         });
+
+        loadCards(goldKey);
 
 
 
@@ -260,11 +274,11 @@ public class fragmentWallet extends Fragment {
             public void onClick(View v) {
                 switch(transactionTypeText.getText().toString()){
                     case "ADD FUNDS":
-                        depositProceed("mtn-gh");
+                        depositProceed("mtn-gh", "", "New Card");
 
                         break;
                     case "WITHDRAW":
-                        withdrawProceed("mtn-gh");
+                        withdrawProceed("mtn-gh", "", "New Card");
                         break;
                 }
             }
@@ -277,11 +291,11 @@ public class fragmentWallet extends Fragment {
             public void onClick(View v) {
                 switch(transactionTypeText.getText().toString()){
                     case "ADD FUNDS":
-                        depositProceed("vodafone-gh");
+                        depositProceed("vodafone-gh", "", "New Card");
 
                         break;
                     case "WITHDRAW":
-                        withdrawProceed("vodafone-gh");
+                        withdrawProceed("vodafone-gh", "", "New Card");
                         break;
                 }
             }
@@ -294,11 +308,11 @@ public class fragmentWallet extends Fragment {
             public void onClick(View v) {
                 switch(transactionTypeText.getText().toString()){
                     case "ADD FUNDS":
-                        depositProceed("tigo-gh");
+                        depositProceed("tigo-gh", "", "New Card");
 
                         break;
                     case "WITHDRAW":
-                        withdrawProceed("tigo-gh");
+                        withdrawProceed("tigo-gh", "", "New Card");
                         break;
                 }
             }
@@ -311,11 +325,11 @@ public class fragmentWallet extends Fragment {
             public void onClick(View v) {
                 switch(transactionTypeText.getText().toString()){
                     case "ADD FUNDS":
-                        depositProceed("airtel-gh");
+                        depositProceed("airtel-gh", "", "New Card");
 
                         break;
                     case "WITHDRAW":
-                        withdrawProceed("airtel-gh");
+                        withdrawProceed("airtel-gh", "", "New Card");
                         break;
                 }
             }
@@ -333,6 +347,118 @@ public class fragmentWallet extends Fragment {
 
     }
 
+    private void loadCards(final String goldKey){
+
+        query = dbRef.child("Xperience").child(goldKey).child("Cards").orderByChild("index");
+
+        adapter = new FirebaseListAdapter<NewCard>(activity, NewCard.class, R.layout.list_cards, query) {
+            @Override
+            protected void populateView(View v, final NewCard model, int position) {
+
+                TextView phoneNumber = (TextView)v.findViewById(R.id.phoneNumber);
+                CircleImageView profileImage = (CircleImageView)v.findViewById(R.id.profileImage);
+                TextView deleteCard = (TextView)v.findViewById(R.id.deleteCard);
+
+                TextView addFundsWithCard = (TextView)v.findViewById(R.id.addFundsWithCard);
+                TextView withdraFundsWithCard = (TextView)v.findViewById(R.id.withdrawWithCard);
+
+
+                phoneNumber.setText(model.getPhoneNumber());
+
+                RelativeLayout detailsLayout = (RelativeLayout)v.findViewById(R.id.detailsLayout);
+
+
+
+
+
+
+                switch (model.getChannel()){
+
+                    case "mtn-gh":
+                        profileImage.setImageResource(R.drawable.mtn);
+                        detailsLayout.setBackgroundColor(getResources().getColor(R.color.mtn));
+                        break;
+
+                    case "vodafone-gh":
+                        profileImage.setImageResource(R.drawable.vodafone);
+                        detailsLayout.setBackgroundColor(getResources().getColor(R.color.vodafone));
+                        break;
+
+                    case "tigo-gh":
+                        profileImage.setImageResource(R.drawable.tigo);
+                        detailsLayout.setBackgroundColor(getResources().getColor(R.color.tigo));
+
+                        break;
+
+                    case "airtel-gh":
+                        profileImage.setImageResource(R.drawable.airtel);
+                        detailsLayout.setBackgroundColor(getResources().getColor(R.color.airtel));
+
+                        break;
+
+                }
+
+
+
+                deleteCard.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+
+                        confirmDialog.NewConfirmDialog(context, "Confirm Action", "Delete saved card", "Delete", "Cancel");
+                        confirmDialog.confirmAccept.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dbRef.child("Xperience").child(goldKey).child("Cards").child(model.getCardID()).removeValue();
+                                confirmDialog.dialog.dismiss();
+                            }
+                        });
+
+
+
+
+                    }
+                });
+
+
+                addFundsWithCard.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        depositProceed(model.getChannel(), model.getPhoneNumber(), "Saved Card");
+                    }
+                });
+
+                withdraFundsWithCard.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        withdrawProceed(model.getChannel(), model.getPhoneNumber(), "Saved Card");
+                    }
+                });
+
+
+
+
+            }
+        };
+
+        listView.setAdapter(adapter);
+
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                RelativeLayout transactionLayout = (RelativeLayout)view.findViewById(R.id.transactionLayout);
+
+                if(transactionLayout.getVisibility() == View.VISIBLE){
+                    transactionLayout.setVisibility(View.GONE);
+                } else{
+                    transactionLayout.setVisibility(View.VISIBLE);
+                }
+
+
+
+            }
+        });
 
 
 
@@ -341,19 +467,33 @@ public class fragmentWallet extends Fragment {
 
 
 
-    private void depositProceed(String Channel){
+    }
+
+
+
+
+
+
+
+
+
+    private void depositProceed(String Channel, String PhoneNumber, String cardStatus){
         Intent intentA = new Intent(context, activityAddFunds.class);
         intentA.putExtra("string", goldKey);
         intentA.putExtra("channel", Channel);
+        intentA.putExtra("cardStatus", cardStatus);
+        intentA.putExtra("phoneNumber", PhoneNumber);
         startActivity(intentA);
         fundsSelector.setVisibility(View.GONE);
     }
 
 
-    private void withdrawProceed(String Channel){
+    private void withdrawProceed(String Channel, String PhoneNumber, String cardStatus){
         Intent intentB = new Intent(getActivity(), activityWithdrawFunds.class);
         intentB.putExtra("string", goldKey);
         intentB.putExtra("channel", Channel);
+        intentB.putExtra("cardStatus", cardStatus);
+        intentB.putExtra("phoneNumber", PhoneNumber);
         startActivity(intentB);
         fundsSelector.setVisibility(View.GONE);
     }

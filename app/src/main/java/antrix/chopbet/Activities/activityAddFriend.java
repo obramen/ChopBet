@@ -364,7 +364,7 @@ public class activityAddFriend extends BaseActivity{
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-            if (Objects.equals(searchText.getText().toString().trim(), "")){
+            if (Objects.equals(searchText.getText().toString().trim().toLowerCase(), "")){
 
             } else if(Objects.equals(searchText.getText().toString().trim(), myUserName)){
 

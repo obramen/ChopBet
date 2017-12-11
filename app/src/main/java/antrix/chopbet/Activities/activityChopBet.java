@@ -1,5 +1,6 @@
 package antrix.chopbet.Activities;
 
+import android.app.Notification;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -46,6 +47,7 @@ import antrix.chopbet.Fragments.fragmentNewBet;
 import antrix.chopbet.Fragments.fragmentTransactions;
 import antrix.chopbet.Fragments.fragmentWallet;
 import antrix.chopbet.R;
+import br.com.goncalves.pugnotification.notification.PugNotification;
 import tgio.rncryptor.RNCryptorNative;
 
 import static android.content.ContentValues.TAG;
@@ -74,6 +76,7 @@ public class activityChopBet extends BaseActivity {
     ValueEventListener matchListener;
 
     Handler mHandler;
+
 
     ProgressDialog progressDialog;
 
@@ -149,6 +152,8 @@ public class activityChopBet extends BaseActivity {
 
         loadPrimeKey();
 
+        //loadNotification();
+
 
 
 
@@ -192,6 +197,7 @@ public class activityChopBet extends BaseActivity {
 
         matchStatus = sharedPreferences.getString("matchStatus", null);
         currentMatchID = sharedPreferences.getString("currentMatchID", null);
+        myUserName = sharedPreferences.getString("myUserName", null);
 
 
         if (Objects.equals(matchStatus, "null")) {
@@ -207,6 +213,7 @@ public class activityChopBet extends BaseActivity {
         progressDialog = new ProgressDialog(context);
 
         rnCryptorNative = new RNCryptorNative();
+
 
 
 
@@ -243,6 +250,8 @@ public class activityChopBet extends BaseActivity {
 
                 }else if (Objects.equals(matchStatus, "Closed")){
                     //transaction.replace(R.id.content, new fragmentNewBet()).commit();
+
+
 
                     Intent betIntent = new Intent(activityChopBet.this, activityNewBet.class);
                     betIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -571,7 +580,6 @@ public class activityChopBet extends BaseActivity {
 
     private void loadBalance(){
 
-
         goldKey = rnCryptorNative.decrypt(diamondKey, myUID);
 
         Log.d(TAG, "diamondKey: " + diamondKey);
@@ -599,6 +607,104 @@ public class activityChopBet extends BaseActivity {
             }
         });
 
+
+
+    }
+
+
+
+    private void loadNotification(){
+
+        if (myUserName != null) {
+
+            dbRef.child("Notifications").child(myUserName).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.hasChildren()) {
+                        if (Objects.equals(dataSnapshot.child("status").getValue().toString(), "New")) {
+                            String type = dataSnapshot.child("type").getValue().toString();
+                            String opponenet = "";
+
+                            if (Objects.equals(dataSnapshot.child("playerOne").getValue().toString(), myUserName)) {
+                                opponenet = dataSnapshot.child("playerTwo").getValue().toString();
+
+                            } else {
+                                opponenet = dataSnapshot.child("playerOne").getValue().toString();
+
+                            }
+
+
+                            Bundle NBundle = new Bundle();
+                            NBundle.putString("Notification", null);
+
+
+                            switch (type){
+                                case "New Match":
+                                    PugNotification.with(context)
+                                            .load()
+                                            .title(type)
+                                            .message("Your match with - " + opponenet + " - has begun. Report after play. If match reported is not disputed within 7 minutes, reward goes to opponent")
+                                            .bigTextStyle("Your match with - " + opponenet + " - has begun. Report after play. If match reported is not disputed within 7 minutes, reward goes to opponent")
+                                            .smallIcon(R.mipmap.ic_launcher_round)
+                                            .largeIcon(R.mipmap.ic_launcher_round)
+                                            .flags(Notification.DEFAULT_ALL)
+                                            //.click(activityNewBet.class, NBundle)
+                                            .autoCancel(true)
+                                            .simple()
+                                            .build();
+                                    break;
+
+                                case "Match Found":
+                                    PugNotification.with(context)
+                                            .load()
+                                            .title(type)
+                                            .message("New match against - " + opponenet + ". Accept match within 20 secs to avoid bans")
+                                            .bigTextStyle("New match against - " + opponenet + ". Accept match within 20 secs to avoid bans")
+                                            .smallIcon(R.mipmap.ic_launcher_round)
+                                            .largeIcon(R.mipmap.ic_launcher_round)
+                                            .flags(Notification.DEFAULT_ALL)
+                                            //.click(activityNewBet.class, NBundle)
+                                            .autoCancel(true)
+                                            .simple()
+                                            .build();
+
+                                    break;
+
+                                case "Account Credited":
+                                    PugNotification.with(context)
+                                            .load()
+                                            .title(type)
+                                            .message("Your account has been credited for your match against - " + opponenet)
+                                            .bigTextStyle("Your account has been credited for your match against - " + opponenet)
+                                            .smallIcon(R.mipmap.ic_launcher_round)
+                                            .largeIcon(R.mipmap.ic_launcher_round)
+                                            .flags(Notification.DEFAULT_ALL)
+                                            //.click(activityNewBet.class, NBundle)
+                                            .autoCancel(true)
+                                            .simple()
+                                            .build();
+
+                                    break;
+                            }
+
+
+
+                            dbRef.child("Notifications").child(myUserName).child("status").setValue("Old");
+
+
+                        }
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+
+        }
 
 
     }

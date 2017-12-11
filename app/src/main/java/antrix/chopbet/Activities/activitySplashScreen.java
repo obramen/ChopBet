@@ -16,6 +16,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.Objects;
 
+import antrix.chopbet.BetServices.NotificationService;
 import antrix.chopbet.R;
 
 
@@ -35,6 +36,9 @@ public class activitySplashScreen extends Activity {
         setContentView(R.layout.activity_splash_screen);
 
         //persistence = new Persistence();
+
+        startService(new Intent(getBaseContext(), NotificationService.class));
+
 
 
         /* New Handler to start the Menu-Activity

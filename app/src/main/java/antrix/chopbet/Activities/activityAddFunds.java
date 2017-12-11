@@ -7,16 +7,21 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Selection;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +39,7 @@ import antrix.chopbet.BetClasses.BaseActivity;
 import antrix.chopbet.BetClasses.BetUtilities;
 import antrix.chopbet.BetClasses.ConfirmDialog;
 import antrix.chopbet.Models.BetBuddy;
+import antrix.chopbet.Models.NewCard;
 import antrix.chopbet.Models.NewTransaction;
 import antrix.chopbet.R;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -79,6 +85,10 @@ public class activityAddFunds extends BaseActivity {
     LoadingButton btnNext;
     EditText amountEditText;
 
+    RelativeLayout newCardLayout;
+    RelativeLayout oldCardLayout;
+    CheckBox saveCard;
+
     Bundle bundle;
 
 
@@ -90,6 +100,12 @@ public class activityAddFunds extends BaseActivity {
     ConfirmDialog confirmDialog;
 
     String regenRune, invisRune, bountyRune;
+
+    TextInputEditText phoneNumberEditText;
+    TextView phoneNumberTextView;
+
+    CircleImageView profileImage;
+    CircleImageView profileImage1;
 
 
 
@@ -105,28 +121,6 @@ public class activityAddFunds extends BaseActivity {
         declarations();
         clickers();
 
-
-        Selection.setSelection(amountEditText.getText(), amountEditText.getText().length());
-        usernameTextView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if(!s.toString().startsWith("GHS")){
-                    amountEditText.setText("GHS");
-                    Selection.setSelection(amountEditText.getText(), amountEditText.getText().length());
-
-                }
-            }
-        });
 
 
 
@@ -158,11 +152,19 @@ public class activityAddFunds extends BaseActivity {
         usernameTextView = (TextView)findViewById(R.id.userNameTextView);
         amountEditText = (EditText)findViewById(R.id.amountEditText);
 
+        newCardLayout = (RelativeLayout)findViewById(R.id.newCardLayout);
+        oldCardLayout = (RelativeLayout)findViewById(R.id.oldCardLayout);
+        saveCard = (CheckBox)findViewById(R.id.saveCard);
         btnNext = (LoadingButton)findViewById(R.id.btnNext);
+        phoneNumberEditText = (TextInputEditText)findViewById(R.id.phoneNumberEditText);
+        phoneNumberTextView = (TextView) findViewById(R.id.phoneNumberTextView);
+
+        profileImage = (CircleImageView)findViewById(R.id.profileImage);
+        profileImage1 = (CircleImageView)findViewById(R.id.profileImage1);
 
 
         myUserName = sharedPreferences.getString("myUserName", null);
-        usernameTextView.setText(myUserName + "\n"+myPhoneNumber);
+        usernameTextView.setText(myUserName);
         bundle = getIntent().getExtras();
 
         confirmDialog = new ConfirmDialog();
@@ -181,6 +183,69 @@ public class activityAddFunds extends BaseActivity {
 
             }
         });
+
+
+
+
+        String Channel = bundle.getString("channel");
+
+        switch (Channel){
+
+            case "mtn-gh":
+                profileImage.setImageResource(R.drawable.mtn);
+                break;
+
+            case "vodafone-gh":
+                profileImage.setImageResource(R.drawable.vodafone);
+                break;
+
+            case "tigo-gh":
+                profileImage.setImageResource(R.drawable.tigo);
+                break;
+
+            case "airtel-gh":
+                profileImage.setImageResource(R.drawable.airtel);
+                break;
+
+        }
+
+ switch (Channel){
+
+            case "mtn-gh":
+                profileImage1.setImageResource(R.drawable.mtn);
+                break;
+
+            case "vodafone-gh":
+                profileImage1.setImageResource(R.drawable.vodafone);
+                break;
+
+            case "tigo-gh":
+                profileImage1.setImageResource(R.drawable.tigo);
+                break;
+
+            case "airtel-gh":
+                profileImage1.setImageResource(R.drawable.airtel);
+                break;
+
+        }
+
+
+
+        switch (bundle.getString("cardStatus")){
+            case "New Card":
+                newCardLayout.setVisibility(View.VISIBLE);
+                oldCardLayout.setVisibility(View.GONE);
+
+                break;
+            case "Saved Card":
+                newCardLayout.setVisibility(View.GONE);
+                oldCardLayout.setVisibility(View.VISIBLE);
+                phoneNumberTextView.setText(bundle.getString("phoneNumber"));
+
+                break;
+        }
+
+
 
 
 
@@ -225,6 +290,10 @@ public class activityAddFunds extends BaseActivity {
 
     private void hubtelConnect(){
 
+        if(TextUtils.isEmpty(amountEditText.getText().toString().trim())){
+            Toast.makeText(context, "Enter amount", Toast.LENGTH_SHORT).show();
+        }
+
         final ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setMessage("Processing payment...");
         progressDialog.setCanceledOnTouchOutside(false);
@@ -233,8 +302,26 @@ public class activityAddFunds extends BaseActivity {
 
         final String goldKey = bundle.getString("string");
         final String Channel = bundle.getString("channel");
+        String PhoneNumber = "";
+
+        switch (bundle.getString("cardStatus")){
+            case "New Card":
+                PhoneNumber = phoneNumberEditText.getText().toString();
+                if(TextUtils.isEmpty(phoneNumberEditText.getText().toString().trim())){
+                    Toast.makeText(context, "Enter phone number", Toast.LENGTH_SHORT).show();
+                }
+
+                break;
+            case "Saved Card":
+                PhoneNumber = bundle.getString("phoneNumber");
+                break;
+        }
+
+        if(!Objects.equals(PhoneNumber.substring(0, 1), "0")){
+            PhoneNumber = "0" + PhoneNumber;
+        }
+
         final String key = dbRef.child("Xperience").child(goldKey).child("Injection").push().getKey();
-        final String PhoneNumber = myPhoneNumber;
 
         //http://requestb.in/1minotz1
         //myPhoneNumber.substring(4)
@@ -244,7 +331,7 @@ public class activityAddFunds extends BaseActivity {
 
         final JsonObject json = new JsonObject();
         json.addProperty("CustomerName", myUserName);
-        json.addProperty("CustomerMsisdn", "0" + PhoneNumber.substring(4));
+        json.addProperty("CustomerMsisdn", PhoneNumber);
         json.addProperty("CustomerEmail", "");
         json.addProperty("Channel", Channel);
         json.addProperty("Amount", amount);
@@ -255,6 +342,7 @@ public class activityAddFunds extends BaseActivity {
         json.addProperty("Token", "string");
         json.addProperty("FeesOnCustomer", true);
 
+        final String finalPhoneNumber = PhoneNumber;
         Ion.with(context)
                 .load(bountyRune)
                 .setHeader("Authorization",regenRune)
@@ -289,10 +377,14 @@ public class activityAddFunds extends BaseActivity {
                                 String charges = newTData.get("Charges").getAsString();
 
                                 dbRef.child("Xperience").child(goldKey).child("Injection").child(key)
-                                        .setValue(new NewTransaction(key, "DEPOSIT", amount, charges, merchant, transactionId, PhoneNumber, "New Transaction", Channel));
+                                        .setValue(new NewTransaction(key, "DEPOSIT", amount, charges, merchant, transactionId, finalPhoneNumber, "New Transaction", Channel));
 
 
+                                if (saveCard.isChecked()){
+                                    String cardID = dbRef.child("Xperience").child(goldKey).child("Cards").push().getKey();
+                                    dbRef.child("Xperience").child(goldKey).child("Cards").child(cardID).setValue(new NewCard(finalPhoneNumber, Channel, cardID));
 
+                                }
 
                                 if (Objects.equals(responseCode, "0001")){
 
@@ -326,7 +418,7 @@ public class activityAddFunds extends BaseActivity {
                                                                 String fees = info.get("Fee").getAsString();
 
                                                                 dbRef.child("Xperience").child(goldKey).child("Injection").child(key)
-                                                                        .setValue(new NewTransaction(key, "DEPOSIT", amount, fees, merchant, transactionId, PhoneNumber, status, Channel));
+                                                                        .setValue(new NewTransaction(key, "DEPOSIT", amount, fees, merchant, transactionId, finalPhoneNumber, status, Channel));
 
 
 

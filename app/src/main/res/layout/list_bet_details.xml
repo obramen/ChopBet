@@ -351,18 +351,20 @@
                     android:ellipsize="end"/>
 
                 <TextView
+                    android:visibility="gone"
                     android:id="@+id/contactSource"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:text="contact"
-                    android:layout_below="@+id/name"
                     android:layout_toEndOf="@+id/profileImage"
                     android:textSize="14dp"
                     android:layout_marginStart="10dp"
-                    android:ellipsize="end"/>
+                    android:ellipsize="end"
+                    android:layout_below="@+id/name" />
 
                 <TextView
+                    android:visibility="gone"
                     android:id="@+id/addFriend"
                     android:layout_width="50dp"
                     android:textAlignment="center"
@@ -420,11 +422,6 @@
             android:textColor="@color/colorPrimary"/>
 
     </RelativeLayout>
-
-
-
-
-
 
 
 

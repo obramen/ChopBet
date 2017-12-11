@@ -1,9 +1,11 @@
 package antrix.chopbet.Activities;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -26,10 +28,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.Objects;
 
 import antrix.chopbet.BetClasses.BaseActivity;
+import antrix.chopbet.BetClasses.BetUtilities;
 import antrix.chopbet.Models.BetBuddy;
 import antrix.chopbet.Models.NewMatch;
 import antrix.chopbet.R;
@@ -70,6 +75,12 @@ public class activityBetDetails extends BaseActivity{
 
     Query query;
 
+    BetUtilities betUtilities;
+    DatabaseReference friendsDbRef;
+    ProgressDialog progressDialog;
+
+
+
 
 
     @Override
@@ -80,8 +91,13 @@ public class activityBetDetails extends BaseActivity{
         loadActionbar("Bet Details");
         getSupportActionBar().setElevation(0);
 
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.show();
         declarations();
         loadHistory();
+        progressDialog.dismiss();
 
 
 
@@ -112,6 +128,10 @@ public class activityBetDetails extends BaseActivity{
         query = dbRef.child("Matches").child(myUserName).orderByChild("matchID").equalTo(currentMatchID);
 
 
+        friendsDbRef = dbRef.child("Friends").child(myPhoneNumber);
+
+
+        betUtilities = new BetUtilities();
 
 
     }
@@ -128,7 +148,7 @@ public class activityBetDetails extends BaseActivity{
             protected void populateView(View v, final NewMatch model, int position) {
 
                 TextView date = (TextView)v.findViewById(R.id.date);
-                TextView name = (TextView)v.findViewById(R.id.name);
+                final TextView name = (TextView)v.findViewById(R.id.name);
                 TextView contactSource = (TextView)v.findViewById(R.id.contactSource);
                 TextView wonOrLost = (TextView)v.findViewById(R.id.wonOrLost);
                 TextView matchID = (TextView)v.findViewById(R.id.matchID);
@@ -137,6 +157,10 @@ public class activityBetDetails extends BaseActivity{
                 TextView fee = (TextView)v.findViewById(R.id.fee);
                 TextView report = (TextView)v.findViewById(R.id.report);
                 TextView dispute = (TextView)v.findViewById(R.id.dispute);
+
+                CircleImageView profileImage = (CircleImageView)v.findViewById(R.id.profileImage);
+
+                final TextView addFriend = (TextView)v.findViewById(R.id.addFriend);
 
 
 
@@ -162,10 +186,14 @@ public class activityBetDetails extends BaseActivity{
 
                 wonOrLost.setText(model.getWonOrLost());
 
+                fee.setText(model.getBetFee());
+
                 if (Objects.equals(model.getWonOrLost(), "WON")){
-                    fee.setText(String.valueOf((Integer.parseInt(model.getBetAmount()))*(0.05)));
-                } else {
-                    fee.setText("0.00");
+                    wonOrLost.setTextColor(getResources().getColor(R.color.green));
+                }else if (Objects.equals(model.getWonOrLost(), "LOST")){
+                    wonOrLost.setTextColor(getResources().getColor(R.color.colorPrimary));
+                } else if (Objects.equals(model.getWonOrLost(), "Pending")){
+                    wonOrLost.setTextColor(getResources().getColor(R.color.colorGameFIFA));
                 }
 
                 /*
@@ -182,11 +210,15 @@ public class activityBetDetails extends BaseActivity{
 */
 
                 if (Objects.equals(myUserName, model.getPlayerOne())) {
-
                     name.setText(model.getPlayerTwo());
+                    addToFriends(model.getPlayerTwo(), addFriend);
+                    loadProfilePic(model.getPlayerTwo(), profileImage);
 
                 } else if (Objects.equals(myUserName, model.getPlayerTwo())) {
                     name.setText(model.getPlayerOne());
+                    addToFriends(model.getPlayerOne(), addFriend);
+                    loadProfilePic(model.getPlayerOne(), profileImage);
+
                 }
 
 
@@ -199,8 +231,29 @@ public class activityBetDetails extends BaseActivity{
 
 
 
-
                 matchTextColours(model.getMatchID(), console, game, internet);
+
+
+
+
+                profileImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(context, activityUserProfile.class);
+                        intent.putExtra("userName", name.getText().toString());
+                        context.startActivity(intent);
+                    }
+                });
+
+                name.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(context, activityUserProfile.class);
+                        intent.putExtra("userName", name.getText().toString());
+                        context.startActivity(intent);
+                    }
+                });
+
 
 
 
@@ -233,7 +286,146 @@ public class activityBetDetails extends BaseActivity{
 
     }
 
+    private void loadProfilePic(final String string, final CircleImageView circleImageView){
 
+
+        dbRef.child("profileImageTimestamp").child(string)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        if (dataSnapshot.hasChildren()){
+
+                            String timestamp = dataSnapshot.child(string).getValue().toString();
+                            StorageReference profileStorageRef = FirebaseStorage.getInstance().getReference()
+                                    .child("ProfileImages").child(string).child(string);
+
+
+                            betUtilities.CircleImageFromFirebase(context, profileStorageRef, circleImageView, timestamp);
+
+                        }
+
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+
+
+
+    }
+
+
+    private void addToFriends(final String string, final TextView textView){
+
+        friendsDbRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.child(string).exists()) {
+                    String status = dataSnapshot.child(string).child("status").getValue().toString();
+
+
+                    switch (status) {
+                        case "Add Friend":
+                            textView.setEnabled(true);
+                            textView.setTypeface(null, Typeface.NORMAL);
+                            textView.setTextColor(getResources().getColor(R.color.colorPrimary));
+                            textView.setText("Add Friend");
+                            textView.setVisibility(View.VISIBLE);
+
+                            break;
+                        case "Pending":
+                            textView.setEnabled(true);
+                            textView.setTypeface(null, Typeface.NORMAL);
+                            textView.setTextColor(getResources().getColor(R.color.colorPrimary));
+                            textView.setText("Accept");
+                            textView.setVisibility(View.VISIBLE);
+
+                            break;
+                        case "Sent":
+                            textView.setEnabled(false);
+                            textView.setTypeface(null, Typeface.ITALIC);
+                            textView.setTextColor(getResources().getColor(R.color.selector));
+                            textView.setText("Sent");
+                            textView.setVisibility(View.VISIBLE);
+
+                            break;
+                        case "Friend":
+                            textView.setEnabled(false);
+                            textView.setTypeface(null, Typeface.ITALIC);
+                            textView.setTextColor(getResources().getColor(R.color.selector));
+                            textView.setText("Friend");
+                            textView.setVisibility(View.GONE);
+
+                            break;
+
+                    }
+
+
+                } else {
+                    textView.setText("Add Friend");
+                    textView.setVisibility(View.VISIBLE);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                dbRef.child("UserNames").child(string).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        String phoneNumber = dataSnapshot.child("phoneNumber").getValue().toString();
+
+                        final BetBuddy myBetBuddy = new BetBuddy(string, phoneNumber, "Sent", "false");
+                        BetBuddy hisBetBuddy = new BetBuddy(myUserName, myPhoneNumber, "Pending", "false");
+
+
+                        switch (textView.getText().toString()) {
+                            case "Add Friend":
+                                dbRef.child("Friends").child(myPhoneNumber).child(string).setValue(myBetBuddy);
+                                dbRef.child("Friends").child(phoneNumber).child(myUserName).setValue(hisBetBuddy);
+
+
+                                break;
+                            case "Accept":
+                                dbRef.child("Friends").child(myPhoneNumber).child(string).child("status").setValue("Friend");
+                                dbRef.child("Friends").child(phoneNumber).child(myUserName).child("status").setValue("Friend");
+
+                                break;
+                            case "Sent":
+
+                                break;
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+
+            }
+        });
+
+
+
+    }
 
 
     private void matchTextColours(final String currentMatchID, final TextView console, final TextView game, final TextView internet){

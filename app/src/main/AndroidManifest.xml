@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="antrix.chopbet">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -62,7 +67,12 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".Activities.activityNewBet"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"
+            android:launchMode="singleInstance">
+
+        </activity>
+
+        <service android:name=".BetServices.NotificationService"/>
     </application>
 
 </manifest>

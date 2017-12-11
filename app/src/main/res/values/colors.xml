@@ -36,4 +36,10 @@
 
     <color name="black_overlay">#66000000</color>
 
+    <color name="tigo">#0b60c6</color>
+    <color name="mtn">#edc410</color>
+    <color name="vodafone">#c60b0b</color>
+    <color name="airtel">#c41919</color>
+
+
 </resources>

@@ -50,8 +50,8 @@
 
             <RelativeLayout
                 android:layout_centerHorizontal="true"
-                android:layout_marginBottom="40dp"
-                android:layout_above="@+id/findBetButton"
+                android:layout_below="@+id/amount"
+                android:layout_marginTop="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
@@ -138,15 +138,15 @@
 
 
         <TextView
-            android:visibility="gone"
+            android:visibility="visible"
             android:id="@+id/findingMatchTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Finding match..."
+            android:text="@string/finding_match"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="80dp"
             android:foregroundGravity="top"
-            android:textSize="18dp"
+            android:textSize="18sp"
             android:textColor="@color/white"/>
 
 
@@ -164,7 +164,7 @@
 
             <LinearLayout
                 android:orientation="vertical"
-                android:layout_below="@+id/btnSave"
+                android:layout_below="@+id/buttonsLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -452,15 +452,41 @@
             </LinearLayout>
 
 
-            <com.dx.dxloadingbutton.lib.LoadingButton
-                android:id="@+id/btnSave"
+            <LinearLayout
+                android:weightSum="2"
+                android:id="@+id/buttonsLayout"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:lb_resetAfterFailed="true"
-                app:lb_btnRippleColor="#000000"
-                app:lb_btnText="Save"
-                app:lb_btnColor="@color/green"
-                />
+                android:layout_height="match_parent">
+
+                <com.dx.dxloadingbutton.lib.LoadingButton
+                    android:id="@+id/btnCancel"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="2dp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:lb_resetAfterFailed="true"
+                    app:lb_btnRippleColor="#000000"
+                    app:lb_btnText="Cancel"
+                    app:lb_btnColor="@color/colorPrimary"
+                    />
+
+                <com.dx.dxloadingbutton.lib.LoadingButton
+                    android:id="@+id/btnSave"
+                    android:layout_marginStart="2dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    app:lb_resetAfterFailed="true"
+                    app:lb_btnRippleColor="#000000"
+                    app:lb_btnText="Save"
+                    app:lb_btnColor="@color/green"
+                    />
+
+
+            </LinearLayout>
+
+
 
 
         </RelativeLayout>
