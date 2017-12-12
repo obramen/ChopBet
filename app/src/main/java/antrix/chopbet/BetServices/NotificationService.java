@@ -82,7 +82,7 @@ public class NotificationService extends Service {
                             Bundle NBundle = new Bundle();
 
                             switch (type){
-                                case "New Match":
+                                case "Match Started":
 
                                     PugNotification.with(getApplicationContext())
                                             .load()

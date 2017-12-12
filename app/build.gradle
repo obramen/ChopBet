@@ -52,6 +52,8 @@ dependencies {
     compile 'com.koushikdutta.ion:ion:2.+'
     testCompile 'junit:junit:4.12'
     compile 'com.github.halysongoncalves:pugnotification:1.8.1'
+    compile 'in.shadowfax:proswipebutton:1.0.1'
+    //compile 'com.ebanx:swipe-button:0.8.3'
 
 }
 
@@ -62,3 +64,14 @@ dependencies {
 
 
 apply plugin: 'com.google.gms.google-services'
+
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        def requested = details.requested
+        if (requested.group == 'com.android.support') {
+            if (!requested.name.startsWith("multidex")) {
+                details.useVersion '25.4.0'
+            }
+        }
+    }
+}

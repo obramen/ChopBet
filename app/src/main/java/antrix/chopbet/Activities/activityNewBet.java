@@ -32,13 +32,17 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.Objects;
 
+import antrix.chopbet.BetClasses.BetUtilities;
 import antrix.chopbet.Models.NewMatch;
 import antrix.chopbet.R;
 import br.com.goncalves.pugnotification.notification.PugNotification;
 import de.hdodenhof.circleimageview.CircleImageView;
+import in.shadowfax.proswipebutton.ProSwipeButton;
 import tgio.rncryptor.RNCryptorNative;
 
 import static android.content.ContentValues.TAG;
@@ -92,6 +96,10 @@ public class activityNewBet extends AppCompatActivity {
     private String diamondKey = null;
     private String goldKey = null;
 
+    BetUtilities betUtilities;
+
+    ProSwipeButton swipeAccept;
+
 
 
 
@@ -117,6 +125,7 @@ public class activityNewBet extends AppCompatActivity {
 
         loadPrimeKey();
         //loadNotification();
+
 
     }
 
@@ -161,6 +170,8 @@ public class activityNewBet extends AppCompatActivity {
         lostText = (TextView)findViewById(R.id.lostText);
         playerTwoTextView = (TextView)findViewById(R.id.playerTwo);
 
+        swipeAccept = (ProSwipeButton)findViewById(R.id.swipeAccept);
+
 
 
 
@@ -176,6 +187,7 @@ public class activityNewBet extends AppCompatActivity {
         ///currentMatchID = ((activityChopBet)context).currentMatchID;
 
         rnCryptorNative = new RNCryptorNative();
+        betUtilities = new BetUtilities();
 
 
 
@@ -270,12 +282,13 @@ public class activityNewBet extends AppCompatActivity {
                     wonText.setVisibility(View.GONE);
                     lostText.setVisibility(View.GONE);
 
-                    acceptButton.setVisibility(View.VISIBLE);
+                    //acceptButton.setVisibility(View.VISIBLE);
+                    swipeAccept.setVisibility(View.VISIBLE);
                     playerOneRadioButton.setVisibility(View.VISIBLE);
                     playerTwoRadioButton.setVisibility(View.VISIBLE);
                     declineButton.setVisibility(View.VISIBLE);
                     acceptProgressBar.setVisibility(View.VISIBLE);
-                    acceptText.setVisibility(View.VISIBLE);
+                    //acceptText.setVisibility(View.VISIBLE);
 
                     pendingTextColours(currentMatchID, console, game, amount, internet);
 
@@ -291,12 +304,13 @@ public class activityNewBet extends AppCompatActivity {
                     wonText.setVisibility(View.VISIBLE);
                     lostText.setVisibility(View.VISIBLE);
 
-                    acceptButton.setVisibility(View.GONE);
+                    //acceptButton.setVisibility(View.GONE);
+                    swipeAccept.setVisibility(View.INVISIBLE);
                     playerOneRadioButton.setVisibility(View.GONE);
                     playerTwoRadioButton.setVisibility(View.GONE);
                     declineButton.setVisibility(View.GONE);
                     acceptProgressBar.setVisibility(View.GONE);
-                    acceptText.setVisibility(View.GONE);
+                    //acceptText.setVisibility(View.GONE);
 
 
                     //dbRef.child("PendingMatches").child(myUserName).removeValue();
@@ -376,6 +390,8 @@ public class activityNewBet extends AppCompatActivity {
 
 
                         pendingTextColours(currentMatchID, console, game, amount, internet);
+                        loadProfileImage(playerTwoUserName, playerTwoImageView);
+
 
 
                         dbRef.child("Matches").child(playerTwoUserName).orderByChild("wonOrLost").equalTo("WON").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -593,6 +609,38 @@ public class activityNewBet extends AppCompatActivity {
 
 
 
+    private void loadProfileImage(final String string, final CircleImageView circleImageView){
+
+
+        dbRef.child("profileImageTimestamp").child(string)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        if (dataSnapshot.hasChildren()){
+
+                            String timestamp = dataSnapshot.child(string).getValue().toString();
+                            StorageReference profileStorageRef = FirebaseStorage.getInstance().getReference()
+                                    .child("ProfileImages").child(string).child(string);
+
+
+                            betUtilities.CircleImageFromFirebase(context, profileStorageRef, circleImageView, timestamp);
+
+                        }
+
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+
+
+    }
 
 
 
@@ -622,6 +670,30 @@ public class activityNewBet extends AppCompatActivity {
 
 
 
+            }
+        });
+
+        swipeAccept.setOnSwipeListener(new ProSwipeButton.OnSwipeListener() {
+            @Override
+            public void onSwipeConfirm() {
+                // user has swiped the btn. Perform your async operation now
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        dbRef.child("PendingMatches").child(myUserName).child(currentMatchID).child("betStatus").setValue("true").addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                acceptButton.setEnabled(false);
+
+                                dbRef.child("MatchObserver").child(myUserName).child("keyString").setValue(goldKey);
+                                Toast.makeText(context, "Match Accepted", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        // task success! show TICK icon in ProSwipeButton
+                        swipeAccept.showResultIcon(true); // false if task failed
+                    }
+                }, 2000);
             }
         });
 
@@ -996,6 +1068,10 @@ public class activityNewBet extends AppCompatActivity {
                     });
 
 
+                    loadProfileImage(playerTwoUserName, playerTwoImageView);
+
+
+
 
 
 
@@ -1318,6 +1394,7 @@ public class activityNewBet extends AppCompatActivity {
 
 
     }
+
 
 
 

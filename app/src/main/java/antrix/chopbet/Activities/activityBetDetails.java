@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -155,7 +156,7 @@ public class activityBetDetails extends BaseActivity{
                 TextView bottomAmount = (TextView)v.findViewById(R.id.bottomAmount);
                 TextView topAmount = (TextView)v.findViewById(R.id.topAmount);
                 TextView fee = (TextView)v.findViewById(R.id.fee);
-                TextView report = (TextView)v.findViewById(R.id.report);
+                final TextView report = (TextView)v.findViewById(R.id.report);
                 TextView dispute = (TextView)v.findViewById(R.id.dispute);
 
                 CircleImageView profileImage = (CircleImageView)v.findViewById(R.id.profileImage);
@@ -254,6 +255,64 @@ public class activityBetDetails extends BaseActivity{
                     }
                 });
 
+
+
+
+                dispute.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dbRef.child("Matches").child(model.getPlayerOne()).child(model.getMatchID()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                if(dataSnapshot.child("credited").exists()){
+
+                                    Toast.makeText(activityBetDetails.this, "Match has already been credited, you can no longer dispute it", Toast.LENGTH_SHORT).show();
+
+                                } else if (dataSnapshot.child("resolved").exists()){
+                                    Toast.makeText(activityBetDetails.this, "Match has been resolved", Toast.LENGTH_SHORT).show();
+                                } else if (dataSnapshot.child("disputed").exists() && dataSnapshot.child("resolved").getValue() == null){
+                                    Toast.makeText(activityBetDetails.this, "Dispute pending", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    dbRef.child("Matches").child(model.getPlayerOne()).child(model.getMatchID()).child("disputed").setValue(true);
+                                    dbRef.child("Matches").child(model.getPlayerTwo()).child(model.getMatchID()).child("disputed").setValue(true);
+                                    Toast.makeText(activityBetDetails.this, "Match disputed successfully", Toast.LENGTH_SHORT).show();
+                                }
+
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+                    }
+                });
+
+                report.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dbRef.child("UserInfo").child(name.getText().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                Integer reports = Integer.parseInt(dataSnapshot.child("reports").getValue().toString());
+                                reports = reports + 1;
+                                dbRef.child("UserInfo").child(name.getText().toString()).child("reports").setValue(reports);
+
+                                Toast.makeText(activityBetDetails.this, "Thank you for your submission.", Toast.LENGTH_SHORT).show();
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                });
 
 
 
