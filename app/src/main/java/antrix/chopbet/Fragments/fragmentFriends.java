@@ -265,6 +265,7 @@ public class fragmentFriends extends Fragment {
             super(itemView);
 
             name = (TextView)itemView.findViewById(R.id.name);
+            CircleImageView profileImage;
 
         }
 

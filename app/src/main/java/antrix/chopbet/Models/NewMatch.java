@@ -8,7 +8,7 @@ public class NewMatch {
     private String playerOne;
     private String playerTwo;
     private String betAmount;
-    private String betFee;
+    private double betFee;
     private long betDate;
     private long index;
     private String betStatus;
@@ -16,13 +16,14 @@ public class NewMatch {
     private String betGame;
     private String betInternet;
     private String wonOrLost;
+    private Boolean credited;
 
 
     public NewMatch(){
 
     }
 
-    public NewMatch(String matchID, String playerOne, String playerTwo, String betAmount, String betFee, String betConsole, String betGame, String betInternet) {
+    public NewMatch(String matchID, String playerOne, String playerTwo, String betAmount, double betFee, String betConsole, String betGame, String betInternet) {
         this.matchID = matchID;
         this.playerOne = playerOne;
         this.playerTwo = playerTwo;
@@ -36,7 +37,7 @@ public class NewMatch {
         index = -1 * betDate;
     }
 
-    public NewMatch(String matchID, String playerOne, String playerTwo, String betAmount, String betFee, String betConsole, String betGame, String betInternet, String wonOrLost) {
+    public NewMatch(String matchID, String playerOne, String playerTwo, String betAmount, double betFee, String betConsole, String betGame, String betInternet, String wonOrLost) {
         this.matchID = matchID;
         this.playerOne = playerOne;
         this.playerTwo = playerTwo;
@@ -46,6 +47,22 @@ public class NewMatch {
         this.betGame = betGame;
         this.betInternet = betInternet;
         this.wonOrLost = wonOrLost;
+
+        betDate = new Date().getTime();
+        index = -1 * betDate;
+    }
+
+    public NewMatch(String matchID, String playerOne, String playerTwo, String betAmount, double betFee, String betConsole, String betGame, String betInternet, String wonOrLost, Boolean credited) {
+        this.matchID = matchID;
+        this.playerOne = playerOne;
+        this.playerTwo = playerTwo;
+        this.betAmount = betAmount;
+        this.betFee = betFee;
+        this.betConsole = betConsole;
+        this.betGame = betGame;
+        this.betInternet = betInternet;
+        this.wonOrLost = wonOrLost;
+        this.credited = credited;
 
         betDate = new Date().getTime();
         index = -1 * betDate;
@@ -84,11 +101,11 @@ public class NewMatch {
         this.betAmount = betAmount;
     }
 
-    public String getBetFee() {
+    public double getBetFee() {
         return betFee;
     }
 
-    public void setBetFee(String betFee) {
+    public void setBetFee(double betFee) {
         this.betFee = betFee;
     }
 
@@ -146,5 +163,13 @@ public class NewMatch {
 
     public void setWonOrLost(String wonOrLost) {
         this.wonOrLost = wonOrLost;
+    }
+
+    public Boolean getCredited() {
+        return credited;
+    }
+
+    public void setCredited(Boolean credited) {
+        this.credited = credited;
     }
 }

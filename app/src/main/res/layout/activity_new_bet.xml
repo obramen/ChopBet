@@ -86,6 +86,7 @@
 
 
                 <ProgressBar
+                    android:visibility="gone"
                     android:id="@+id/acceptProgressBar"
                     style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="match_parent"
@@ -94,8 +95,9 @@
                     />
 
                 <TextView
+                    android:layout_below="@+id/swipeDecline"
                     android:textColor="@color/black"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="70dp"
                     android:id="@+id/playerTwo"
                     android:padding="10dp"
                     android:textAlignment="center"
@@ -230,7 +232,7 @@
                     android:layout_centerHorizontal="true"
                     android:background="@mipmap/ic_cancel"
                     android:id="@+id/declineButton"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:padding="5dp"
@@ -241,7 +243,8 @@
 
                 <RelativeLayout
                     android:layout_centerHorizontal="true"
-                    android:layout_marginBottom="10dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="70dp"
                     android:layout_above="@+id/swipeAccept"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
@@ -286,7 +289,7 @@
                 </RelativeLayout>
 
                 <in.shadowfax.proswipebutton.ProSwipeButton
-                    android:visibility="visible"
+                    android:visibility="gone"
                     android:id="@+id/swipeAccept"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -294,6 +297,43 @@
                     android:layout_alignParentBottom="true"
                     app:bg_color="@color/green"
                     app:btn_text="Swipe to accept"
+                    app:text_color="@android:color/white"
+                    app:text_size="12sp" />
+
+                <in.shadowfax.proswipebutton.ProSwipeButton
+                    android:visibility="gone"
+                    android:id="@+id/swipeWin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:arrow_color="@color/white"
+                    android:layout_alignParentBottom="true"
+                    app:bg_color="@color/green"
+                    app:btn_text="Swipe if match WON"
+                    app:text_color="@android:color/white"
+                    app:text_size="12sp" />
+
+                <in.shadowfax.proswipebutton.ProSwipeButton
+                    android:visibility="gone"
+                    android:id="@+id/swipeDecline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:arrow_color="@color/white"
+                    android:layout_alignParentTop="true"
+                    app:bg_color="@color/colorPrimary"
+                    app:btn_text="Swipe to decline"
+                    app:text_color="@android:color/white"
+                    app:text_size="12sp" />
+
+
+                <in.shadowfax.proswipebutton.ProSwipeButton
+                    android:visibility="gone"
+                    android:id="@+id/swipeLoss"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:arrow_color="@color/white"
+                    android:layout_alignParentTop="true"
+                    app:bg_color="@color/colorPrimary"
+                    app:btn_text="Swipe if match LOST"
                     app:text_color="@android:color/white"
                     app:text_size="12sp" />
 

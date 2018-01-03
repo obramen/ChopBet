@@ -10,7 +10,9 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
@@ -19,6 +21,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +57,13 @@ import static android.content.ContentValues.TAG;
 
 public class activityChopBet extends BaseActivity {
 
+    private static final String TAG_CHOP_BET = "0";
+    private static final String TAG_FRIENDS = "1";
+    private static final String TAG_HISTORY = "2";
+    private static final String TAG_TRANSACTIONS = "3";
+    private static final String TAG_WALLET = "4";
+
+
     FirebaseAuth.AuthStateListener mAuthListener;
     String myPhoneNumber;
     Context context;
@@ -82,7 +92,10 @@ public class activityChopBet extends BaseActivity {
 
     public String deviceOnlinekey = null;
 
+    ChopBetViewPager chopBetViewPager;
 
+
+    RelativeLayout buttonLayout;
 
     String myUID;
     RNCryptorNative rnCryptorNative;
@@ -128,9 +141,14 @@ public class activityChopBet extends BaseActivity {
                     return true;
             }
             return false;
+
+
+
+
         }
 
     };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,15 +178,8 @@ public class activityChopBet extends BaseActivity {
 
 
 
-
-
-
-
-
-
-
-
     }
+
 
     private void declarations(){
 
@@ -214,6 +225,8 @@ public class activityChopBet extends BaseActivity {
 
         rnCryptorNative = new RNCryptorNative();
 
+        buttonLayout = (RelativeLayout)findViewById(R.id.buttonsLayout);
+
 
 
 
@@ -252,7 +265,7 @@ public class activityChopBet extends BaseActivity {
                     //transaction.replace(R.id.content, new fragmentNewBet()).commit();
 
 
-
+                    dbRef.child("MatchObserver").child(myUserName).child("searchState").removeValue();
                     Intent betIntent = new Intent(activityChopBet.this, activityNewBet.class);
                     betIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     betIntent.putExtra("currentMatchID", currentMatchID);
@@ -260,6 +273,20 @@ public class activityChopBet extends BaseActivity {
                     finish();
                 }
 
+                if (dataSnapshot.child("searchState").getValue() == null){
+
+                    BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+                    navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+                    navigation.setVisibility(View.VISIBLE);
+
+                } else {
+
+                    BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+                    navigation.setOnNavigationItemSelectedListener(null);
+                    navigation.setVisibility(View.INVISIBLE);
+
+
+                }
 
 
 

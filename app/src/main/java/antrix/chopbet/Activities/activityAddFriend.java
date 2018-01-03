@@ -137,11 +137,11 @@ public class activityAddFriend extends BaseActivity{
 
                 if (Objects.equals(searchText.getText().toString().trim(), "")){
 
-                } else if(Objects.equals(searchText.getText().toString().trim(), myUserName)){
+                } else if(Objects.equals(searchText.getText().toString().toLowerCase().trim() , myUserName)){
 
                 }
                 else {
-                    searchFriends(searchText.getText().toString().trim().toLowerCase());
+                    searchFriends(searchText.getText().toString().toLowerCase().trim());
                 }
 
             }
@@ -364,27 +364,19 @@ public class activityAddFriend extends BaseActivity{
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-            if (Objects.equals(searchText.getText().toString().trim().toLowerCase(), "")){
+            if (Objects.equals(searchText.getText().toString().trim(), "")){
 
-            } else if(Objects.equals(searchText.getText().toString().trim(), myUserName)){
+            } else if(Objects.equals(searchText.getText().toString().toLowerCase().trim(), myUserName)){
 
             }
             else {
-                searchFriends(searchText.getText().toString().trim());
+                searchFriends(searchText.getText().toString().toLowerCase().trim());
             }
 
             return true;
         }
         return super.dispatchKeyEvent(e);
     }
-
-
-
-
-
-
-
-
 
 
 

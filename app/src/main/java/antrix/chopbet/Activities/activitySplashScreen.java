@@ -37,7 +37,7 @@ public class activitySplashScreen extends Activity {
 
         //persistence = new Persistence();
 
-        startService(new Intent(getBaseContext(), NotificationService.class));
+        //startService(new Intent(getBaseContext(), NotificationService.class));
 
 
 

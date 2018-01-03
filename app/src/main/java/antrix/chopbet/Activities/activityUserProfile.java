@@ -404,7 +404,7 @@ public class activityUserProfile extends BaseActivity{
 
 
 
-                if (Objects.equals(myUserName, model.getPlayerOne())) {
+                if (Objects.equals(userName, model.getPlayerOne())) {
 
                     name.setText(model.getPlayerTwo());
 
@@ -441,7 +441,7 @@ public class activityUserProfile extends BaseActivity{
 
 
 
-                } else if (Objects.equals(myUserName, model.getPlayerTwo())) {
+                } else if (Objects.equals(userName, model.getPlayerTwo())) {
                     name.setText(model.getPlayerOne());
 
                     //matchTextColours(model.getMatchID());
@@ -532,6 +532,7 @@ public class activityUserProfile extends BaseActivity{
                     public void onClick(View v) {
                         Intent intent = new Intent(context, activityBetDetails.class);
                         intent.putExtra("matchID", model.getMatchID());
+                        intent.putExtra("username", userName);
                         startActivity(intent);
                     }
                 });

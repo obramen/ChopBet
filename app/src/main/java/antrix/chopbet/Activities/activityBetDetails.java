@@ -32,6 +32,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.Locale;
 import java.util.Objects;
 
 import antrix.chopbet.BetClasses.BaseActivity;
@@ -121,10 +122,12 @@ public class activityBetDetails extends BaseActivity{
 
         listView = (ListView)findViewById(R.id.list_BetDetails);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        myUserName = sharedPreferences.getString("myUserName", null);
+        //myUserName = sharedPreferences.getString("myUserName", null);
 
         bundle = getIntent().getExtras();
+
         currentMatchID = bundle.getString("matchID");
+        currentMatchID = bundle.getString("username");
 
         query = dbRef.child("Matches").child(myUserName).orderByChild("matchID").equalTo(currentMatchID);
 
@@ -157,7 +160,7 @@ public class activityBetDetails extends BaseActivity{
                 TextView topAmount = (TextView)v.findViewById(R.id.topAmount);
                 TextView fee = (TextView)v.findViewById(R.id.fee);
                 final TextView report = (TextView)v.findViewById(R.id.report);
-                TextView dispute = (TextView)v.findViewById(R.id.dispute);
+                final TextView dispute = (TextView)v.findViewById(R.id.dispute);
 
                 CircleImageView profileImage = (CircleImageView)v.findViewById(R.id.profileImage);
 
@@ -187,7 +190,7 @@ public class activityBetDetails extends BaseActivity{
 
                 wonOrLost.setText(model.getWonOrLost());
 
-                fee.setText(model.getBetFee());
+                fee.setText(String.valueOf(String.format(Locale.UK, "%1.2f", model.getBetFee())));
 
                 if (Objects.equals(model.getWonOrLost(), "WON")){
                     wonOrLost.setTextColor(getResources().getColor(R.color.green));
@@ -257,6 +260,43 @@ public class activityBetDetails extends BaseActivity{
 
 
 
+                dbRef.child("Matches").child(model.getPlayerOne()).child(model.getMatchID()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        /*if(dataSnapshot.child("credited").exists()){
+                            dispute.setVisibility(View.INVISIBLE);
+
+                        } else */if (dataSnapshot.child("resolved").exists()){
+                            //dispute.setVisibility(View.INVISIBLE);
+                            dispute.setText("Resolved");
+                            dispute.setTypeface(null, Typeface.ITALIC);
+                            dispute.setEnabled(false);
+
+                        } else if (dataSnapshot.child("disputed").exists() && dataSnapshot.child("resolved").getValue() == null){
+                            //dispute.setVisibility(View.INVISIBLE);
+                            dispute.setText("Dipute pending");
+                            dispute.setTypeface(null, Typeface.ITALIC);
+                            dispute.setEnabled(false);
+
+                        } else {
+
+                            //dispute.setVisibility(View.VISIBLE);
+                            dispute.setText("DISPUTE");
+                            dispute.setTypeface(null, Typeface.NORMAL);
+                            dispute.setEnabled(true);
+                        }
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+
 
                 dispute.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -265,18 +305,20 @@ public class activityBetDetails extends BaseActivity{
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                                if(dataSnapshot.child("credited").exists()){
+                                /*if(dataSnapshot.child("credited").exists()){
 
                                     Toast.makeText(activityBetDetails.this, "Match has already been credited, you can no longer dispute it", Toast.LENGTH_SHORT).show();
 
-                                } else if (dataSnapshot.child("resolved").exists()){
+                                } else */if (dataSnapshot.child("resolved").exists()){
                                     Toast.makeText(activityBetDetails.this, "Match has been resolved", Toast.LENGTH_SHORT).show();
                                 } else if (dataSnapshot.child("disputed").exists() && dataSnapshot.child("resolved").getValue() == null){
+                                    //dispute.setVisibility(View.INVISIBLE);
                                     Toast.makeText(activityBetDetails.this, "Dispute pending", Toast.LENGTH_SHORT).show();
                                 } else {
                                     dbRef.child("Matches").child(model.getPlayerOne()).child(model.getMatchID()).child("disputed").setValue(true);
                                     dbRef.child("Matches").child(model.getPlayerTwo()).child(model.getMatchID()).child("disputed").setValue(true);
                                     Toast.makeText(activityBetDetails.this, "Match disputed successfully", Toast.LENGTH_SHORT).show();
+                                    //dispute.setVisibility(View.INVISIBLE);
                                 }
 
 
@@ -294,15 +336,27 @@ public class activityBetDetails extends BaseActivity{
                 report.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        dbRef.child("UserInfo").child(name.getText().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        dbRef.child("UserReports").child(name.getText().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                                Integer reports = Integer.parseInt(dataSnapshot.child("reports").getValue().toString());
-                                reports = reports + 1;
-                                dbRef.child("UserInfo").child(name.getText().toString()).child("reports").setValue(reports);
+                                if (dataSnapshot.getValue() == null){
+                                    dbRef.child("UserReports").child(name.getText().toString()).child("reports").setValue(1);
 
-                                Toast.makeText(activityBetDetails.this, "Thank you for your submission.", Toast.LENGTH_SHORT).show();
+                                    report.setVisibility(View.INVISIBLE);
+                                    Toast.makeText(activityBetDetails.this, "Thank you for your submission.", Toast.LENGTH_SHORT).show();
+
+                                }else {
+
+                                    Integer reports = Integer.parseInt(dataSnapshot.child("reports").getValue().toString());
+                                    reports = reports + 1;
+                                    dbRef.child("UserReports").child(name.getText().toString()).child("reports").setValue(reports);
+
+                                    report.setVisibility(View.GONE);
+
+                                    Toast.makeText(activityBetDetails.this, "Thank you for your submission.", Toast.LENGTH_SHORT).show();
+
+                                }
 
                             }
 

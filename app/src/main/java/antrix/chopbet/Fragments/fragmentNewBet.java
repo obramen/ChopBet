@@ -430,7 +430,7 @@ public class fragmentNewBet extends Fragment {
 
 
                                     //String matchKey = dbRef.child("Matches").child(myUserName).push().getKey();
-                                    NewMatch newMatch = new NewMatch(currentMatchID, myUserName, playerTwoUserName, xAmount, "Fee", xConsole, xGame, xInternet, "Pending");
+                                    NewMatch newMatch = new NewMatch(currentMatchID, myUserName, playerTwoUserName, xAmount, 0, xConsole, xGame, xInternet, "Pending");
 
 
 

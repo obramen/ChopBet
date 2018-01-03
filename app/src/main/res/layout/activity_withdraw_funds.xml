@@ -8,6 +8,51 @@
     android:background="@color/white"
     tools:context="antrix.chopbet.Activities.activityAddFunds">
 
+
+    <RelativeLayout
+        android:visibility="visible"
+        android:paddingTop="10dp"
+        android:id="@+id/oldCardLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/profileImage1"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentStart="true"
+                android:layout_margin="10dp"
+                android:layout_marginStart="15dp"
+                android:src="@drawable/flag_ghana"
+                app:civ_border_color="#EEE"
+                app:civ_border_width="2dp"
+                app:civ_fill_color="@color/colorAccent" />
+
+            <TextView
+                android:textSize="14sp"
+                android:id="@+id/phoneNumberTextView"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/profileImage1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+        </RelativeLayout>
+
+
+
+
+
+
+
+    </RelativeLayout>
+
+
     <TextView
         android:layout_marginTop="10dp"
         android:id="@+id/userNameTextView"
@@ -19,15 +64,15 @@
         android:textColor="@color/black" />
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="ChopBet Wallet"
         android:layout_marginTop="5dp"
-        android:textStyle="italic"
         android:gravity="center"
+        android:text="ChopBet Wallet"
+        android:textColor="@color/selector"
         android:textSize="13sp"
-        android:textColor="@color/selector" />
-
+        android:textStyle="italic" />
 
 
     <EditText

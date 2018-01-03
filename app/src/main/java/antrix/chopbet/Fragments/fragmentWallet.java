@@ -27,6 +27,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Locale;
+
 import antrix.chopbet.Activities.activityAddFunds;
 import antrix.chopbet.BetClasses.ConfirmDialog;
 import antrix.chopbet.Models.NewCard;
@@ -160,6 +162,7 @@ public class fragmentWallet extends Fragment {
             @Override
             public void onClick(View v) {
                 fundsSelector.setVisibility(View.VISIBLE);
+                fundsSelector.setBackgroundColor(getResources().getColor(R.color.divider));
                 addFundsSelector.setVisibility(View.VISIBLE);
                 //withdrawFundsSelector.setVisibility(View.GONE);
                 cancelText.setVisibility(View.VISIBLE);
@@ -173,6 +176,7 @@ public class fragmentWallet extends Fragment {
             @Override
             public void onClick(View v) {
                 fundsSelector.setVisibility(View.VISIBLE);
+                fundsSelector.setBackgroundColor(getResources().getColor(R.color.selector));
                 addFundsSelector.setVisibility(View.VISIBLE);
                 //withdrawFundsSelector.setVisibility(View.VISIBLE);
                 cancelText.setVisibility(View.VISIBLE);
@@ -240,8 +244,7 @@ public class fragmentWallet extends Fragment {
                 if(dataSnapshotB.hasChildren()) {
 
 
-                    balance.setText(String.valueOf("GHS " + dataSnapshotB.child("Bounty").getValue().toString()));
-
+                    balance.setText(String.valueOf("GHS " + String.format(Locale.UK, "%1.2f", Double.valueOf(dataSnapshotB.child("Bounty").getValue().toString()))));
 
 
                 }

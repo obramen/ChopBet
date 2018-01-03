@@ -98,7 +98,7 @@ public class activityNewBet extends AppCompatActivity {
 
     BetUtilities betUtilities;
 
-    ProSwipeButton swipeAccept;
+    ProSwipeButton swipeAccept, swipeDecline, swipeWin, swipeLoss;
 
 
 
@@ -171,6 +171,9 @@ public class activityNewBet extends AppCompatActivity {
         playerTwoTextView = (TextView)findViewById(R.id.playerTwo);
 
         swipeAccept = (ProSwipeButton)findViewById(R.id.swipeAccept);
+        swipeDecline = (ProSwipeButton)findViewById(R.id.swipeDecline);
+        swipeWin = (ProSwipeButton)findViewById(R.id.swipeWin);
+        swipeLoss = (ProSwipeButton)findViewById(R.id.swipeLoss);
 
 
 
@@ -277,17 +280,21 @@ public class activityNewBet extends AppCompatActivity {
                     loadActionbar("New Match");
 
 
-                    wonMatchButton.setVisibility(View.GONE);
-                    lostMatchButton.setVisibility(View.GONE);
-                    wonText.setVisibility(View.GONE);
-                    lostText.setVisibility(View.GONE);
+                    //wonMatchButton.setVisibility(View.GONE);
+                    //lostMatchButton.setVisibility(View.GONE);
+                    //wonText.setVisibility(View.GONE);
+                    //lostText.setVisibility(View.GONE);
 
                     //acceptButton.setVisibility(View.VISIBLE);
                     swipeAccept.setVisibility(View.VISIBLE);
+                    swipeDecline.setVisibility(View.VISIBLE);
+                    swipeWin.setVisibility(View.GONE);
+                    swipeLoss.setVisibility(View.GONE);
+
                     playerOneRadioButton.setVisibility(View.VISIBLE);
                     playerTwoRadioButton.setVisibility(View.VISIBLE);
-                    declineButton.setVisibility(View.VISIBLE);
-                    acceptProgressBar.setVisibility(View.VISIBLE);
+                    //declineButton.setVisibility(View.VISIBLE);
+                    //acceptProgressBar.setVisibility(View.VISIBLE);
                     //acceptText.setVisibility(View.VISIBLE);
 
                     pendingTextColours(currentMatchID, console, game, amount, internet);
@@ -299,18 +306,25 @@ public class activityNewBet extends AppCompatActivity {
                     winsAndLosses();
                     loadActionbar("Match in Progress");
 
-                    wonMatchButton.setVisibility(View.VISIBLE);
-                    lostMatchButton.setVisibility(View.VISIBLE);
-                    wonText.setVisibility(View.VISIBLE);
-                    lostText.setVisibility(View.VISIBLE);
+                    //wonMatchButton.setVisibility(View.VISIBLE);
+                    //lostMatchButton.setVisibility(View.VISIBLE);
+                    //wonText.setVisibility(View.VISIBLE);
+                    //lostText.setVisibility(View.VISIBLE);
 
                     //acceptButton.setVisibility(View.GONE);
-                    swipeAccept.setVisibility(View.INVISIBLE);
+
+
+                    swipeWin.setVisibility(View.VISIBLE);
+                    swipeLoss.setVisibility(View.VISIBLE);
+                    swipeAccept.setVisibility(View.GONE);
+                    swipeDecline.setVisibility(View.GONE);
                     playerOneRadioButton.setVisibility(View.GONE);
                     playerTwoRadioButton.setVisibility(View.GONE);
-                    declineButton.setVisibility(View.GONE);
-                    acceptProgressBar.setVisibility(View.GONE);
+                    //declineButton.setVisibility(View.GONE);
+                    //acceptProgressBar.setVisibility(View.GONE);
                     //acceptText.setVisibility(View.GONE);
+
+
 
 
                     //dbRef.child("PendingMatches").child(myUserName).removeValue();
@@ -380,11 +394,11 @@ public class activityNewBet extends AppCompatActivity {
 
                             if (Objects.equals(dataSnapshot.child("playerOne").getValue().toString(), myUserName)){
                                 playerTwoUserName = dataSnapshot.child("playerTwo").getValue().toString();
-                                playerTwoTextView.setText(playerTwoUserName);
+                                playerTwoTextView.setText(myUserName + " vs " + playerTwoUserName);
 
                             } else{
                                 playerTwoUserName = dataSnapshot.child("playerOne").getValue().toString();
-                                playerTwoTextView.setText(playerTwoUserName);
+                                playerTwoTextView.setText(myUserName + " vs " + playerTwoUserName);
 
                             }
 
@@ -446,12 +460,16 @@ public class activityNewBet extends AppCompatActivity {
                                     }
                                     playerOneRadioButton.setChecked(true);
                                     p1Accept = "true";
+                                    swipeAccept.setVisibility(View.GONE);
+                                    swipeDecline.setVisibility(View.GONE);
                                 } else if (Objects.equals(playerOneBetStatus, "false")) {
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                         playerOneRadioButton.setButtonTintList(ColorStateList.valueOf(declineColor));
                                     }
                                     playerOneRadioButton.setChecked(true);
                                     p1Accept = "false";
+                                    swipeAccept.setVisibility(View.GONE);
+                                    swipeDecline.setVisibility(View.GONE);
 
 
                                 }
@@ -499,94 +517,6 @@ public class activityNewBet extends AppCompatActivity {
                             });
 
 
-/*
-
-                            if ((Objects.equals(p1Accept, "true")) && (Objects.equals(p2Accept, "false"))) {
-
-                                //dbRef.child("PendingMatches").child(myUserName).child(currentMatchID).removeEventListener(listener);
-                                //dbRef.child("PendingMatches").child(playerTwoUserName).child(currentMatchID).removeEventListener(listenerB);
-                                //dbRef.child("PendingMatches").child(myUserName).removeValue();
-                                dbRef.child("MatchObserver").child(myUserName).child("matchStatus").setValue("Open");
-                                dbRef.child("MatchObserver").child(playerTwoUserName).child("matchStatus").setValue("Open");
-
-                            } else if ((Objects.equals(p1Accept, "false")) && (Objects.equals(p2Accept, "true"))) {
-
-                                //dbRef.child("PendingMatches").child(myUserName).child(currentMatchID).removeEventListener(listener);
-                                //dbRef.child("PendingMatches").child(playerTwoUserName).child(currentMatchID).removeEventListener(listenerB);
-
-                                //dbRef.child("PendingMatches").child(myUserName).removeValue();
-                                dbRef.child("MatchObserver").child(myUserName).child("matchStatus").setValue("Open");
-                                dbRef.child("MatchObserver").child(playerTwoUserName).child("matchStatus").setValue("Open");
-
-                            } else if ((Objects.equals(p1Accept, "false")) && (Objects.equals(p2Accept, "false"))) {
-
-                                //dbRef.child("PendingMatches").child(myUserName).child(currentMatchID).removeEventListener(listener);
-                                //dbRef.child("PendingMatches").child(playerTwoUserName).child(currentMatchID).removeEventListener(listenerB);
-
-                                //dbRef.child("PendingMatches").child(myUserName).removeValue();
-                                dbRef.child("MatchObserver").child(myUserName).child("matchStatus").setValue("Open");
-                                dbRef.child("MatchObserver").child(playerTwoUserName).child("matchStatus").setValue("Open");
-
-                            }else if ((Objects.equals(p1Accept, "false")) && (Objects.equals(p2Accept, "null"))) {
-
-                                //dbRef.child("PendingMatches").child(myUserName).child(currentMatchID).removeEventListener(listener);
-                                //dbRef.child("PendingMatches").child(playerTwoUserName).child(currentMatchID).removeEventListener(listenerB);
-
-                                //dbRef.child("PendingMatches").child(myUserName).removeValue();
-                                dbRef.child("MatchObserver").child(myUserName).child("matchStatus").setValue("Open");
-                                dbRef.child("MatchObserver").child(playerTwoUserName).child("matchStatus").setValue("Open");
-
-                            }else if ((Objects.equals(p1Accept, "null")) && (Objects.equals(p2Accept, "false"))) {
-
-                                //dbRef.child("PendingMatches").child(myUserName).child(currentMatchID).removeEventListener(listener);
-                                //dbRef.child("PendingMatches").child(playerTwoUserName).child(currentMatchID).removeEventListener(listenerB);
-
-                                //dbRef.child("PendingMatches").child(myUserName).removeValue();
-                                dbRef.child("MatchObserver").child(myUserName).child("matchStatus").setValue("Open");
-                                dbRef.child("MatchObserver").child(playerTwoUserName).child("matchStatus").setValue("Open");
-
-                            }else if ((Objects.equals(p1Accept, "true")) && (Objects.equals(p2Accept, "true"))) {
-
-
-                                //if (Objects.equals(myUserName, dataSnapshot.child("playerOne").getValue().toString())) {
-
-
-
-                                    dbRef.child("MatchObserver").child(playerTwoUserName).child("matchAccepted").setValue("true");
-                                    dbRef.child("MatchObserver").child(myUserName).child("matchAccepted").setValue("true");
-
-                                    String xAmount = dataSnapshot.child("betAmount").getValue().toString();
-                                    String xConsole = dataSnapshot.child("betConsole").getValue().toString();
-                                    String xGame = dataSnapshot.child("betGame").getValue().toString();
-                                    String xInternet = dataSnapshot.child("betInternet").getValue().toString();
-
-
-                                    //String matchKey = dbRef.child("Matches").child(myUserName).push().getKey();
-                                    NewMatch newMatch = new NewMatch(currentMatchID, myUserName, playerTwoUserName, xAmount, "Fee", xConsole, xGame, xInternet, "Pending");
-
-
-
-
-                                    dbRef.child("Matches").child(myUserName).child(currentMatchID).setValue(newMatch);
-                                    dbRef.child("Matches").child(playerTwoUserName).child(currentMatchID).setValue(newMatch);
-
-
-
-                                    dbRef.child("PendingMatches").child(myUserName).child(currentMatchID).removeEventListener(listener);
-
-
-
-
-
-                                //}
-
-
-                            }
-
-*/
-
-
-
 
 
 
@@ -611,32 +541,44 @@ public class activityNewBet extends AppCompatActivity {
 
     private void loadProfileImage(final String string, final CircleImageView circleImageView){
 
+        try{
 
-        dbRef.child("profileImageTimestamp").child(string)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
+            dbRef.child("profileImageTimestamp").child(string)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
 
-                        if (dataSnapshot.hasChildren()){
+                            if(!isDestroyed()){
+                                if (dataSnapshot.hasChildren()){
 
-                            String timestamp = dataSnapshot.child(string).getValue().toString();
-                            StorageReference profileStorageRef = FirebaseStorage.getInstance().getReference()
-                                    .child("ProfileImages").child(string).child(string);
+                                    String timestamp = dataSnapshot.child(string).getValue().toString();
+                                    StorageReference profileStorageRef = FirebaseStorage.getInstance().getReference()
+                                            .child("ProfileImages").child(string).child(string);
 
 
-                            betUtilities.CircleImageFromFirebase(context, profileStorageRef, circleImageView, timestamp);
+                                    betUtilities.CircleImageFromFirebase(context, profileStorageRef, circleImageView, timestamp);
+
+                                }
+                            }
+
+
+
+
 
                         }
 
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+        }catch(Exception e){
+            Log.d(TAG, "loadProfileImage: " + e);
+
+        }
 
 
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
 
 
 
@@ -680,11 +622,9 @@ public class activityNewBet extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-
                         dbRef.child("PendingMatches").child(myUserName).child(currentMatchID).child("betStatus").setValue("true").addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                acceptButton.setEnabled(false);
 
                                 dbRef.child("MatchObserver").child(myUserName).child("keyString").setValue(goldKey);
                                 Toast.makeText(context, "Match Accepted", Toast.LENGTH_SHORT).show();
@@ -692,10 +632,67 @@ public class activityNewBet extends AppCompatActivity {
                         });
                         // task success! show TICK icon in ProSwipeButton
                         swipeAccept.showResultIcon(true); // false if task failed
+
                     }
                 }, 2000);
             }
         });
+
+        swipeWin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        dbRef.child("Matches").child(myUserName).child(currentMatchID).child("scoreIntent").setValue("WON");
+                        swipeWin.showResultIcon(true);
+
+                    }
+                }, 2000);
+
+            }
+        });
+
+
+        swipeDecline.setOnSwipeListener(new ProSwipeButton.OnSwipeListener() {
+            @Override
+            public void onSwipeConfirm() {
+                // user has swiped the btn. Perform your async operation now
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        dbRef.child("PendingMatches").child(myUserName).child(currentMatchID).child("betStatus").setValue("false").addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                acceptButton.setEnabled(false);
+                                Toast.makeText(context, "Match Declined", Toast.LENGTH_SHORT).show();
+
+                            }
+                        });
+                        // task success! show TICK icon in ProSwipeButton
+                        swipeDecline.showResultIcon(false); // false if task failed
+
+                    }
+                }, 2000);
+            }
+        });
+
+        swipeLoss.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        dbRef.child("Matches").child(myUserName).child(currentMatchID).child("scoreIntent").setValue("LOST");
+                        swipeLoss.showResultIcon(false);
+                    }
+                }, 2000);
+            }
+        });
+
+
 
 
         declineButton.setOnClickListener(new View.OnClickListener() {
@@ -743,7 +740,7 @@ public class activityNewBet extends AppCompatActivity {
 
 
 
-                dbRef.child("Matches").child(myUserName).child(currentMatchID).child("wonOrLost").setValue("WON");
+                dbRef.child("Matches").child(myUserName).child(currentMatchID).child("scoreIntent").setValue("WON");
 
                 progressDialog.dismiss();
 
@@ -775,7 +772,7 @@ public class activityNewBet extends AppCompatActivity {
             public void onClick(View v) {
 
 
-                dbRef.child("Matches").child(playerTwoUserName).child(currentMatchID).child("wonOrLost").setValue("WON");
+                dbRef.child("Matches").child(myUserName).child(currentMatchID).child("scoreIntent").setValue("LOST");
 
   /*
                 dbRef.child("Matches").child(myUserName).child(currentMatchID).child("wonOrLost").setValue("LOST");
@@ -1281,8 +1278,8 @@ public class activityNewBet extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        dbRef.child("PendingMatches").child(myUserName).child(currentMatchID).removeEventListener(listener);
-        dbRef.child("PendingMatches").child(playerTwoUserName).child(currentMatchID).removeEventListener(listenerB);
+        //dbRef.child("PendingMatches").child(myUserName).child(currentMatchID).removeEventListener(listener);
+        //dbRef.child("PendingMatches").child(playerTwoUserName).child(currentMatchID).removeEventListener(listenerB);
     }
 
 

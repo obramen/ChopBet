@@ -13,6 +13,7 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
@@ -32,11 +33,14 @@ import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import antrix.chopbet.Activities.activityBetDetails;
 import antrix.chopbet.Activities.activityTransactionDetails;
-import antrix.chopbet.Models.NewMatch;
 import antrix.chopbet.Models.NewTransaction;
 import antrix.chopbet.R;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -58,6 +62,7 @@ public class fragmentTransactions extends Fragment {
     Activity activity;
 
     CharSequence previousItemDate = null;
+    CharSequence compareDate = null;
 
     SharedPreferences sharedPreferences;
 
@@ -72,6 +77,14 @@ public class fragmentTransactions extends Fragment {
     private String goldKey = null;
 
     String regenRune, invisRune;
+
+    boolean isLoading = false;
+    int startPoint = 0;
+
+    int loadingPosition = 0;
+
+
+
 
     @Nullable
     @Override
@@ -130,6 +143,8 @@ public class fragmentTransactions extends Fragment {
 
 
 
+
+
     }
 
 
@@ -146,7 +161,14 @@ public class fragmentTransactions extends Fragment {
 
                 goldKey = rnCryptorNative.decrypt(diamondKey, myUID);
 
-                loadHistory();
+
+
+                query = dbRef.child("Xperience").child(goldKey).child("Injection").orderByChild("index");//.limitToFirst(10);
+
+
+                //loadMore();
+                loadHistory(query);
+                ///loadMore();
             }
 
             @Override
@@ -158,14 +180,19 @@ public class fragmentTransactions extends Fragment {
     }
 
 
-    private void loadHistory(){
+    private void loadHistory(Query xQuery){
 
 
-        query = dbRef.child("Xperience").child(goldKey).child("Injection").orderByChild("index").limitToFirst(10);
 
-        adapter = new FirebaseListAdapter<NewTransaction>(activity, NewTransaction.class, R.layout.list_transactions, query) {
+
+        adapter = new FirebaseListAdapter<NewTransaction>(activity, NewTransaction.class, R.layout.list_transactions, xQuery) {
             @Override
             protected void populateView(View v, final NewTransaction model, int position) {
+                isLoading = true;
+
+
+
+
 
                 TextView date = (TextView)v.findViewById(R.id.date);
                 TextView transactionType = (TextView)v.findViewById(R.id.transactionType);
@@ -268,7 +295,7 @@ public class fragmentTransactions extends Fragment {
 
 
 
-                CharSequence compareDate = DateFormat.format(getString(R.string.dateformat), model.getDate());
+                compareDate = DateFormat.format(getString(R.string.dateformat), model.getDate());
 
 
                 ////// SETTING THE DATE
@@ -341,17 +368,110 @@ public class fragmentTransactions extends Fragment {
 
 
 
+                isLoading = false;
             }
 
 
-        };
 
+
+        };
         listView.setAdapter(adapter);
 
 
 
 
+    }
 
+    private void loadMore(){
+
+        loadHistory(query);
+        listView.setAdapter(adapter);
+
+
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+
+            private int currentVisibleItemCount;
+            private int currentScrollState;
+            private int currentFirstVisibleItem;
+            private int totalItem;
+
+
+
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+                //Toast.makeText(context, "Scroll State changed", Toast.LENGTH_SHORT).show();
+
+
+                this.currentScrollState = scrollState;
+                //this.isScrollCompleted();
+
+                if (totalItem - currentFirstVisibleItem == currentVisibleItemCount && this.currentScrollState == SCROLL_STATE_IDLE){
+                    startPoint += 10;
+                    //query = dbRef.child("Xperience").child(goldKey).child("Injection").orderByChild("index").limitToFirst(startPoint);
+                    //loadHistory(query);
+                    //adapter.notifyDataSetChanged();
+                    //listView.setAdapter(adapter);
+
+
+
+                }
+
+
+
+
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+
+
+                this.currentFirstVisibleItem = firstVisibleItem;
+                this.currentVisibleItemCount = visibleItemCount;
+                this.totalItem = totalItemCount;
+
+
+
+                if (totalItem - currentFirstVisibleItem == currentVisibleItemCount && this.currentScrollState == SCROLL_STATE_IDLE){
+                    startPoint += 10;
+                    query = dbRef.child("Xperience").child(goldKey).child("Injection").orderByChild("index").limitToFirst(startPoint);
+                    loadHistory(query);
+                    adapter.notifyDataSetChanged();
+
+
+
+                }
+
+
+
+
+
+
+               /* if(firstVisibleItem == 0){
+
+
+
+
+                    //loadHistory(mQuery);
+
+
+
+                } else{
+                    *//*startPoint += 10;
+                    Query mQuery = dbRef.child("Xperience").child(goldKey).child("Injection").orderByChild("index").limitToFirst(startPoint);
+                    loadHistory(mQuery);*//*
+                }
+*/
+
+            }
+
+
+
+
+        });
     }
 
 
