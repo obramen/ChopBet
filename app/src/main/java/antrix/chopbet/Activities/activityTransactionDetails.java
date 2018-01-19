@@ -123,6 +123,7 @@ public class activityTransactionDetails extends BaseActivity {
                 TextView topAmount = (TextView)v.findViewById(R.id.topAmount);
                 TextView fee = (TextView)v.findViewById(R.id.fee);
                 TextView transactionResult = (TextView)v.findViewById(R.id.transactionResult);
+                TextView phoneNumber = (TextView)v.findViewById(R.id.phoneNumber);
 
 
                 transactionID.setText(model.getTransactionID());
@@ -131,10 +132,14 @@ public class activityTransactionDetails extends BaseActivity {
                 bottomAmount.setText("GHS " + model.getAmount());
                 topAmount.setText("GHS " + model.getAmount());
 
+                phoneNumber.setText(model.getPhoneNumber());
+
 
                 transactionResult.setText(model.getResult());
 
                 fee.setText(model.getFee());
+
+
 
 
                 if(DateUtils.isToday(model.getDate())){
@@ -144,6 +149,24 @@ public class activityTransactionDetails extends BaseActivity {
                 }
 
 
+                switch (model.getResult()){
+
+                    case "Success":
+                        transactionResult.setTextColor(getResources().getColor(R.color.green));
+
+                        break;
+
+                    case "Failed":
+                        transactionResult.setTextColor(getResources().getColor(R.color.colorPrimary));
+                        break;
+                    case "New Transaction":
+                        transactionResult.setTextColor(getResources().getColor(R.color.colorGameFIFA));
+                        break;
+                    default:
+                        transactionResult.setTextColor(getResources().getColor(R.color.black));
+
+
+                }
 
 
 

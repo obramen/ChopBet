@@ -304,11 +304,14 @@ public class fragmentTransactions extends Fragment {
                     if(DateUtils.isToday(model.getDate())){
                         date.setText("Today");
                         previousItemDate = compareDate;
+
                     } else {
                         date.setText(DateFormat.format(getString(R.string.dateformat), model.getDate()));
                         previousItemDate = compareDate;
 
                     }
+                    date.setVisibility(View.VISIBLE);
+
 
                 }
                 else if (Objects.equals(previousItemDate, compareDate)){
@@ -321,11 +324,14 @@ public class fragmentTransactions extends Fragment {
                     if(DateUtils.isToday(model.getDate())){
                         date.setText("Today");
                         previousItemDate = compareDate;
+
                     } else {
                         date.setText(DateFormat.format(getString(R.string.dateformat), model.getDate()));
                         previousItemDate = compareDate;
 
                     }
+                    date.setVisibility(View.VISIBLE);
+
 
                 }
 

@@ -456,7 +456,7 @@ public class activityEditUsername extends BaseActivity implements ImageUtils.Ima
         this.file_name=filename;
         profileImage.setImageBitmap(file);
 
-        String path =  Environment.getExternalStorageDirectory() + File.separator + "ImageAttach" + File.separator;
+        String path =  Environment.getExternalStorageDirectory() + File.separator + "ChopBet" + File.separator;
         imageUtils.createImage(file,filename,path,false);
 
 

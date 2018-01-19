@@ -90,7 +90,7 @@ public class activityNewBet extends AppCompatActivity {
     ProgressBar acceptProgressBar;
 
     Button wonMatchButton, lostMatchButton;
-    TextView wonText, lostText, winsTextView, lossesTextView;
+    TextView wonText, lostText, winsTextView, lossesTextView, winPercent;
 
     RNCryptorNative rnCryptorNative;
     private String diamondKey = null;
@@ -99,6 +99,8 @@ public class activityNewBet extends AppCompatActivity {
     BetUtilities betUtilities;
 
     ProSwipeButton swipeAccept, swipeDecline, swipeWin, swipeLoss;
+
+    long myWins, myLosses;
 
 
 
@@ -149,6 +151,7 @@ public class activityNewBet extends AppCompatActivity {
         acceptText = (TextView) findViewById(R.id.acceptText);
         winsTextView = (TextView) findViewById(R.id.winsTextView);
         lossesTextView = (TextView) findViewById(R.id.lossesTextView);
+        winPercent = (TextView) findViewById(R.id.winPercent);
 
 
         console = (TextView)findViewById(R.id.console);
@@ -632,6 +635,8 @@ public class activityNewBet extends AppCompatActivity {
                         });
                         // task success! show TICK icon in ProSwipeButton
                         swipeAccept.showResultIcon(true); // false if task failed
+                        swipeAccept.setVisibility(View.GONE);
+
 
                     }
                 }, 2000);
@@ -673,6 +678,8 @@ public class activityNewBet extends AppCompatActivity {
                         });
                         // task success! show TICK icon in ProSwipeButton
                         swipeDecline.showResultIcon(false); // false if task failed
+                        swipeDecline.setVisibility(View.GONE);
+
 
                     }
                 }, 2000);
@@ -687,6 +694,7 @@ public class activityNewBet extends AppCompatActivity {
                     public void run() {
                         dbRef.child("Matches").child(myUserName).child(currentMatchID).child("scoreIntent").setValue("LOST");
                         swipeLoss.showResultIcon(false);
+
                     }
                 }, 2000);
             }
@@ -1020,17 +1028,23 @@ public class activityNewBet extends AppCompatActivity {
 
                     if (Objects.equals(dataSnapshot.child("playerOne").getValue().toString(), myUserName)){
                         playerTwoUserName = dataSnapshot.child("playerTwo").getValue().toString();
-                        playerTwoTextView.setText(playerTwoUserName);
+                        playerTwoTextView.setText("Opponent: " + playerTwoUserName);
 
                     } else{
                         playerTwoUserName = dataSnapshot.child("playerOne").getValue().toString();
-                        playerTwoTextView.setText(playerTwoUserName);
+                        playerTwoTextView.setText("Opponent: " + playerTwoUserName);
 
                     }
 
+                    loadProfileImage(playerTwoUserName, playerTwoImageView);
 
 
 
+
+
+
+
+                    ///////////// OPPONENT WINS AND LOSSES
 
                     dbRef.child("Matches").child(playerTwoUserName).orderByChild("wonOrLost").equalTo("WON").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -1065,7 +1079,95 @@ public class activityNewBet extends AppCompatActivity {
                     });
 
 
-                    loadProfileImage(playerTwoUserName, playerTwoImageView);
+
+
+
+
+
+
+                    ///////////// MY WINS AND LOSSES
+
+                    dbRef.child("Matches").child(myUserName).orderByChild("wonOrLost").equalTo("WON").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            myWins = dataSnapshot.getChildrenCount();
+
+
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+                    dbRef.child("Matches").child(myUserName).orderByChild("wonOrLost").equalTo("LOST").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            myLosses = dataSnapshot.getChildrenCount();
+
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+
+
+
+
+                    long opponentWins = Long.parseLong(winsTextView.getText().toString());
+                    long opponentLosses = Long.parseLong(lossesTextView.getText().toString());
+
+                    long opponentTotal = opponentWins + opponentLosses;
+                    long opponentWinRate = (opponentWins / opponentTotal) * 100;
+
+
+                    long myTotal = myWins + myLosses;
+                    long myWinRate = (myWins / myTotal) * 100;
+
+
+                    long winDifference = opponentWinRate - myWinRate;
+                    //long longMatchDifference = opponentTotal - myTotal;
+
+                    if (winDifference < 0) {
+                        winDifference = winDifference * -1;
+
+                        if (winDifference < 20){
+                            winPercent.setText("45%");
+                        } else if (winDifference >= 20 && winDifference < 50){
+                            winPercent.setText("30%");
+                        } else if (winDifference >= 50 && winDifference < 80){
+                            winPercent.setText("15%");
+                        } else if (winDifference >= 80){
+                            winPercent.setText("10%");
+                        }
+
+
+                    } else {
+                        if (winDifference < 20){
+                            winPercent.setText("55%");
+                        } else if (winDifference >= 20 && winDifference < 50){
+                            winPercent.setText("70%");
+                        } else if (winDifference >= 50 && winDifference < 80){
+                            winPercent.setText("85%");
+                        } else if (winDifference >= 80){
+                            winPercent.setText("90%");
+                        }
+
+                    }
+
+
+
+
+
+
 
 
 

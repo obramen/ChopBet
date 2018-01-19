@@ -23,7 +23,7 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="370dp">
+            android:layout_height="420dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -81,13 +81,51 @@
 
 
 
+
+
+
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:text="Phone Number"
+                    android:layout_alignBaseline="@+id/phoneNumber"
+                    android:layout_alignBottom="@+id/phoneNumber"
+                    android:layout_alignStart="@+id/relativeLayout" />
+
+                <TextView
+                    android:id="@+id/phoneNumber"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="10dp"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:layout_marginStart="10dp"
+                    android:textColor="@color/black"
+                    android:text="Phone"/>
+
+
+
+
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
                     android:layout_alignParentBottom="true"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
-                    android:background="@color/divider">
+                    android:background="@color/divider"
+                    android:id="@+id/relativeLayout">
                 </RelativeLayout>
 
 

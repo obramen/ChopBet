@@ -1,27 +1,45 @@
 package antrix.chopbet.Activities;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dx.dxloadingbutton.lib.LoadingButton;
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+
+import java.util.Objects;
 
 import antrix.chopbet.Models.BetBuddy;
+import antrix.chopbet.Models.NewCard;
+import antrix.chopbet.Models.NewTransaction;
 import antrix.chopbet.R;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class activityWithdrawFunds extends AppCompatActivity {
 
@@ -44,14 +62,24 @@ public class activityWithdrawFunds extends AppCompatActivity {
     String myUserName;
     SharedPreferences sharedPreferences;
 
+    private static final String TAG = "TAG";
+
+
 
     Activity activity;
 
-    TextView usernameTextView;
+    TextView usernameTextView, phoneNumberTextView;
     LoadingButton btnNext;
     EditText amountEditText;
 
     Bundle bundle;
+
+    String damageRune, regenRune, invisRune;
+
+    Handler mHandler;
+
+    CircleImageView profileImage1;
+
 
 
     @Override
@@ -63,6 +91,7 @@ public class activityWithdrawFunds extends AppCompatActivity {
         getSupportActionBar().setElevation(0);
 
         declarations();
+        clickers();
 
 
 
@@ -85,14 +114,63 @@ public class activityWithdrawFunds extends AppCompatActivity {
         listView = (ListView)findViewById(R.id.list_Friends);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         usernameTextView = (TextView)findViewById(R.id.userNameTextView);
+        phoneNumberTextView = (TextView)findViewById(R.id.phoneNumberTextView);
         amountEditText = (EditText)findViewById(R.id.amountEditText);
 
         btnNext = (LoadingButton)findViewById(R.id.btnNext);
+
+        profileImage1 = (CircleImageView)findViewById(R.id.profileImage1);
+
+
+        mHandler = new Handler();
+
+
 
 
         myUserName = sharedPreferences.getString("myUserName", null);
         usernameTextView.setText(myUserName);
         bundle = getIntent().getExtras();
+
+        phoneNumberTextView.setText(myPhoneNumber);
+
+
+        dbRef.child("Xplosion").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                damageRune = dataSnapshot.child("damageRune").getValue().toString();
+                regenRune = dataSnapshot.child("regenRune").getValue().toString();
+                invisRune = dataSnapshot.child("invisRune").getValue().toString();
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+        String Channel = bundle.getString("channel");
+
+        switch (Channel){
+
+            case "mtn-gh":
+                profileImage1.setImageResource(R.drawable.mtn);
+                break;
+
+            case "vodafone-gh":
+                profileImage1.setImageResource(R.drawable.vodafone);
+                break;
+
+            case "tigo-gh":
+                profileImage1.setImageResource(R.drawable.tigo);
+                break;
+
+            case "airtel-gh":
+                profileImage1.setImageResource(R.drawable.airtel);
+                break;
+
+        }
 
 
 
@@ -120,10 +198,196 @@ public class activityWithdrawFunds extends AppCompatActivity {
 
 
 
+        hubtelConnect();
+
+
+    }
+
+
+    private void hubtelConnect(){
+
+        if(TextUtils.isEmpty(amountEditText.getText().toString().trim())){
+            Toast.makeText(context, "Enter amount", Toast.LENGTH_SHORT).show();
+        }
+
+        final ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.setMessage("Processing payment...");
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        final String goldKey = bundle.getString("string");
+        final String Channel = bundle.getString("channel");
+        String PhoneNumber = "";
+
+
+        final String key = dbRef.child("Xperience").child(goldKey).child("Rejection").push().getKey();
+
+        //http://requestb.in/1minotz1
+        PhoneNumber = myPhoneNumber.substring(4);
+
+        final String amount = amountEditText.getText().toString();
+        final String merchant = "Hubtel";
+
+        final JsonObject json = new JsonObject();
+        json.addProperty("RecipientName", myUserName);
+        json.addProperty("RecipientMsisdn", PhoneNumber);
+        json.addProperty("CustomerEmail", "");
+        json.addProperty("Channel", Channel);
+        json.addProperty("Amount", amount);
+        json.addProperty("PrimaryCallbackUrl", "http://antrixgaming.com");
+        json.addProperty("SecondaryCallbackUrl", "http://antrixgaming.com");
+        json.addProperty("Description", "Chop-Bet Wallet Topup");
+        json.addProperty("ClientReference", "Chop-Bet");
+        //json.addProperty("Token", "string");
+        json.addProperty("FeesOnCustomer", true);
+
+        final String finalPhoneNumber = PhoneNumber;
+        Ion.with(context)
+                .load(damageRune)
+                .setHeader("Authorization",regenRune)
+                //.setHeader("Host", "api.hubtel.com")
+                //.setHeader("Accept", "application/json")
+                .setHeader("Content-Type", "application/json")
+                .setJsonObjectBody(json)
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+
+                        if (result == null || result.get("ResponseCode").getAsInt() == 4101){
+                            progressDialog.dismiss();
+                            //Snackbar.make(v, "Payment failed, check your connection...", Snackbar.LENGTH_LONG).show();
+                            Toast.makeText(context, "Payment failed, check your connection...", Toast.LENGTH_LONG).show();
+                            amountEditText.setEnabled(true);
+                            btnNext.setEnabled(true);
+                        } else if (result.get("ResponseCode").getAsInt() == 3008){
+                            progressDialog.dismiss();
+                            Toast.makeText(context, "Internal error, please try again in a few minutes", Toast.LENGTH_LONG).show();
+                            finish();
+                        } else {
+                            try {
+
+                                Toast.makeText(context, result.toString(), Toast.LENGTH_LONG).show();
+
+                                JsonObject newTResult = result;    // Converts the string "result" to a JSONObject
+                                String responseCode = newTResult.get("ResponseCode").getAsString();
+
+
+                                JsonObject newTData = newTResult.get("Data").getAsJsonObject();
+
+                                final String transactionId = newTData.get("TransactionId").getAsString();
+
+                                String charges = newTData.get("Charges").getAsString();
+
+                                dbRef.child("Xperience").child(goldKey).child("Rejection").child(key)
+                                        .setValue(new NewTransaction(key, "WITHDRAWAL", amount, charges, merchant, transactionId, finalPhoneNumber, "New Transaction", Channel));
+
+
+
+                                if (Objects.equals(responseCode, "0001")){
+
+                                    mHandler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+
+                                            //String TransactionId = result.get("TransactionId").getAsString();
+                                            Ion.with(getApplicationContext())
+                                                    .load(invisRune + transactionId)
+                                                    .setHeader("Authorization",regenRune)
+                                                    //.setHeader("Host", "api.hubtel.com")
+                                                    //.setHeader("Accept", "application/json")
+                                                    .setHeader("Content-Type", "application/json")
+                                                    .asJsonObject()
+                                                    .setCallback(new FutureCallback<JsonObject>() {
+                                                        @Override
+                                                        public void onCompleted(Exception e, JsonObject result2) {
+                                                            String finalResponseCode = result2.get("ResponseCode").getAsString();
+
+                                                            if (Objects.equals(finalResponseCode, "0000")){
+
+                                                                JsonArray data = result2.get("Data").getAsJsonArray();
+
+
+
+                                                                JsonObject info = data.get(0).getAsJsonObject();
+                                                                String status = info.get("TransactionStatus").getAsString();
+                                                                // do stuff with the result or error
+
+                                                                String fees = info.get("Fee").getAsString();
+
+                                                                dbRef.child("Xperience").child(goldKey).child("Injection").child(key)
+                                                                        .setValue(new NewTransaction(key, "DEPOSIT", amount, fees, merchant, transactionId, finalPhoneNumber, status, Channel));
+
+
+
+                                                                Toast.makeText(context, "Payment "+ status, Toast.LENGTH_LONG).show();
+                                                                progressDialog.dismiss();
+
+                                                                finish();
+
+                                                            }
+
+                                                        }
+                                                    });
+
+
+
+                                        }
+                                    },500);
+
+
+                                }
+
+                                else{
+                                    Toast.makeText(context, "Error occurred, please try again", Toast.LENGTH_SHORT).show();
+                                    progressDialog.dismiss();
+                                }
+
+
+                            } catch (JsonIOException f){
+                                // This method will run if something goes wrong with the json, like a typo to the json-key or a broken JSON.
+                                progressDialog.dismiss();
+                                Log.e(TAG, f.getMessage());
+                                Toast.makeText(getApplicationContext(), "Please check your internet connection.", Toast.LENGTH_LONG).show();
+                                amountEditText.setEnabled(true);
+                                btnNext.setEnabled(true);
+                            }
+                        }
+
+
+
+
+                    }
+
+                });
+
+
+        /*
+        confirmDialog.NewConfirmDialog(context, "Confirm Deposit", "GHS " + amount +"\n"+Channel + "\n0" + myPhoneNumber.substring(4) , "Next", "Cancel");
+        confirmDialog.confirmAccept.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+
+
+
+
+
+            }
+        });
+        //progressDialog.dismiss();
+
+
+        //Ion.getDefault(getApplicationContext()).cancelAll(json1);
+*/
+
 
 
 
     }
+
 
 
 

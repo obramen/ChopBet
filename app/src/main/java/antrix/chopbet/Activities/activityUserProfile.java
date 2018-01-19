@@ -335,10 +335,15 @@ public class activityUserProfile extends BaseActivity{
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                matchID = (TextView) view.findViewById(R.id.matchID);
-                Intent intent = new Intent(activity, activityBetDetails.class);
-                intent.putExtra("matchID", matchID.getText().toString());
-                startActivity(intent);
+                if(Objects.equals(userName, myUserName)){
+
+                } else{
+                    matchID = (TextView) view.findViewById(R.id.matchID);
+                    Intent intent = new Intent(activity, activityBetDetails.class);
+                    intent.putExtra("matchID", matchID.getText().toString());
+                    startActivity(intent);
+                }
+
             }
         });
 

@@ -209,25 +209,25 @@ public class activityAddFunds extends BaseActivity {
 
         }
 
- switch (Channel){
+         switch (Channel){
 
-            case "mtn-gh":
-                profileImage1.setImageResource(R.drawable.mtn);
-                break;
+                    case "mtn-gh":
+                        profileImage1.setImageResource(R.drawable.mtn);
+                        break;
 
-            case "vodafone-gh":
-                profileImage1.setImageResource(R.drawable.vodafone);
-                break;
+                    case "vodafone-gh":
+                        profileImage1.setImageResource(R.drawable.vodafone);
+                        break;
 
-            case "tigo-gh":
-                profileImage1.setImageResource(R.drawable.tigo);
-                break;
+                    case "tigo-gh":
+                        profileImage1.setImageResource(R.drawable.tigo);
+                        break;
 
-            case "airtel-gh":
-                profileImage1.setImageResource(R.drawable.airtel);
-                break;
+                    case "airtel-gh":
+                        profileImage1.setImageResource(R.drawable.airtel);
+                        break;
 
-        }
+                }
 
 
 
@@ -304,11 +304,12 @@ public class activityAddFunds extends BaseActivity {
         final String Channel = bundle.getString("channel");
         String PhoneNumber = "";
 
-        switch (bundle.getString("cardStatus")){
+        switch (bundle.getString(getString(R.string.cardstatus))){
             case "New Card":
                 PhoneNumber = phoneNumberEditText.getText().toString();
-                if(TextUtils.isEmpty(phoneNumberEditText.getText().toString().trim())){
+                if(TextUtils.isEmpty(phoneNumberEditText.getText().toString().trim())  || phoneNumberEditText.getText().toString().trim().length() < 9){
                     Toast.makeText(context, "Enter phone number", Toast.LENGTH_SHORT).show();
+                    return;
                 }
 
                 break;
@@ -381,8 +382,31 @@ public class activityAddFunds extends BaseActivity {
 
 
                                 if (saveCard.isChecked()){
-                                    String cardID = dbRef.child("Xperience").child(goldKey).child("Cards").push().getKey();
-                                    dbRef.child("Xperience").child(goldKey).child("Cards").child(cardID).setValue(new NewCard(finalPhoneNumber, Channel, cardID));
+
+
+                                    dbRef.child("Xperience").child(goldKey).child("Cards").addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            if (dataSnapshot.hasChildren()){
+                                                if (dataSnapshot.child(finalPhoneNumber).exists()){
+
+                                                } else{
+                                                    //String cardID = dbRef.child("Xperience").child(goldKey).child("Cards").push().getKey();
+                                                    dbRef.child("Xperience").child(goldKey).child("Cards").child(finalPhoneNumber).setValue(new NewCard(finalPhoneNumber, Channel, finalPhoneNumber));
+
+                                                }
+
+                                            } else{
+                                                dbRef.child("Xperience").child(goldKey).child("Cards").child(finalPhoneNumber).setValue(new NewCard(finalPhoneNumber, Channel, finalPhoneNumber));
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
+
 
                                 }
 
